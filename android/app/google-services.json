@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960074773700",
+    "project_id": "master-max-ced03",
+    "storage_bucket": "master-max-ced03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960074773700:android:1234567890",
+        "android_client_info": {
+          "package_name": "com.example.mastermax_2030"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC799JbfYLQ5ka6t2rHYCNdTmwSD6TYiBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
