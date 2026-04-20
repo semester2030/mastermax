@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../providers/business_analytics_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_colors.dart';
@@ -68,31 +69,31 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         title: const Text(
           'التحليلات التجارية',
           style: TextStyle(
-            color: AppColors.accent,
+            color: AppColors.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.accent),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: AppColors.accent),
+            icon: const Icon(Icons.filter_list, color: AppColors.textPrimary),
             onPressed: () {
               // TODO: Implement filter functionality
             },
           ),
           IconButton(
-            icon: const Icon(Icons.share, color: AppColors.accent),
+            icon: const Icon(Icons.share, color: AppColors.textPrimary),
             onPressed: () {
               // TODO: Implement share functionality
             },
@@ -100,7 +101,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
         ],
       ),
       body: Container(
-        color: Colors.white,
+        color: AppColors.white,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -108,7 +109,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: ColorUtils.withOpacity(AppColors.accent, 0.3),
@@ -120,30 +121,75 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                     const Text(
                       'الملخص المالي',
                       style: TextStyle(
-                        color: AppColors.accent,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildMetricCard(
-                          'المبيعات',
-                          '٥٠٠,٠٠٠ ر.س',
-                          Icons.trending_up,
-                          AppColors.success,
-                          growth: '+15%',
-                        ),
-                        _buildMetricCard(
-                          'المصروفات',
-                          '١٥٠,٠٠٠ ر.س',
-                          Icons.trending_down,
-                          AppColors.error,
-                          growth: '-8%',
-                        ),
-                      ],
+                    Consumer<BusinessAnalyticsProvider>(
+                      builder: (context, provider, child) {
+                        final analytics = provider.analytics;
+                        final isEmpty = analytics['isEmpty'] == true;
+                        final revenue = (analytics['revenue'] as num?)?.toDouble() ?? 0.0;
+                        final expenses = (analytics['expenses'] as num?)?.toDouble() ?? 0.0;
+                        final revenueGrowth = analytics['growth']?['revenue'] ?? 0;
+                        final expensesGrowth = analytics['growth']?['expenses'] ?? 0;
+                        
+                        if (isEmpty && revenue == 0 && expenses == 0) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.analytics_outlined,
+                                    size: 64,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'لا توجد بيانات بعد',
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'سيتم عرض البيانات عند إضافة أول عملية بيع',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildMetricCard(
+                              'المبيعات',
+                              '${_formatCurrency(revenue)} ر.س',
+                              Icons.trending_up,
+                              AppColors.success,
+                              growth: revenueGrowth > 0 ? '+$revenueGrowth%' : null,
+                            ),
+                            _buildMetricCard(
+                              'المصروفات',
+                              '${_formatCurrency(expenses)} ر.س',
+                              Icons.trending_down,
+                              AppColors.error,
+                              growth: expensesGrowth > 0 ? '+$expensesGrowth%' : null,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                     Row(
@@ -222,7 +268,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: ColorUtils.withOpacity(AppColors.accent, 0.3),
@@ -234,70 +280,90 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                     const Text(
                       'المبيعات الشهرية',
                       style: TextStyle(
-                        color: AppColors.accent,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: const FlGridData(show: false),
-                          titlesData: FlTitlesData(
-                            leftTitles: const AxisTitles(
-                              
-                            ),
-                            rightTitles: const AxisTitles(
-                              
-                            ),
-                            topTitles: const AxisTitles(
-                              
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'];
-                                  if (value.toInt() < 0 || value.toInt() >= months.length) {
-                                    return const Text('');
-                                  }
-                                  return Text(
-                                    months[value.toInt()],
-                                    style: TextStyle(
-                                      color: ColorUtils.withOpacity(AppColors.textLight, 0.7),
-                                      fontSize: 12,
-                                    ),
-                                  );
-                                },
+                    Consumer<BusinessAnalyticsProvider>(
+                      builder: (context, provider, child) {
+                        final analytics = provider.analytics;
+                        final isEmpty = analytics['isEmpty'] == true;
+                        final monthlySales = analytics['monthly_sales'] as List? ?? [];
+                        
+                        if (isEmpty || monthlySales.isEmpty) {
+                          return const SizedBox(
+                            height: 200,
+                            child: Center(
+                              child: Text(
+                                'لا توجد بيانات للمبيعات الشهرية',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
                               ),
+                            ),
+                          );
+                        }
+                        
+                        final spots = monthlySales.asMap().entries.map((entry) {
+                          return FlSpot(entry.key.toDouble(), (entry.value['value'] as num).toDouble());
+                        }).toList();
+                        
+                        return SizedBox(
+                          height: 200,
+                          child: LineChart(
+                            LineChartData(
+                              gridData: const FlGridData(show: false),
+                              titlesData: FlTitlesData(
+                                leftTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                rightTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                topTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, meta) {
+                                      if (value.toInt() < 0 || value.toInt() >= monthlySales.length) {
+                                        return const Text('');
+                                      }
+                                      final month = monthlySales[value.toInt()]['month'] as String? ?? '';
+                                      return Text(
+                                        month,
+                                        style: TextStyle(
+                                          color: ColorUtils.withOpacity(AppColors.textLight, 0.7),
+                                          fontSize: 12,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              borderData: FlBorderData(show: false),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: spots,
+                                  isCurved: true,
+                                  color: AppColors.accent,
+                                  barWidth: 3,
+                                  isStrokeCapRound: true,
+                                  dotData: const FlDotData(show: false),
+                                  belowBarData: BarAreaData(
+                                    show: true,
+                                    color: ColorUtils.withOpacity(AppColors.accent, 0.1),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          borderData: FlBorderData(show: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: const [
-                                FlSpot(0, 3),
-                                FlSpot(1, 4),
-                                FlSpot(2, 3.5),
-                                FlSpot(3, 5),
-                                FlSpot(4, 4),
-                                FlSpot(5, 6),
-                              ],
-                              isCurved: true,
-                              color: AppColors.accent,
-                              barWidth: 3,
-                              isStrokeCapRound: true,
-                              dotData: const FlDotData(show: false),
-                              belowBarData: BarAreaData(
-                                show: true,
-                                color: ColorUtils.withOpacity(AppColors.accent, 0.1),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -306,7 +372,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: ColorUtils.withOpacity(AppColors.accent, 0.3),
@@ -318,34 +384,58 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
                     const Text(
                       'المخزون',
                       style: TextStyle(
-                        color: AppColors.accent,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildInventoryCard(
-                          'السيارات المتاحة',
-                          '٢٥',
-                          Icons.directions_car,
-                          AppColors.success,
-                        ),
-                        _buildInventoryCard(
-                          'قيد الحجز',
-                          '٥',
-                          Icons.pending,
-                          AppColors.warning,
-                        ),
-                        _buildInventoryCard(
-                          'تم البيع',
-                          '١٥',
-                          Icons.check_circle,
-                          AppColors.accent,
-                        ),
-                      ],
+                    Consumer<BusinessAnalyticsProvider>(
+                      builder: (context, provider, child) {
+                        final analytics = provider.analytics;
+                        final isEmpty = analytics['isEmpty'] == true;
+                        final inventory = analytics['inventory'] as Map<String, dynamic>? ?? {};
+                        final totalItems = (inventory['total_items'] as num?)?.toInt() ?? 0;
+                        
+                        if (isEmpty && totalItems == 0) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                'لا توجد بيانات للمخزون',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInventoryCard(
+                              'المتاح',
+                              totalItems.toString(),
+                              Icons.inventory_2,
+                              AppColors.success,
+                            ),
+                            _buildInventoryCard(
+                              'قيد الحجز',
+                              '0',
+                              Icons.pending,
+                              AppColors.warning,
+                            ),
+                            _buildInventoryCard(
+                              'تم البيع',
+                              '0',
+                              Icons.check_circle,
+                              AppColors.accent,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -365,7 +455,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: ColorUtils.withOpacity(AppColors.accent, 0.3),
@@ -391,7 +481,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
             Text(
               value,
               style: const TextStyle(
-                color: AppColors.accent,
+                color: AppColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -438,7 +528,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
           Text(
             percentage,
             style: const TextStyle(
-              color: AppColors.accent,
+              color: AppColors.textPrimary,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -456,7 +546,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: ColorUtils.withOpacity(AppColors.accent, 0.3),
@@ -469,7 +559,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
             Text(
               value,
               style: const TextStyle(
-                color: AppColors.accent,
+                color: AppColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -491,7 +581,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
   void _showMetricDetails(String title, String value, IconData icon, Color color) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: AppColors.surface,
@@ -559,7 +649,7 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
   void _showInventoryDetails(String title, String value, IconData icon, Color color) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: AppColors.surface,
@@ -622,6 +712,11 @@ class _BusinessAnalyticsScreenState extends State<BusinessAnalyticsScreen> {
         ),
       ),
     );
+  }
+
+  String _formatCurrency(double amount) {
+    final formatter = NumberFormat('#,##0', 'ar');
+    return formatter.format(amount);
   }
 
   Widget _buildDetailButton(String label, IconData icon, VoidCallback onPressed) {

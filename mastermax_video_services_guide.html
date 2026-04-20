@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل شامل: خدمات بث الفيديو لتطبيق Mastermax</title>
+  <link rel="stylesheet" href="mastermax_video_services_guide.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Hero Header -->
+  <header class="hero-header">
+    <div class="hero-content">
+      <h1><i class="fas fa-video"></i> دليل شامل: خدمات بث الفيديو لتطبيق Mastermax</h1>
+      <p class="hero-subtitle">
+        تحليل دقيق للخدمات المناسبة، التكاليف، آلية الربط، ومتطلبات التطبيق مع إثباتات موثقة
+      </p>
+      <div class="hero-meta">
+        <span><i class="fas fa-calendar"></i> تاريخ المراجعة: 2025</span>
+        <span><i class="fas fa-language"></i> اللغة: العربية</span>
+        <span><i class="fas fa-shield-alt"></i> مصادر موثوقة</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Icons -->
+  <nav class="nav-icons">
+    <div class="icon-card" data-section="analysis">
+      <div class="icon-wrapper">
+        <i class="fas fa-search"></i>
+      </div>
+      <h3>تحليل التطبيق</h3>
+    </div>
+    <div class="icon-card" data-section="services">
+      <div class="icon-wrapper">
+        <i class="fas fa-cloud"></i>
+      </div>
+      <h3>الخدمات المناسبة</h3>
+    </div>
+    <div class="icon-card" data-section="costs">
+      <div class="icon-wrapper">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <h3>التكاليف التفصيلية</h3>
+    </div>
+    <div class="icon-card" data-section="integration">
+      <div class="icon-wrapper">
+        <i class="fas fa-plug"></i>
+      </div>
+      <h3>آلية الربط</h3>
+    </div>
+    <div class="icon-card" data-section="requirements">
+      <div class="icon-wrapper">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <h3>المتطلبات</h3>
+    </div>
+    <div class="icon-card" data-section="implementation">
+      <div class="icon-wrapper">
+        <i class="fas fa-code"></i>
+      </div>
+      <h3>خطة التنفيذ</h3>
+    </div>
+    <div class="icon-card" data-section="comparison">
+      <div class="icon-wrapper">
+        <i class="fas fa-balance-scale"></i>
+      </div>
+      <h3>مقارنة شاملة</h3>
+    </div>
+    <div class="icon-card" data-section="references">
+      <div class="icon-wrapper">
+        <i class="fas fa-book"></i>
+      </div>
+      <h3>المراجع</h3>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Section 1: تحليل التطبيق الحالي -->
+    <section id="analysis" class="content-section ref-section active-section">
+      <div class="section-header">
+        <h2><i class="fas fa-search"></i> 1. تحليل التطبيق الحالي (Mastermax)</h2>
+      </div>
+
+      <div class="info-box success">
+        <i class="fas fa-check-circle"></i>
+        <strong>الخلاصة:</strong> التطبيق <strong>جاهز جزئياً</strong> لخدمات بث الفيديو المتقدمة، لكن يحتاج تحسينات محددة.
+      </div>
+
+      <h3>1.1 البنية التقنية الحالية</h3>
+      <div class="tech-stack">
+        <div class="tech-item">
+          <i class="fas fa-mobile-alt"></i>
+          <strong>Framework:</strong> Flutter (Dart)
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-play-circle"></i>
+          <strong>Video Player:</strong> video_player (^2.9.2) + chewie (^1.10.0)
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-database"></i>
+          <strong>Storage:</strong> Firebase Storage (حالياً)
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-server"></i>
+          <strong>Backend:</strong> Firebase (Firestore + Storage)
+        </div>
+        <div class="tech-item">
+          <i class="fas fa-network-wired"></i>
+          <strong>HTTP Client:</strong> dio (^5.4.0) + http (^1.3.0)
+        </div>
+      </div>
+
+      <h3>1.2 دعم بروتوكولات الفيديو</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>البروتوكول</th>
+            <th>الحالة</th>
+            <th>الإثبات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MP4 (Progressive)</strong></td>
+            <td><span class="badge success">✅ مدعوم</span></td>
+            <td><code>video_player</code> يدعم MP4 مباشرة</td>
+          </tr>
+          <tr>
+            <td><strong>HLS (.m3u8)</strong></td>
+            <td><span class="badge success">✅ مدعوم</span></td>
+            <td><code>video_player</code> يدعم HLS تلقائياً (iOS/Android)</td>
+          </tr>
+          <tr>
+            <td><strong>DASH</strong></td>
+            <td><span class="badge warning">⚠️ غير مدعوم</span></td>
+            <td>يحتاج مكتبة إضافية مثل <code>better_player</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>1.3 الكود الحالي للفيديو</h3>
+      <div class="code-evidence">
+        <div class="evidence-item">
+          <strong>الملف:</strong> <code>lib/src/features/spotlight/widgets/car_video_player.dart</code>
+          <pre><code>// ✅ يدعم HLS و MP4
+_controller = VideoPlayerController.networkUrl(
+  Uri.parse(videoUrl),
+  // video_player يدعم HLS (.m3u8) تلقائياً
+);</code></pre>
+        </div>
+        <div class="evidence-item">
+          <strong>الملف:</strong> <code>lib/src/shared/widgets/media/video_player.dart</code>
+          <pre><code>// ✅ يستخدم video_player + chewie
+_videoPlayerController = VideoPlayerController.networkUrl(
+  Uri.parse(widget.url),
+);</code></pre>
+        </div>
+      </div>
+
+      <h3>1.4 Cloudflare Stream (موجود لكن غير مفعّل بالكامل)</h3>
+      <div class="info-box warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>ملاحظة:</strong> يوجد كود Cloudflare Stream في المشروع لكنه <strong>اختياري</strong> (Feature Flag).
+        <br><strong>الملف:</strong> <code>lib/src/features/spotlight/services/cloudflare_stream_service.dart</code>
+      </div>
+
+      <h3>1.5 نقاط القوة</h3>
+      <ul class="checklist">
+        <li><i class="fas fa-check"></i> يدعم HLS تلقائياً (مطلوب لـ Cloudflare Stream)</li>
+        <li><i class="fas fa-check"></i> يستخدم <code>dio</code> للـ HTTP (مفيد للربط مع APIs)</li>
+        <li><i class="fas fa-check"></i> بنية منظمة (Services + Providers)</li>
+        <li><i class="fas fa-check"></i> Firebase موجود (يمكن استخدامه كـ Backend API)</li>
+      </ul>
+
+      <h3>1.6 نقاط تحتاج تحسين</h3>
+      <ul class="checklist">
+        <li><i class="fas fa-times"></i> لا يوجد Backend API منفصل (يعتمد على Firebase مباشرة)</li>
+        <li><i class="fas fa-times"></i> لا يوجد نظام Transcoding (تحويل الفيديو)</li>
+        <li><i class="fas fa-times"></i> لا يوجد Signed URLs (حماية الروابط)</li>
+        <li><i class="fas fa-times"></i> لا يوجد تكامل مع Wasabi/Backblaze</li>
+        <li><i class="fas fa-times"></i> لا يوجد تكامل مع Cloudflare CDN</li>
+      </ul>
+    </section>
+
+    <!-- Section 2: الخدمات المناسبة -->
+    <section id="services" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-cloud"></i> 2. الخدمات المناسبة لتطبيق Mastermax</h2>
+      </div>
+
+      <div class="info-box info">
+        <i class="fas fa-info-circle"></i>
+        <strong>التوصية:</strong> بناءً على تحليل التطبيق، <strong>Wasabi/Backblaze + Cloudflare CDN</strong> هو الخيار الأفضل لتطبيق Mastermax.
+      </div>
+
+      <h3>2.1 مقارنة سريعة</h3>
+      <div class="comparison-cards">
+        <div class="comparison-card">
+          <div class="card-header">
+            <i class="fas fa-stream"></i>
+            <h3>Cloudflare Stream</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>المميزات:</strong></p>
+            <ul>
+              <li>✅ حل متكامل (تخزين + بث + تحويل)</li>
+              <li>✅ سهل الربط (API مباشر)</li>
+              <li>✅ يدعم HLS تلقائياً</li>
+            </ul>
+            <p><strong>العيوب:</strong></p>
+            <ul>
+              <li>❌ مكلف جداً عند الانتشار الكبير</li>
+              <li>❌ $1 لكل 1000 دقيقة مشاهدة</li>
+              <li>❌ $5 لكل 1000 دقيقة تخزين</li>
+            </ul>
+            <p class="recommendation"><strong>مناسب ل:</strong> MVP أو تطبيقات صغيرة</p>
+          </div>
+        </div>
+
+        <div class="comparison-card recommended">
+          <div class="card-header">
+            <i class="fas fa-server"></i>
+            <h3>Wasabi/Backblaze + Cloudflare CDN</h3>
+            <span class="badge success">موصى به</span>
+          </div>
+          <div class="card-body">
+            <p><strong>المميزات:</strong></p>
+            <ul>
+              <li>✅ أرخص بكثير (حوالي 500 ريال/شهر مقابل 228,750 ريال)</li>
+              <li>✅ مرونة عالية في التحكم</li>
+              <li>✅ Bandwidth Alliance (Egress مجاني/مخفض)</li>
+              <li>✅ يدعم HLS (بعد Transcoding)</li>
+            </ul>
+            <p><strong>العيوب:</strong></p>
+            <ul>
+              <li>⚠️ يحتاج Transcoding Server</li>
+              <li>⚠️ يحتاج Backend API</li>
+              <li>⚠️ إعداد أكثر تعقيداً</li>
+            </ul>
+            <p class="recommendation"><strong>مناسب ل:</strong> تطبيقات كبيرة + انتشار عالي</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>2.2 لماذا Wasabi/Backblaze + Cloudflare CDN؟</h3>
+      <div class="reasons-grid">
+        <div class="reason-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <h4>التكلفة</h4>
+          <p>فرق هائل في التكلفة: <strong>500 ريال/شهر</strong> مقابل <strong>228,750 ريال/شهر</strong> عند مليون مشاهدة يومياً</p>
+        </div>
+        <div class="reason-card">
+          <i class="fas fa-chart-line"></i>
+          <h4>قابلية التوسع</h4>
+          <p>يمكن التوسع بدون قلق من التكاليف المرتفعة. التكلفة تزيد تدريجياً مع الحجم</p>
+        </div>
+        <div class="reason-card">
+          <i class="fas fa-cog"></i>
+          <h4>المرونة</h4>
+          <p>تحكم كامل في جودة الفيديو، عدد النسخ، وإعدادات CDN</p>
+        </div>
+        <div class="reason-card">
+          <i class="fas fa-shield-alt"></i>
+          <h4>الأمان</h4>
+          <p>يمكن تطبيق Signed URLs، Token-based Access، وCORS Policies</p>
+        </div>
+      </div>
+
+      <h3>2.3 متى تستخدم Cloudflare Stream؟</h3>
+      <ul class="checklist">
+        <li><i class="fas fa-check"></i> إذا كان التطبيق في مرحلة MVP وعدد المشاهدات قليل (&lt; 10,000 يومياً)</li>
+        <li><i class="fas fa-check"></i> إذا لم يكن لديك فريق Backend قوي</li>
+        <li><i class="fas fa-check"></i> إذا كنت تريد حل سريع بدون تعقيدات</li>
+      </ul>
+    </section>
+
+    <!-- Section 3: التكاليف التفصيلية -->
+    <section id="costs" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-dollar-sign"></i> 3. التكاليف التفصيلية (يومي / شهري / سنوي)</h2>
+      </div>
+
+      <h3>3.1 سيناريو: مليون مشاهدة يومياً</h3>
+      <div class="scenario-box">
+        <p><strong>الفرضيات:</strong></p>
+        <ul>
+          <li>عدد المشاهدات: <strong>1,000,000 مشاهدة/يوم</strong></li>
+          <li>مدة الفيديو: <strong>2 دقيقة/مشاهدة</strong></li>
+          <li>إجمالي الدقائق اليومية: <strong>2,000,000 دقيقة</strong></li>
+          <li>إجمالي الدقائق الشهرية: <strong>60,000,000 دقيقة</strong></li>
+          <li>حجم المكتبة: <strong>100,000 فيديو × 2 دقيقة = 200,000 دقيقة</strong></li>
+        </ul>
+      </div>
+
+      <h3>3.2 Cloudflare Stream - التكاليف</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>البند</th>
+            <th>يومي (دولار / ريال)</th>
+            <th>شهري (دولار / ريال)</th>
+            <th>سنوي (دولار / ريال)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>البث (Delivery)</strong></td>
+            <td>$2,000 / 7,500 ر.س</td>
+            <td>$60,000 / 225,000 ر.س</td>
+            <td>$720,000 / 2,700,000 ر.س</td>
+          </tr>
+          <tr>
+            <td><strong>التخزين (Storage)</strong></td>
+            <td>$33.33 / 125 ر.س</td>
+            <td>$1,000 / 3,750 ر.س</td>
+            <td>$12,000 / 45,000 ر.س</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><strong>الإجمالي</strong></td>
+            <td><strong>$2,033.33 / 7,625 ر.س</strong></td>
+            <td><strong>$61,000 / 228,750 ر.س</strong></td>
+            <td><strong>$732,000 / 2,745,000 ر.س</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="source">المصدر: <a href="https://www.cloudflare.com/products/cloudflare-stream/pricing/" target="_blank">Cloudflare Stream Pricing</a></p>
+
+      <h3>3.3 Wasabi/Backblaze + Cloudflare CDN - التكاليف</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>البند</th>
+            <th>يومي (دولار / ريال)</th>
+            <th>شهري (دولار / ريال)</th>
+            <th>سنوي (دولار / ريال)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>التخزين (Wasabi - حتى 5TB)</strong></td>
+            <td>$1.17 / 4.38 ر.س</td>
+            <td>$35 / 131.25 ر.س</td>
+            <td>$420 / 1,575 ر.س</td>
+          </tr>
+          <tr>
+            <td><strong>التحويل (Transcoding)</strong></td>
+            <td>$2.67 / 10 ر.س</td>
+            <td>$80 / 300 ر.س</td>
+            <td>$960 / 3,600 ر.س</td>
+          </tr>
+          <tr>
+            <td><strong>Cloudflare Pro</strong></td>
+            <td>$0.67 / 2.5 ر.س</td>
+            <td>$20 / 75 ر.س</td>
+            <td>$240 / 900 ر.س</td>
+          </tr>
+          <tr>
+            <td><strong>نقل البيانات (Egress)*</strong></td>
+            <td>$4.5 / 16.88 ر.س</td>
+            <td>$135 / 506.25 ر.س</td>
+            <td>$1,620 / 6,075 ر.س</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><strong>الإجمالي</strong></td>
+            <td><strong>$9.01 / 33.76 ر.س</strong></td>
+            <td><strong>$270 / 1,012.5 ر.س</strong></td>
+            <td><strong>$3,240 / 12,150 ر.س</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">* مع Bandwidth Alliance، Egress من Backblaze إلى Cloudflare مجاني/مخفض بشدة</p>
+      <p class="source">المصادر: 
+        <a href="https://wasabi.com/pricing/" target="_blank">Wasabi Pricing</a>, 
+        <a href="https://www.backblaze.com/b2/cloud-storage-pricing.html" target="_blank">Backblaze B2 Pricing</a>,
+        <a href="https://www.cloudflare.com/bandwidth-alliance/" target="_blank">Bandwidth Alliance</a>
+      </p>
+
+      <h3>3.4 مقارنة التكاليف</h3>
+      <div class="comparison-chart">
+        <div class="chart-item">
+          <div class="chart-bar" style="height: 100%; background: #EF4444;">
+            <span>Cloudflare Stream</span>
+            <strong>228,750 ر.س/شهر</strong>
+          </div>
+        </div>
+        <div class="chart-item">
+          <div class="chart-bar" style="height: 0.44%; background: #10B981;">
+            <span>Wasabi + CDN</span>
+            <strong>1,012.5 ر.س/شهر</strong>
+          </div>
+        </div>
+      </div>
+      <p class="highlight-text"><strong>الفرق: 226x أرخص!</strong></p>
+    </section>
+
+    <!-- Section 4: آلية الربط -->
+    <section id="integration" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-plug"></i> 4. آلية الربط والتنفيذ داخل التطبيق</h2>
+      </div>
+
+      <h3>4.1 البنية المقترحة</h3>
+      <div class="architecture-diagram">
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-mobile-alt"></i>
+            <strong>تطبيق Mastermax (Flutter)</strong>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-server"></i>
+            <strong>Backend API</strong>
+            <span class="arch-note">(Firebase Functions أو Node.js)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-video"></i>
+            <strong>Transcoding Service</strong>
+            <span class="arch-note">(FFmpeg على VPS)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-database"></i>
+            <strong>Wasabi/Backblaze B2</strong>
+            <span class="arch-note">(تخزين HLS)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-globe"></i>
+            <strong>Cloudflare CDN</strong>
+            <span class="arch-note">(توزيع الفيديو)</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-level">
+          <div class="arch-item">
+            <i class="fas fa-users"></i>
+            <strong>المستخدمون</strong>
+          </div>
+        </div>
+      </div>
+
+      <h3>4.2 تدفق العمل (من الرفع إلى المشاهدة)</h3>
+      <div class="workflow">
+        <div class="workflow-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>رفع الفيديو</h4>
+            <p>المستخدم يرفع الفيديو من التطبيق → Backend API</p>
+            <code>POST /api/videos/upload</code>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>التحويل (Transcoding)</h4>
+            <p>Backend يرسل مهمة تحويل → Transcoding Service يحول إلى HLS</p>
+            <code>FFmpeg → .m3u8 + .ts segments</code>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>التخزين</h4>
+            <p>الملفات المحولة تُرفع إلى Wasabi/Backblaze B2</p>
+            <code>PUT /b2api/v2/b2_upload_file</code>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>ربط CDN</h4>
+            <p>Cloudflare CDN يقرأ من Wasabi/Backblaze عبر CNAME</p>
+            <code>CDN → B2 Bucket (Bandwidth Alliance)</code>
+          </div>
+        </div>
+        <div class="workflow-step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h4>المشاهدة</h4>
+            <p>التطبيق يحصل على رابط HLS من API → video_player يشغله</p>
+            <code>GET /api/videos/{id}/stream → HLS URL</code>
+          </div>
+        </div>
+      </div>
+
+      <h3>4.3 كود الربط في Flutter</h3>
+      <div class="code-example">
+        <h4>أ. رفع الفيديو</h4>
+        <pre><code>// lib/src/features/spotlight/services/video_upload_service.dart
+Future&lt;String&gt; uploadVideo(File videoFile) async {
+  // 1. رفع إلى Backend API
+  final formData = FormData.fromMap({
+    'video': await MultipartFile.fromFile(videoFile.path),
+    'title': title,
+    'type': type,
+  });
+  
+  final response = await dio.post(
+    'https://api.mastermax.com/videos/upload',
+    data: formData,
+  );
+  
+  // 2. Backend يعيد videoId
+  return response.data['videoId'];
+}</code></pre>
+      </div>
+
+      <div class="code-example">
+        <h4>ب. الحصول على رابط المشاهدة</h4>
+        <pre><code>// lib/src/features/spotlight/services/video_service.dart
+Future&lt;String&gt; getVideoStreamUrl(String videoId) async {
+  final response = await dio.get(
+    'https://api.mastermax.com/videos/$videoId/stream',
+    queryParameters: {
+      'signed': 'true', // للحصول على Signed URL
+    },
+  );
+  
+  // Backend يعيد HLS URL من Cloudflare CDN
+  return response.data['hlsUrl'];
+  // مثال: https://cdn.mastermax.com/videos/abc123.m3u8
+}</code></pre>
+      </div>
+
+      <div class="code-example">
+        <h4>ج. تشغيل الفيديو</h4>
+        <pre><code>// lib/src/features/spotlight/widgets/video_player.dart
+Future&lt;void&gt; _loadVideo(String videoId) async {
+  // 1. الحصول على HLS URL
+  final hlsUrl = await videoService.getVideoStreamUrl(videoId);
+  
+  // 2. تشغيل عبر video_player (يدعم HLS تلقائياً)
+  _controller = VideoPlayerController.networkUrl(
+    Uri.parse(hlsUrl), // .m3u8 URL
+  );
+  
+  await _controller.initialize();
+  _controller.play();
+}</code></pre>
+      </div>
+
+      <h3>4.4 Backend API Endpoints المطلوبة</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Endpoint</th>
+            <th>الوظيفة</th>
+            <th>المثال</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST /api/videos/upload</code></td>
+            <td>رفع فيديو جديد</td>
+            <td>استقبال ملف MP4 → إرسال لمهمة Transcoding</td>
+          </tr>
+          <tr>
+            <td><code>GET /api/videos/{id}/stream</code></td>
+            <td>الحصول على رابط HLS</td>
+            <td>إرجاع Signed URL من Cloudflare CDN</td>
+          </tr>
+          <tr>
+            <td><code>GET /api/videos/{id}/status</code></td>
+            <td>حالة التحويل</td>
+            <td>processing / ready / failed</td>
+          </tr>
+          <tr>
+            <td><code>DELETE /api/videos/{id}</code></td>
+            <td>حذف فيديو</td>
+            <td>حذف من B2 + Firestore</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 5: المتطلبات -->
+    <section id="requirements" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-tasks"></i> 5. المتطلبات: هل التطبيق جاهز؟</h2>
+      </div>
+
+      <h3>5.1 ما هو موجود (✅ جاهز)</h3>
+      <div class="requirements-grid">
+        <div class="req-card success">
+          <i class="fas fa-check-circle"></i>
+          <h4>Video Player</h4>
+          <p><code>video_player</code> موجود ويدعم HLS</p>
+          <span class="evidence">lib/src/shared/widgets/media/video_player.dart</span>
+        </div>
+        <div class="req-card success">
+          <i class="fas fa-check-circle"></i>
+          <h4>HTTP Client</h4>
+          <p><code>dio</code> موجود للربط مع APIs</p>
+          <span class="evidence">pubspec.yaml: dio: ^5.4.0</span>
+        </div>
+        <div class="req-card success">
+          <i class="fas fa-check-circle"></i>
+          <h4>Firebase Backend</h4>
+          <p>Firebase موجود (يمكن استخدامه كـ Backend)</p>
+          <span class="evidence">Firebase Functions</span>
+        </div>
+        <div class="req-card success">
+          <i class="fas fa-check-circle"></i>
+          <h4>Video Service</h4>
+          <p>بنية Services موجودة</p>
+          <span class="evidence">lib/src/features/spotlight/services/</span>
+        </div>
+      </div>
+
+      <h3>5.2 ما هو مفقود (❌ يحتاج إضافة)</h3>
+      <div class="requirements-grid">
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>Backend API منفصل</h4>
+          <p><strong>المطلوب:</strong> Node.js/Go API أو Firebase Functions</p>
+          <p><strong>الوظيفة:</strong> رفع، تحويل، وإدارة الفيديوهات</p>
+          <span class="evidence">غير موجود حالياً</span>
+        </div>
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>Transcoding Service</h4>
+          <p><strong>المطلوب:</strong> VPS مع FFmpeg أو خدمة سحابية</p>
+          <p><strong>الوظيفة:</strong> تحويل MP4 → HLS (.m3u8)</p>
+          <span class="evidence">غير موجود</span>
+        </div>
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>تكامل Wasabi/Backblaze</h4>
+          <p><strong>المطلوب:</strong> SDK للربط مع B2 API</p>
+          <p><strong>الوظيفة:</strong> رفع/حذف ملفات HLS</p>
+          <span class="evidence">غير موجود</span>
+        </div>
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>Signed URLs</h4>
+          <p><strong>المطلوب:</strong> نظام حماية الروابط</p>
+          <p><strong>الوظيفة:</strong> منع الوصول غير المصرح</p>
+          <span class="evidence">غير موجود</span>
+        </div>
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>Cloudflare CDN Setup</h4>
+          <p><strong>المطلوب:</strong> إعداد DNS + CNAME</p>
+          <p><strong>الوظيفة:</strong> ربط CDN مع B2 Bucket</p>
+          <span class="evidence">غير موجود</span>
+        </div>
+        <div class="req-card error">
+          <i class="fas fa-times-circle"></i>
+          <h4>Video Upload Service</h4>
+          <p><strong>المطلوب:</strong> Service لرفع الفيديو للـ Backend</p>
+          <p><strong>الوظيفة:</strong> Multipart upload</p>
+          <span class="evidence">موجود جزئياً (Firebase فقط)</span>
+        </div>
+      </div>
+
+      <h3>5.3 خطة الإضافة (خطوة بخطوة)</h3>
+      <div class="implementation-steps">
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">1</span>
+            <h4>إعداد Backend API</h4>
+          </div>
+          <div class="step-body">
+            <p><strong>الخيارات:</strong></p>
+            <ul>
+              <li>Firebase Functions (Node.js) - <strong>موصى به</strong></li>
+              <li>VPS مع Express.js</li>
+              <li>AWS Lambda / Google Cloud Functions</li>
+            </ul>
+            <p><strong>المدة:</strong> 2-3 أسابيع</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">2</span>
+            <h4>إعداد Transcoding Service</h4>
+          </div>
+          <div class="step-body">
+            <p><strong>الخيارات:</strong></p>
+            <ul>
+              <li>VPS (DigitalOcean/Linode) مع FFmpeg - <strong>موصى به</strong></li>
+              <li>AWS MediaConvert</li>
+              <li>خدمة Transcoding جاهزة (Mux, Zencoder)</li>
+            </ul>
+            <p><strong>المدة:</strong> 1-2 أسبوع</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">3</span>
+            <h4>ربط Wasabi/Backblaze</h4>
+          </div>
+          <div class="step-body">
+            <p><strong>الخطوات:</strong></p>
+            <ul>
+              <li>إنشاء حساب Backblaze B2</li>
+              <li>إنشاء Bucket</li>
+              <li>إضافة B2 SDK في Backend</li>
+              <li>ربط Cloudflare CDN (Bandwidth Alliance)</li>
+            </ul>
+            <p><strong>المدة:</strong> 1 أسبوع</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">4</span>
+            <h4>تحديث Flutter App</h4>
+          </div>
+          <div class="step-body">
+            <p><strong>التحديثات:</strong></p>
+            <ul>
+              <li>إضافة VideoUploadService (ربط مع Backend API)</li>
+              <li>تحديث VideoService (الحصول على HLS URLs)</li>
+              <li>تحسين VideoPlayer (دعم Adaptive Bitrate)</li>
+            </ul>
+            <p><strong>المدة:</strong> 1-2 أسبوع</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>5.4 التكلفة الإجمالية للإعداد</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>البند</th>
+            <th>التكلفة الشهرية</th>
+            <th>ملاحظات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Backend API (Firebase Functions)</td>
+            <td>$0 - $25</td>
+            <td>حسب الاستخدام (Free Tier متاح)</td>
+          </tr>
+          <tr>
+            <td>Transcoding VPS</td>
+            <td>$30 - $50</td>
+            <td>DigitalOcean/Linode (4 CPU, 8GB RAM)</td>
+          </tr>
+          <tr>
+            <td>Wasabi/Backblaze Storage</td>
+            <td>$6 - $35</td>
+            <td>حسب الحجم (1-5 TB)</td>
+          </tr>
+          <tr>
+            <td>Cloudflare Pro</td>
+            <td>$20</td>
+            <td>خطة Pro (CDN + Bandwidth Alliance)</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><strong>الإجمالي (شهري)</strong></td>
+            <td><strong>$56 - $130</strong></td>
+            <td><strong>≈ 210 - 488 ر.س</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 6: خطة التنفيذ -->
+    <section id="implementation" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-code"></i> 6. خطة التنفيذ التفصيلية</h2>
+      </div>
+
+      <h3>6.1 المرحلة 1: إعداد البنية التحتية (أسبوعان)</h3>
+      <div class="phase-card">
+        <h4>الأسبوع 1: حسابات وخدمات</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> إنشاء حساب Backblaze B2</li>
+          <li><i class="fas fa-check-square"></i> إنشاء حساب Cloudflare Pro</li>
+          <li><i class="fas fa-check-square"></i> إعداد VPS للتحويل (DigitalOcean)</li>
+          <li><i class="fas fa-check-square"></i> تثبيت FFmpeg على VPS</li>
+        </ul>
+        <h4>الأسبوع 2: الربط</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> إنشاء B2 Bucket</li>
+          <li><i class="fas fa-check-square"></i> ربط Cloudflare CDN مع B2 (CNAME)</li>
+          <li><i class="fas fa-check-square"></i> تفعيل Bandwidth Alliance</li>
+          <li><i class="fas fa-check-square"></i> اختبار الرفع والتحميل</li>
+        </ul>
+      </div>
+
+      <h3>6.2 المرحلة 2: تطوير Backend API (3-4 أسابيع)</h3>
+      <div class="phase-card">
+        <h4>الأسبوع 3-4: Firebase Functions</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> إعداد Firebase Functions</li>
+          <li><i class="fas fa-check-square"></i> تطوير <code>uploadVideo</code> endpoint</li>
+          <li><i class="fas fa-check-square"></i> تطوير <code>getVideoStream</code> endpoint</li>
+          <li><i class="fas fa-check-square"></i> تطوير <code>getVideoStatus</code> endpoint</li>
+        </ul>
+        <h4>الأسبوع 5-6: Transcoding Integration</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> تطوير Transcoding Service (FFmpeg)</li>
+          <li><i class="fas fa-check-square"></i> ربط Transcoding مع B2 Upload</li>
+          <li><i class="fas fa-check-square"></i> إضافة Queue System (Bull/BullMQ)</li>
+          <li><i class="fas fa-check-square"></i> تطوير Signed URLs</li>
+        </ul>
+      </div>
+
+      <h3>6.3 المرحلة 3: تحديث Flutter App (أسبوعان)</h3>
+      <div class="phase-card">
+        <h4>الأسبوع 7: Services</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> إضافة <code>VideoUploadService</code></li>
+          <li><i class="fas fa-check-square"></i> تحديث <code>VideoService</code> (HLS URLs)</li>
+          <li><i class="fas fa-check-square"></i> إضافة Progress Tracking</li>
+        </ul>
+        <h4>الأسبوع 8: UI & Testing</h4>
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> تحديث Video Player UI</li>
+          <li><i class="fas fa-check-square"></i> إضافة Loading States</li>
+          <li><i class="fas fa-check-square"></i> اختبار شامل</li>
+        </ul>
+      </div>
+
+      <h3>6.4 المرحلة 4: الاختبار والتحسين (أسبوع)</h3>
+      <div class="phase-card">
+        <ul class="task-list">
+          <li><i class="fas fa-check-square"></i> اختبار الرفع من أجهزة مختلفة</li>
+          <li><i class="fas fa-check-square"></i> اختبار المشاهدة على شبكات مختلفة</li>
+          <li><i class="fas fa-check-square"></i> قياس الأداء (Time to First Frame)</li>
+          <li><i class="fas fa-check-square"></i> تحسين Cache Settings</li>
+        </ul>
+      </div>
+
+      <h3>6.5 المدة الإجمالية</h3>
+      <div class="timeline-summary">
+        <div class="timeline-item">
+          <strong>المرحلة 1:</strong> 2 أسابيع
+        </div>
+        <div class="timeline-item">
+          <strong>المرحلة 2:</strong> 3-4 أسابيع
+        </div>
+        <div class="timeline-item">
+          <strong>المرحلة 3:</strong> 2 أسابيع
+        </div>
+        <div class="timeline-item">
+          <strong>المرحلة 4:</strong> 1 أسبوع
+        </div>
+        <div class="timeline-total">
+          <strong>الإجمالي: 8-9 أسابيع (2-2.5 شهر)</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: مقارنة شاملة -->
+    <section id="comparison" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-balance-scale"></i> 7. مقارنة شاملة: Cloudflare Stream vs Wasabi + CDN</h2>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>المعيار</th>
+            <th>Cloudflare Stream</th>
+            <th>Wasabi/Backblaze + Cloudflare CDN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>التكلفة (مليون مشاهدة/يوم)</strong></td>
+            <td>228,750 ر.س/شهر</td>
+            <td>1,012.5 ر.س/شهر</td>
+          </tr>
+          <tr>
+            <td><strong>سهولة الإعداد</strong></td>
+            <td>✅ سهل جداً (API مباشر)</td>
+            <td>⚠️ يحتاج Backend + Transcoding</td>
+          </tr>
+          <tr>
+            <td><strong>التحويل (Transcoding)</strong></td>
+            <td>✅ تلقائي</td>
+            <td>⚠️ يحتاج VPS أو خدمة خارجية</td>
+          </tr>
+          <tr>
+            <td><strong>المرونة</strong></td>
+            <td>❌ محدودة</td>
+            <td>✅ تحكم كامل</td>
+          </tr>
+          <tr>
+            <td><strong>قابلية التوسع</strong></td>
+            <td>✅ ممتازة (لكن مكلفة)</td>
+            <td>✅ ممتازة + رخيصة</td>
+          </tr>
+          <tr>
+            <td><strong>الأمان</strong></td>
+            <td>✅ Signed URLs</td>
+            <td>✅ Signed URLs + CORS</td>
+          </tr>
+          <tr>
+            <td><strong>الجاهزية للتطبيق</strong></td>
+            <td>✅ جاهز (يحتاج تفعيل فقط)</td>
+            <td>⚠️ يحتاج 8-9 أسابيع تطوير</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>7.1 التوصية النهائية</h3>
+      <div class="recommendation-box">
+        <div class="rec-header">
+          <i class="fas fa-star"></i>
+          <h3>Wasabi/Backblaze + Cloudflare CDN</h3>
+        </div>
+        <div class="rec-body">
+          <p><strong>لماذا؟</strong></p>
+          <ul>
+            <li>✅ <strong>التكلفة:</strong> أرخص بـ 226x عند الانتشار الكبير</li>
+            <li>✅ <strong>قابلية التوسع:</strong> يمكن التوسع بدون قلق من التكاليف</li>
+            <li>✅ <strong>المرونة:</strong> تحكم كامل في الجودة والإعدادات</li>
+            <li>✅ <strong>الاستثمار:</strong> 8-9 أسابيع تطوير = توفير ملايين الريالات سنوياً</li>
+          </ul>
+          <p class="rec-note">
+            <strong>ملاحظة:</strong> إذا كان التطبيق في مرحلة MVP وعدد المشاهدات قليل (&lt; 10,000 يومياً)، 
+            يمكن البدء بـ Cloudflare Stream ثم الانتقال لـ Wasabi/Backblaze عند النمو.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: المراجع -->
+    <section id="references" class="content-section ref-section">
+      <div class="section-header">
+        <h2><i class="fas fa-book"></i> 8. المراجع والمصادر الموثوقة</h2>
+      </div>
+
+      <h3>8.1 مصادر التسعير</h3>
+      <div class="references-list">
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Cloudflare Stream Pricing</strong>
+            <a href="https://www.cloudflare.com/products/cloudflare-stream/pricing/" target="_blank">
+              https://www.cloudflare.com/products/cloudflare-stream/pricing/
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Wasabi Pricing</strong>
+            <a href="https://wasabi.com/pricing/" target="_blank">
+              https://wasabi.com/pricing/
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Backblaze B2 Pricing</strong>
+            <a href="https://www.backblaze.com/b2/cloud-storage-pricing.html" target="_blank">
+              https://www.backblaze.com/b2/cloud-storage-pricing.html
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Cloudflare Bandwidth Alliance</strong>
+            <a href="https://www.cloudflare.com/bandwidth-alliance/" target="_blank">
+              https://www.cloudflare.com/bandwidth-alliance/
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <h3>8.2 مصادر تقنية</h3>
+      <div class="references-list">
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Flutter video_player Package</strong>
+            <a href="https://pub.dev/packages/video_player" target="_blank">
+              https://pub.dev/packages/video_player
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Backblaze B2 API Documentation</strong>
+            <a href="https://www.backblaze.com/b2/docs/" target="_blank">
+              https://www.backblaze.com/b2/docs/
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>FFmpeg Documentation</strong>
+            <a href="https://ffmpeg.org/documentation.html" target="_blank">
+              https://ffmpeg.org/documentation.html
+            </a>
+          </div>
+        </div>
+        <div class="ref-item">
+          <i class="fas fa-link"></i>
+          <div>
+            <strong>Firebase Functions Documentation</strong>
+            <a href="https://firebase.google.com/docs/functions" target="_blank">
+              https://firebase.google.com/docs/functions
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <h3>8.3 إثباتات من الكود</h3>
+      <div class="code-evidence">
+        <div class="evidence-item">
+          <strong>video_player يدعم HLS:</strong>
+          <pre><code>// lib/src/features/spotlight/widgets/car_video_player.dart:74
+_controller = VideoPlayerController.networkUrl(
+  Uri.parse(videoUrl),
+  // video_player يدعم HLS (.m3u8) تلقائياً
+);</code></pre>
+        </div>
+        <div class="evidence-item">
+          <strong>dio موجود للـ HTTP:</strong>
+          <pre><code>// pubspec.yaml:107
+dio: ^5.4.0</code></pre>
+        </div>
+        <div class="evidence-item">
+          <strong>Cloudflare Stream Service موجود:</strong>
+          <pre><code>// lib/src/features/spotlight/services/cloudflare_stream_service.dart
+// موجود لكن غير مفعّل بالكامل</code></pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Mastermax - دليل شامل لخدمات بث الفيديو | جميع الأرقام مبنية على مصادر رسمية حتى 2025</p>
+  </footer>
+
+  <script src="mastermax_video_services_guide.js"></script>
+</body>
+</html>
+

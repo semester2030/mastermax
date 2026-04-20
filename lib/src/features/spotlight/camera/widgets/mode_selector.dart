@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/camera_screen.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ModeSelector extends StatelessWidget {
   final CameraMode currentMode;
@@ -14,7 +15,7 @@ class ModeSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black54,
+        color: AppColors.textPrimary.withOpacity(0.54),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
@@ -54,7 +55,7 @@ class ModeSelector extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: () => onModeSelected(mode),
           borderRadius: BorderRadius.circular(16),
@@ -64,7 +65,7 @@ class ModeSelector extends StatelessWidget {
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white24 : Colors.transparent,
+              color: isSelected ? AppColors.white.withOpacity(0.24) : AppColors.transparent,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -72,14 +73,14 @@ class ModeSelector extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  color: Colors.white,
+                  color: AppColors.white,
                   size: 20,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   ),

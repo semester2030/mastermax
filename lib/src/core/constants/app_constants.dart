@@ -1,6 +1,8 @@
+import 'app_brand.dart';
+
 class AppConstants {
   // App Info
-  static const String appName = 'MASTER MAX';
+  static String get appName => AppBrand.displayName;
   static const String appVersion = '1.0.0';
   static const String appBuildNumber = '1';
 
@@ -44,7 +46,7 @@ class AppConstants {
 
   // Listings
   static const int maxImagesPerProperty = 20;
-  static const int maxImagesPerCar = 15;
+  static const int maxImagesPerCar = 20;
   static const int maxVideosPerProperty = 2;
   static const int maxVideosPerCar = 2;
   static const int minPropertyPrice = 1000;

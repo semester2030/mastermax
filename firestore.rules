@@ -1,0 +1,356 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function authed() {
+      return request.auth != null;
+    }
+
+    function callerUserExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    /// حساب لوحة الإدارة (Firebase Auth فقط بدون مستند users) — يجب أن يطابق AuthState / AuthService.
+    function isBootstrapDashboardAdmin() {
+      return authed()
+        && request.auth.token.email != null
+        && request.auth.token.email == 'admin@mastermax.com';
+    }
+
+    /// أدمن: بريد لوحة الإدارة المعروف، أو isAdmin في وثيقة users، أو مطالبة مخصصة admin على التوكن.
+    function isAdmin() {
+      return authed() && (
+        isBootstrapDashboardAdmin()
+        || (callerUserExists()
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('isAdmin', false) == true)
+        || (request.auth.token.keys().hasAny(['admin']) && request.auth.token.admin == true)
+      );
+    }
+
+    /// نوع الحساب من وثيقة users (يُخزَّن غالباً في userType من التسجيل).
+    function callerAccountType() {
+      let p = /databases/$(database)/documents/users/$(request.auth.uid);
+      return !exists(p)
+        ? ''
+        : get(p).data.get('userType', get(p).data.get('type', ''));
+    }
+
+    function mayCreateCarListingForAccount() {
+      let t = callerAccountType();
+      return t == 'UserType.carDealer' || t == 'UserType.carTrader' || t == 'UserType.individual'
+        || t == 'carDealer' || t == 'carTrader' || t == 'individual';
+    }
+
+    /// عقار: شركات ووسطاء عقار فقط — الأفراد والقطاع الآلي لا ينشئون/يحدّثون إعلانات عقارية.
+    function mayCreatePropertyListingForAccount() {
+      let t = callerAccountType();
+      return t == 'UserType.realEstateCompany' || t == 'UserType.realEstateAgent'
+        || t == 'realEstateCompany' || t == 'realEstateAgent';
+    }
+
+    // --- حسابات المستخدمين (الملف الشخصي؛ الأدمن يحدّث التحقق من لوحة الويب) ---
+    match /users/{userId} {
+      allow read: if authed();
+      allow create: if authed() && request.auth.uid == userId
+        && request.resource.data.get('isAdmin', false) == false;
+      allow update: if authed() && (
+          (request.auth.uid == userId
+            && request.resource.data.get('isAdmin', false) == resource.data.get('isAdmin', false))
+          || isAdmin()
+        );
+      allow delete: if authed() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // --- إعلانات السيارات: قراءة عامة؛ الكتابة لصاحب الإعلان فقط ---
+    match /cars/{carId} {
+      allow read: if true;
+      allow create: if authed()
+        && request.resource.data.sellerId == request.auth.uid
+        && callerUserExists()
+        && (isAdmin() || mayCreateCarListingForAccount());
+      allow update, delete: if authed()
+        && resource.data.sellerId == request.auth.uid;
+    }
+
+    // --- العقارات: قراءة عامة؛ الكتابة لمالك السجل ---
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow create: if authed()
+        && request.resource.data.ownerId == request.auth.uid
+        && callerUserExists()
+        && (isAdmin() || mayCreatePropertyListingForAccount());
+      allow update, delete: if authed()
+        && (
+          isAdmin()
+          || (
+            resource.data.ownerId == request.auth.uid
+            && mayCreatePropertyListingForAccount()
+          )
+        );
+
+      match /status_history/{historyId} {
+        allow read, write: if authed()
+          && (
+            isAdmin()
+            || (
+              get(/databases/$(database)/documents/properties/$(propertyId)).data.ownerId == request.auth.uid
+              && mayCreatePropertyListingForAccount()
+            )
+          );
+      }
+    }
+
+    // --- تذاكر الدعم: المستخدم يرى ويعدّل تذاكره فقط ---
+    match /support_tickets/{ticketId} {
+      allow read: if authed() && resource.data.userId == request.auth.uid;
+      allow create: if authed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if authed()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // --- اشتراكات سبوتلايت: مستند لكل مستخدم ---
+    match /subscriptions/{userId} {
+      allow read, write: if authed() && request.auth.uid == userId;
+    }
+
+    // --- تفضيلات محادثات المستخدم (إخفاء من القائمة، كتم) — لا تُغيّر chatRooms ---
+    match /userChatPrefs/{userId} {
+      allow read, write: if authed() && request.auth.uid == userId;
+    }
+
+    // --- مفضلة المستخدم ---
+    match /favorites/{favId} {
+      allow read: if authed() && resource.data.userId == request.auth.uid;
+      allow create: if authed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if authed()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // --- تحويلات بنكية مرتبطة بالاشتراك ---
+    match /bank_transfers/{transferId} {
+      allow read: if authed() && resource.data.userId == request.auth.uid;
+      allow create: if authed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if authed()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // --- طلبات التحقق من الوثائق ---
+    match /verification_requests/{reqUserId} {
+      allow read: if authed() && (request.auth.uid == reqUserId || isAdmin());
+      allow create, update: if authed() && (request.auth.uid == reqUserId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // --- فشل رفع وسائط (التطبيق يكتب؛ الأدمن يقرأ في لوحة المراقبة) ---
+    match /media_upload_failures/{id} {
+      allow create: if authed();
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
+    // --- جلسات التطبيق (المستخدم يكتب جلسته؛ الأدمن يقرأ في المراقبة) ---
+    match /app_sessions/{sessionId} {
+      allow create: if authed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if authed()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid;
+      allow read, delete: if isAdmin();
+    }
+
+    // --- سجل إجراءات الإدارة: إنشاء فقط، والمُنفّذ يجب أن يطابق الجلسة ---
+    match /admin_audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorUid is string
+        && request.resource.data.action is string
+        && request.resource.data.action.size() > 0
+        && request.resource.data.action.size() <= 128
+        && request.resource.data.targetType is string
+        && request.resource.data.targetType.size() > 0
+        && request.resource.data.targetType.size() <= 96
+        && request.resource.data.summary is string
+        && request.resource.data.summary.size() > 0
+        && request.resource.data.summary.size() <= 2048
+        && request.resource.data.outcome is string
+        && (request.resource.data.outcome == 'success' || request.resource.data.outcome == 'failure')
+        && request.resource.data.source is string
+        && request.resource.data.source == 'admin_web'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasAll([
+          'actorUid',
+          'action',
+          'targetType',
+          'summary',
+          'outcome',
+          'source',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'actorUid',
+          'actorEmail',
+          'action',
+          'targetType',
+          'targetId',
+          'summary',
+          'metadata',
+          'outcome',
+          'source',
+          'createdAt'
+        ])
+        && (!request.resource.data.keys().hasAny(['actorEmail'])
+          || (request.resource.data.actorEmail is string
+            && request.resource.data.actorEmail.size() <= 320))
+        && (!request.resource.data.keys().hasAny(['targetId'])
+          || (request.resource.data.targetId is string
+            && request.resource.data.targetId.size() <= 200))
+        && (!request.resource.data.keys().hasAny(['metadata'])
+          || (request.resource.data.metadata is map
+            && request.resource.data.metadata.size() <= 30));
+      allow update, delete: if false;
+    }
+
+    // --- تقييمات العقارات ---
+    match /property_reviews/{reviewId} {
+      allow read: if true;
+      allow create: if authed()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if authed()
+        && resource.data.userId == request.auth.uid;
+
+      match /replies/{replyId} {
+        allow read: if true;
+        allow write: if authed();
+      }
+      match /reactions/{reactionUserId} {
+        allow read: if true;
+        allow write: if authed() && request.auth.uid == reactionUserId;
+      }
+    }
+
+    // --- مجموعات أخرى مستخدمة في التطبيق (مستخدم مسجّل فقط) ---
+    match /security_logs/{id} {
+      allow read, write: if authed();
+    }
+    match /reports/{id} {
+      allow read, write: if authed();
+    }
+    // فيديوهات السبوتلايت: قراءة عامة (مثل إعلانات السيارات/العقارات) حتى يعمل الفيد في التصفح بدون فشل صامت
+    // عند انتهاء الجلسة أو مشاكل التوكن؛ الكتابة تبقى للمستخدمين المسجلين فقط.
+    match /spotlight_videos/{id} {
+      allow read: if true;
+      allow write: if authed();
+    }
+
+    /// تجميع مشاهدات سبوتلايت يوميًا (مفتاح المستند yyyy-MM-dd بتوقيت السعودية من التطبيق).
+    match /spotlight_daily_views/{dayKey} {
+      allow read: if isAdmin();
+      allow create, update: if authed();
+      allow delete: if isAdmin();
+    }
+    match /sales/{id} {
+      allow read, write: if authed();
+    }
+    match /rentals/{id} {
+      allow read, write: if authed();
+    }
+    match /videos/{id} {
+      allow read, write: if authed();
+    }
+    match /bookings/{id} {
+      allow read, write: if authed();
+    }
+    match /notifications/{id} {
+      allow read, write: if authed();
+    }
+    match /property_sales/{id} {
+      allow read, write: if authed();
+    }
+    match /rental_contracts/{id} {
+      allow read, write: if authed();
+    }
+    match /property_contracts/{id} {
+      allow read, write: if authed();
+    }
+    match /special_offers/{id} {
+      allow read, write: if authed();
+    }
+    match /payment_plans/{id} {
+      allow read, write: if authed();
+    }
+    match /property_shares/{id} {
+      allow read, write: if authed();
+    }
+    match /inspections/{id} {
+      allow read, write: if authed();
+    }
+    match /video_shares/{id} {
+      allow read, write: if authed();
+    }
+    match /branches/{id} {
+      allow read, write: if authed();
+    }
+    match /real_estate_customers/{id} {
+      allow read, write: if authed();
+    }
+    match /rental_payments/{id} {
+      allow read, write: if authed();
+    }
+
+    match /businesses/{businessId} {
+      allow read, write: if authed();
+      match /analytics/{docId} {
+        allow read, write: if authed();
+      }
+    }
+
+    match /companies/{companyId} {
+      allow read, write: if authed();
+      match /team_members/{memberId} {
+        allow read, write: if authed();
+      }
+    }
+
+    /// مشاركون في غرفة محادثة (مستند chatRooms/{roomId})
+    function chatRoomParticipant(roomId) {
+      let r = get(/databases/$(database)/documents/chatRooms/$(roomId)).data;
+      return r.user1Id == request.auth.uid || r.user2Id == request.auth.uid;
+    }
+
+    match /chatRooms/{roomId} {
+      allow read: if authed()
+        && (resource.data.user1Id == request.auth.uid
+            || resource.data.user2Id == request.auth.uid);
+      allow create: if authed()
+        && request.resource.data.user1Id is string
+        && request.resource.data.user2Id is string
+        && (request.resource.data.user1Id == request.auth.uid
+            || request.resource.data.user2Id == request.auth.uid);
+      allow update: if authed()
+        && (resource.data.user1Id == request.auth.uid
+            || resource.data.user2Id == request.auth.uid);
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if authed() && chatRoomParticipant(roomId);
+        allow create: if authed()
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.senderId is string
+          && request.resource.data.text is string
+          && chatRoomParticipant(roomId);
+        allow update, delete: if false;
+      }
+    }
+
+    match /chats/{chatId} {
+      allow read, write: if authed();
+      match /messages/{messageId} {
+        allow read, write: if authed();
+      }
+    }
+  }
+}

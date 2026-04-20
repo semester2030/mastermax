@@ -16,7 +16,7 @@ class PanoramaHotspot {
     required this.longitude,
     required this.latitude,
     this.icon = Icons.place,
-    this.color = Colors.white,
+    this.color = const Color(0xFFFFFFFF),
   });
 
   factory PanoramaHotspot.fromJson(Map<String, dynamic> json) {

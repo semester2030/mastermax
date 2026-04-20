@@ -25,7 +25,7 @@ class ClusteringService {
       if (!addedToCluster) {
         clusters.add(MapCluster(
           id: 'cluster_${clusters.length}',
-          point: marker.point,
+          position: marker.position,
           markers: [marker],
         ));
       }
@@ -38,8 +38,8 @@ class ClusteringService {
     final double distance = _calculateDistance(
       marker.latitude,
       marker.longitude,
-      cluster.point.coordinates.lat.toDouble(),
-      cluster.point.coordinates.lng.toDouble(),
+      cluster.position.latitude,
+      cluster.position.longitude,
     );
     return distance <= radius;
   }

@@ -4,6 +4,7 @@ import '../models/camera_result.dart';
 import '../models/media_metadata.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/app_brand.dart';
 
 class ThreeDService {
   final List<String> _capturedImages = [];
@@ -97,7 +98,7 @@ class ThreeDService {
         'angleStep': 360 / requiredAngles,
         'resolution': '4096x4096',
       },
-      watermarkInfo: 'Master Max - 3D Model',
+      watermarkInfo: '${AppBrand.displayName} - 3D Model',
       hasAudio: false,
       createdBy: 'Test User',
       createdAt: DateTime.now(),

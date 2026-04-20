@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -79,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               // Header with back button
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: Colors.transparent,
+                color: AppColors.transparent,
                 child: Row(
                   children: [
                     IconButton(

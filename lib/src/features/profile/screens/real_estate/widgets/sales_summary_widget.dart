@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/property_models.dart';
+import '../../../../../core/theme/app_colors.dart';
 
 class SalesSummaryWidget extends StatelessWidget {
   final List<Sale> sales;
@@ -14,23 +15,22 @@ class SalesSummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      color: AppColors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'ملخص المبيعات',
-              style: textTheme.titleLarge?.copyWith(
-                color: colorScheme.primary,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -45,9 +45,6 @@ class SalesSummaryWidget extends StatelessWidget {
   }
 
   Widget _buildSummaryRow(BuildContext context, String label, String value) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -55,14 +52,16 @@ class SalesSummaryWidget extends StatelessWidget {
         children: [
           Text(
             label,
-            style: textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 16,
             ),
           ),
           Text(
             value,
-            style: textTheme.bodyLarge?.copyWith(
-              color: colorScheme.primary,
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),

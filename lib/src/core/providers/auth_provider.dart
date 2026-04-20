@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,10 +9,13 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _currentUser;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  // ✅ StreamSubscription للتأكد من إغلاقها
+  StreamSubscription<User?>? _authStateSubscription;
 
   AuthProvider() {
     // الاستماع لتغييرات حالة المصادقة
-    _auth.authStateChanges().listen(_onAuthStateChanged);
+    _authStateSubscription = _auth.authStateChanges().listen(_onAuthStateChanged);
   }
 
   /// المستخدم الحالي
@@ -111,5 +115,13 @@ class AuthProvider extends ChangeNotifier {
       // Handle error
       await signOut();
     }
+  }
+
+  @override
+  void dispose() {
+    // ✅ إغلاق StreamSubscription
+    _authStateSubscription?.cancel();
+    _authStateSubscription = null;
+    super.dispose();
   }
 } 

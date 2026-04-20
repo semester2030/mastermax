@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../providers/map_state.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class MapTypeSelector extends StatelessWidget {
   final MapFilterType selectedType;
@@ -22,8 +23,8 @@ class MapTypeSelector extends StatelessWidget {
             onTap: () => onTypeChanged(MapFilterType.realEstate),
             icon: Icons.home,
             label: 'عقارات',
-            startColor: const Color(0xFF1976D2),
-            endColor: const Color(0xFF64B5F6),
+            startColor: AppColors.primary,
+            endColor: AppColors.primaryLight,
           ),
           const SizedBox(width: 12),
           _TypeButton(
@@ -31,8 +32,8 @@ class MapTypeSelector extends StatelessWidget {
             onTap: () => onTypeChanged(MapFilterType.cars),
             icon: Icons.directions_car,
             label: 'سيارات',
-            startColor: const Color(0xFF7B1FA2),
-            endColor: const Color(0xFFBA68C8),
+            startColor: AppColors.primaryDark,
+            endColor: AppColors.primary,
           ),
         ],
       ),

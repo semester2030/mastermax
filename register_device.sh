@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "=== حل جذري: تسجيل الجهاز ==="
+echo ""
+echo "1. افتح Xcode"
+echo "2. اذهب إلى: Window > Devices and Simulators (Shift+Cmd+2)"
+echo "3. اضغط على iPhone من القائمة"
+echo "4. اضغط 'Use for Development' إذا ظهرت"
+echo ""
+echo "بعد التسجيل، شغّل:"
+echo "flutter run -d 00008110-00191986268BA01E"

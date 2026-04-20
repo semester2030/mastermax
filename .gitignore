@@ -23,6 +23,12 @@ migrate_working_dir/
 # is commented out by default.
 #.vscode/
 
+# Firebase local (cache / emulator — لا تُرفع)
+.firebase/
+
+# مخرجات بناء ويب/آيواس داخل lib (لا تُرفع)
+lib/web/build/
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

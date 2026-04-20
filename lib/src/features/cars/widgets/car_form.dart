@@ -4,14 +4,19 @@ import '../models/car_model.dart';
 import '../../../shared/widgets/inputs/image_picker_field.dart';
 import '../../../shared/widgets/inputs/location_picker_field.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_constants.dart';
 import 'car_features_selector.dart';
 import '../../../core/utils/color_utils.dart';
 
 class CarForm extends StatefulWidget {
   final Function(CarModel) onSubmit;
+  /// عند التمرير: وضع تعديل مع تعبئة الحقول من السيارة الحالية.
+  final CarModel? initialCar;
 
   const CarForm({
-    required this.onSubmit, super.key,
+    required this.onSubmit,
+    super.key,
+    this.initialCar,
   });
 
   @override
@@ -24,6 +29,7 @@ class _CarFormState extends State<CarForm> {
     'title': '',
     'description': '',
     'price': 0.0,
+    'purchasePrice': null, // ✅ سعر الشراء/التكلفة (اختياري)
     'brand': '',
     'model': '',
     'year': DateTime.now().year,
@@ -34,7 +40,7 @@ class _CarFormState extends State<CarForm> {
     'features': <String>[],
     'images': <String>[],
     'mainImage': '',
-    'location': const GeoPoint(0, 0),
+    'location': const GeoPoint(24.7136, 46.6753), // الرياض (افتراضي - سيتم تحديثه تلقائياً)
     'address': '',
     'hasVideo': false,
     'videoUrl': null,
@@ -44,6 +50,87 @@ class _CarFormState extends State<CarForm> {
     'interiorPanoramaUrl': null,
     'virtualTourUrl': null,
   };
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialCar != null) {
+      _hydrateFromCar(widget.initialCar!);
+    }
+  }
+
+  void _hydrateFromCar(CarModel c) {
+    _formData['title'] = c.title;
+    _formData['description'] = c.description;
+    _formData['price'] = c.price;
+    _formData['purchasePrice'] = c.purchasePrice;
+    final brandKey = c.brand.trim();
+    _formData['brand'] = _carModels.containsKey(brandKey) ? brandKey : '';
+    final modelVal = c.model.trim();
+    final b = _formData['brand'] as String;
+    _formData['model'] =
+        (b.isNotEmpty && (_carModels[b]?.contains(modelVal) ?? false)) ? modelVal : '';
+    _formData['year'] = c.year;
+    _formData['kilometers'] = c.kilometers;
+    _formData['condition'] = _normCondition(c.condition);
+    _formData['transmission'] = _normTransmission(c.transmission);
+    _formData['fuelType'] = _normFuel(c.fuelType);
+    _formData['features'] = List<String>.from(c.features);
+    _formData['images'] = List<String>.from(c.images);
+    _formData['mainImage'] = c.mainImage;
+    _formData['location'] = c.location ?? const GeoPoint(24.7136, 46.6753);
+    _formData['address'] = c.address;
+    _formData['hasVideo'] = c.hasVideo;
+    _formData['videoUrl'] = c.videoUrl;
+    _formData['has360View'] = c.has360View;
+    _formData['panoramaUrl'] = c.panoramaUrl;
+    _formData['hasInteriorView'] = c.hasInteriorView;
+    _formData['interiorPanoramaUrl'] = c.interiorPanoramaUrl;
+    _formData['virtualTourUrl'] = c.virtualTourUrl;
+  }
+
+  static String _normCondition(String raw) {
+    final s = raw.trim();
+    if (s == 'جديدة' || s == 'مستعملة') return s;
+    if (s == 'مستعمل' || s == 'used') return 'مستعملة';
+    if (s == 'جديد' || s == 'new') return 'جديدة';
+    return 'جديدة';
+  }
+
+  static String _normTransmission(String raw) {
+    final s = raw.trim();
+    if (s == 'أوتوماتيك' || s == 'عادي') return s;
+    if (s == 'automatic' || s == 'Automatic') return 'أوتوماتيك';
+    if (s == 'manual' || s == 'Manual') return 'عادي';
+    return 'أوتوماتيك';
+  }
+
+  static String _normFuel(String raw) {
+    const allowed = ['بنزين', 'ديزل', 'كهرباء', 'هجين'];
+    final s = raw.trim();
+    if (allowed.contains(s)) return s;
+    if (s == 'petrol' || s == 'gasoline') return 'بنزين';
+    if (s == 'diesel') return 'ديزل';
+    if (s == 'electric') return 'كهرباء';
+    if (s == 'hybrid') return 'هجين';
+    return 'بنزين';
+  }
+
+  bool get _isEditing => widget.initialCar != null;
+
+  String? _effectiveBrand() {
+    final b = _formData['brand'] as String?;
+    if (b == null || b.isEmpty || !_carModels.containsKey(b)) return null;
+    return b;
+  }
+
+  String? _effectiveModel() {
+    final b = _effectiveBrand();
+    final m = _formData['model'] as String?;
+    if (b == null || m == null || m.isEmpty) return null;
+    if (_carModels[b]?.contains(m) != true) return null;
+    return m;
+  }
 
   final Map<String, List<String>> _carModels = {
     // اليابانية
@@ -621,6 +708,7 @@ class _CarFormState extends State<CarForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextFormField(
+          initialValue: (_formData['title'] as String?) ?? '',
           decoration: _buildInputDecoration(
             labelText: 'عنوان السيارة',
             icon: Icons.title,
@@ -636,6 +724,7 @@ class _CarFormState extends State<CarForm> {
         ),
         const SizedBox(height: 16),
         TextFormField(
+          initialValue: (_formData['description'] as String?) ?? '',
           decoration: _buildInputDecoration(
             labelText: 'الوصف',
             icon: Icons.description,
@@ -652,6 +741,7 @@ class _CarFormState extends State<CarForm> {
         ),
         const SizedBox(height: 16),
         TextFormField(
+          initialValue: _formData['price'] != null ? _formData['price'].toString() : '',
           decoration: _buildInputDecoration(
             labelText: 'السعر',
             icon: Icons.attach_money,
@@ -675,6 +765,42 @@ class _CarFormState extends State<CarForm> {
           },
         ),
         const SizedBox(height: 16),
+        // ✅ حقل سعر الشراء/التكلفة (لحساب الربح في CRM)
+        TextFormField(
+          initialValue: _formData['purchasePrice'] != null
+              ? _formData['purchasePrice'].toString()
+              : null,
+          decoration: _buildInputDecoration(
+            labelText: 'سعر الشراء/التكلفة (اختياري)',
+            icon: Icons.account_balance_wallet,
+          ).copyWith(
+            helperText: 'سعر الشراء (للسيارات الجاهزة) أو التكلفة (للسيارات المجمعة) - يستخدم لحساب الربح',
+            helperMaxLines: 2,
+          ),
+          style: const TextStyle(color: AppColors.text),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value != null && value.isNotEmpty) {
+              final purchasePrice = double.tryParse(value);
+              if (purchasePrice == null || purchasePrice <= 0) {
+                return 'الرجاء إدخال رقم صحيح';
+              }
+              final salePrice = double.tryParse(_formData['price'].toString()) ?? 0;
+              if (purchasePrice > salePrice && salePrice > 0) {
+                return 'سعر الشراء/التكلفة يجب أن يكون أقل من سعر البيع';
+              }
+            }
+            return null;
+          },
+          onSaved: (value) {
+            if (value != null && value.isNotEmpty) {
+              _formData['purchasePrice'] = double.tryParse(value);
+            } else {
+              _formData['purchasePrice'] = null;
+            }
+          },
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -685,6 +811,7 @@ class _CarFormState extends State<CarForm> {
                 ),
                 style: const TextStyle(color: AppColors.text),
                 dropdownColor: AppColors.surface,
+                value: _effectiveBrand(),
                 items: _carModels.keys.map((brand) {
                   return DropdownMenuItem(
                     value: brand,
@@ -717,6 +844,7 @@ class _CarFormState extends State<CarForm> {
                 ),
                 style: const TextStyle(color: AppColors.text),
                 dropdownColor: AppColors.surface,
+                value: _effectiveModel(),
                 items: _formData['brand'] != null && _carModels.containsKey(_formData['brand'])
                     ? _carModels[_formData['brand']]!.map((model) {
                         return DropdownMenuItem(
@@ -748,6 +876,7 @@ class _CarFormState extends State<CarForm> {
           children: [
             Expanded(
               child: TextFormField(
+                initialValue: _formData['year']?.toString() ?? '',
                 decoration: _buildInputDecoration(
                   labelText: 'سنة الصنع',
                   icon: Icons.calendar_today,
@@ -776,6 +905,7 @@ class _CarFormState extends State<CarForm> {
             const SizedBox(width: 16),
             Expanded(
               child: TextFormField(
+                initialValue: _formData['kilometers']?.toString() ?? '',
                 decoration: _buildInputDecoration(
                   labelText: 'عدد الكيلومترات',
                   icon: Icons.speed,
@@ -812,6 +942,9 @@ class _CarFormState extends State<CarForm> {
                 ),
                 style: const TextStyle(color: AppColors.text),
                 dropdownColor: AppColors.surface,
+                value: const {'جديدة', 'مستعملة'}.contains(_formData['condition'])
+                    ? _formData['condition'] as String?
+                    : null,
                 items: ['جديدة', 'مستعملة'].map((condition) {
                   return DropdownMenuItem(
                     value: condition,
@@ -843,6 +976,9 @@ class _CarFormState extends State<CarForm> {
                 ),
                 style: const TextStyle(color: AppColors.text),
                 dropdownColor: AppColors.surface,
+                value: const {'أوتوماتيك', 'عادي'}.contains(_formData['transmission'])
+                    ? _formData['transmission'] as String?
+                    : null,
                 items: ['أوتوماتيك', 'عادي'].map((transmission) {
                   return DropdownMenuItem(
                     value: transmission,
@@ -875,6 +1011,9 @@ class _CarFormState extends State<CarForm> {
           ),
           style: const TextStyle(color: AppColors.text),
           dropdownColor: AppColors.surface,
+          value: const {'بنزين', 'ديزل', 'كهرباء', 'هجين'}.contains(_formData['fuelType'])
+              ? _formData['fuelType'] as String?
+              : null,
           items: ['بنزين', 'ديزل', 'كهرباء', 'هجين'].map((fuelType) {
             return DropdownMenuItem(
               value: fuelType,
@@ -959,6 +1098,7 @@ class _CarFormState extends State<CarForm> {
             });
           },
           label: 'صور السيارة',
+          maxImages: AppConstants.maxImagesPerCar,
         ),
       ],
     );
@@ -978,8 +1118,8 @@ class _CarFormState extends State<CarForm> {
         ),
         const SizedBox(height: 16),
         LocationPickerField(
-          initialAddress: '',
-          initialLocation: const GeoPoint(0, 0),
+          initialAddress: _formData['address'] as String? ?? '',
+          initialLocation: _formData['location'] as GeoPoint? ?? const GeoPoint(24.7136, 46.6753),
           label: 'موقع السيارة',
           onLocationSelected: (location, address) {
             setState(() {
@@ -1039,7 +1179,7 @@ class _CarFormState extends State<CarForm> {
             hintText: 'أدخل رابط الجولة الافتراضية',
             prefixIcon: Icon(Icons.link),
           ),
-          initialValue: _formData['virtualTourUrl'],
+          initialValue: (_formData['virtualTourUrl'] as String?) ?? '',
           onChanged: (value) {
             setState(() {
               _formData['virtualTourUrl'] = value.isEmpty ? null : value;
@@ -1055,19 +1195,39 @@ class _CarFormState extends State<CarForm> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         onPressed: () {
-          if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            final now = DateTime.now();
-            final carData = {
-              ..._formData,
-              'createdAt': now,
-              'updatedAt': now,
-              'isActive': true,
-              'isFeatured': false,
-              'isVerified': false,
-            };
-            widget.onSubmit(CarModel.fromMap(carData, ''));
+          if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+            return;
           }
+          _formKey.currentState!.save();
+          final now = DateTime.now();
+          final base = widget.initialCar;
+          if (base != null) {
+            final merged = Map<String, dynamic>.from(_formData);
+            merged['createdAt'] = base.createdAt;
+            merged['updatedAt'] = now;
+            merged['isActive'] = base.isActive;
+            merged['isFeatured'] = base.isFeatured;
+            merged['isVerified'] = base.isVerified;
+            merged['sellerId'] = base.sellerId;
+            merged['sellerName'] = base.sellerName;
+            merged['sellerPhone'] = base.sellerPhone;
+            merged['hasVideo'] = base.hasVideo;
+            merged['videoUrl'] = base.videoUrl;
+            if (base.videos != null) {
+              merged['videos'] = base.videos!.map((v) => v.toMap()).toList();
+            }
+            widget.onSubmit(CarModel.fromMap(merged, base.id));
+            return;
+          }
+          final carData = {
+            ..._formData,
+            'createdAt': now,
+            'updatedAt': now,
+            'isActive': true,
+            'isFeatured': false,
+            'isVerified': false,
+          };
+          widget.onSubmit(CarModel.fromMap(carData, ''));
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -1075,9 +1235,9 @@ class _CarFormState extends State<CarForm> {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        child: const Text(
-          'إضافة السيارة',
-          style: TextStyle(
+        child: Text(
+          _isEditing ? 'حفظ التعديلات' : 'إضافة السيارة',
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),

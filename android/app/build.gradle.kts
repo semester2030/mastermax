@@ -5,9 +5,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+import java.io.FileInputStream
+import java.util.Properties
+
 android {
     namespace = "com.example.mastermax_2030_new"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -24,13 +27,22 @@ android {
         applicationId = "com.example.mastermax_2030_new"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // Mapbox Configuration
-        manifestPlaceholders["MAPBOX_ACCESS_TOKEN"] = "pk.eyJ1IjoiZmF6MjAiLCJhIjoiY202cXYyZ20wMW9wNTJpc2h0cXF5cG1qbyJ9.00-UGiXUfPqWXl_Pvs9zsA"
+        val local = Properties()
+        val lp = rootProject.file("local.properties")
+        if (lp.exists()) {
+            FileInputStream(lp).use { local.load(it) }
+        }
+        val mapsFromLocal = local.getProperty("GOOGLE_MAPS_API_KEY")?.trim().orEmpty()
+        val mapsKey =
+            (project.findProperty("GOOGLE_MAPS_API_KEY") as String?)?.trim()?.takeIf { it.isNotEmpty() }
+                ?: mapsFromLocal.takeIf { it.isNotEmpty() }
+                ?: "AIzaSyDqTUgEpUZmwM602S6TVc57d5erB_c-dr4"
+        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = mapsKey
     }
 
     buildTypes {
@@ -43,8 +55,6 @@ android {
 }
 
 dependencies {
-    // Mapbox Dependencies
-    implementation("com.mapbox.maps:android:11.9.0")
 }
 
 flutter {

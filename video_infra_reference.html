@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>المرجع الرسمي لتكلفة بث الفيديو لتطبيق Mastermax</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="مرجع رسمي تفصيلي باللغة العربية لتصميم بنية بث فيديو عالية الجودة لتطبيق Mastermax، مع مقارنة دقيقة بين Cloudflare Stream و Wasabi/Backblaze + Cloudflare CDN، وتقدير التكاليف، وخطة العمل، والمهارات المطلوبة.">
+  <link rel="stylesheet" href="video_infra_reference.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <h1>المرجع الرسمي لتكلفة وبنية بث الفيديو لتطبيق Mastermax</h1>
+      <p class="subtitle">
+        مقارنة موثقة بين <strong>Cloudflare Stream</strong> و
+        <strong>Wasabi / Backblaze B2 + Cloudflare CDN</strong>
+        مع خطة عمل، أدوار الفريق، وأرقام دقيقة مبنية على مصادر رسمية حتى عام 2025.
+      </p>
+      <div class="hero-meta">
+        <span>تاريخ المراجعة: 2025</span>
+        <span>اللغة: العربية</span>
+      </div>
+      <a href="#summary" class="primary-btn">الانتقال إلى الخلاصة التنفيذية</a>
+
+      <div class="topics-grid" aria-label="أقسام المرجع">
+        <button type="button" class="topic-card active" data-target="summary">
+          <span class="topic-card-icon">📌</span>
+          <span class="topic-card-label">الخلاصة التنفيذية</span>
+        </button>
+        <button type="button" class="topic-card" data-target="official-pricing">
+          <span class="topic-card-icon">💰</span>
+          <span class="topic-card-label">الأسعار الرسمية</span>
+        </button>
+        <button type="button" class="topic-card" data-target="scenarios">
+          <span class="topic-card-icon">📊</span>
+          <span class="topic-card-label">سيناريوهات التكلفة</span>
+        </button>
+        <button type="button" class="topic-card" data-target="architecture">
+          <span class="topic-card-icon">🏗️</span>
+          <span class="topic-card-label">البنية التقنية</span>
+        </button>
+        <button type="button" class="topic-card" data-target="team">
+          <span class="topic-card-icon">👨‍💻</span>
+          <span class="topic-card-label">الفريق والمهارات</span>
+        </button>
+        <button type="button" class="topic-card" data-target="process">
+          <span class="topic-card-icon">🗺️</span>
+          <span class="topic-card-label">خطة العمل</span>
+        </button>
+        <button type="button" class="topic-card" data-target="calculator">
+          <span class="topic-card-icon">🧮</span>
+          <span class="topic-card-label">حاسبة التكاليف</span>
+        </button>
+        <button type="button" class="topic-card" data-target="references">
+          <span class="topic-card-icon">🔗</span>
+          <span class="topic-card-label">المراجع الرسمية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. Executive Summary -->
+    <section id="summary" class="card ref-section">
+      <h2>1. الخلاصة التنفيذية (Executive Summary)</h2>
+      <p>
+        هذا المستند هو <strong>مرجع رسمي داخلي</strong> لتطبيق Mastermax يشرح
+        بشكل تفصيلي ودقيق:
+      </p>
+      <ul>
+        <li>نموذج تسعير <strong>Cloudflare Stream</strong> الرسمي (تخزين + مشاهدات بالدقائق).</li>
+        <li>نموذج التخزين الرخيص باستخدام <strong>Wasabi</strong> أو <strong>Backblaze B2</strong> مع <strong>Cloudflare CDN</strong>.</li>
+        <li>سيناريوهات تكلفة عند وصول التطبيق إلى <strong>مليون مشاهدة يوميًا</strong>.</li>
+        <li>البنية التقنية المقترحة لبث الفيديو بجودة عالية وسرعة تحميل ممتازة.</li>
+        <li>خطة العمل، والمهارات المطلوبة، وعدد الموظفين الأنسب (1 مقابل 2 مقابل 3).</li>
+      </ul>
+      <p class="info">
+        جميع الأرقام مبنية على <strong>أسعار رسمية</strong> من مزوّدي الخدمات حتى عام 2025،
+        ومع ذلك يجب دائمًا التحقق من الصفحات الرسمية عند اتخاذ قرارات مالية نهائية لأن الأسعار
+        قد تتغير مستقبلاً.
+      </p>
+    </section>
+
+    <!-- 2. Official Pricing Section -->
+    <section id="official-pricing" class="card ref-section">
+      <h2>2. الأسعار الرسمية (2025) ومصادرها</h2>
+
+      <h3>2.1 Cloudflare Stream</h3>
+      <p>
+        وفق وثائق Cloudflare Stream الرسمية (قسم التسعير في
+        <code>https://developers.cloudflare.com/stream/</code> و
+        <code>https://www.cloudflare.com/products/cloudflare-stream/</code>)
+        يتم التسعير على النحو التالي:
+      </p>
+      <ul>
+        <li><strong>تخزين الفيديو (Storage):</strong> تقريبًا <strong>5 دولار أمريكي لكل 1000 دقيقة فيديو مخزّنة</strong> شهريًا.</li>
+        <li><strong>البث/المشاهدة (Delivery):</strong> تقريبًا <strong>1 دولار أمريكي لكل 1000 دقيقة مشاهدة</strong> (مسلّمة للمستخدمين).</li>
+        <li>لا توجد رسوم منفصلة للترميز (Encoding) داخل خدمة Stream الأساسية ضمن الحزم القياسية.</li>
+      </ul>
+
+      <p class="info">
+        المرجع: صفحة Cloudflare Stream – التسعير (Pricing). يمكن مراجعة التفاصيل الأحدث على:
+        <code>https://www.cloudflare.com/products/cloudflare-stream/pricing/</code>
+      </p>
+
+      <h3>2.2 Wasabi Hot Cloud Storage</h3>
+      <p>
+        وفق صفحة التسعير الرسمية لـ Wasabi (على سبيل المثال:
+        <code>https://wasabi.com/pricing/</code>)، فإن:
+      </p>
+      <ul>
+        <li><strong>تكلفة التخزين:</strong> تقريبًا <strong>5.99 – 6.99 دولار أمريكي لكل 1 تيرابايت شهريًا</strong>
+          (يتم عرض السعر بالدولار/تيرابايت/شهر بشكل واضح في صفحة التسعير).</li>
+        <li><strong>رسوم الخروج (Egress):</strong> في الخطط الحديثة، Wasabi تسوّق لخدمة <em>No Egress Fees</em>
+          في أغلب الاستخدامات النموذجية، مع وجود سياسة استخدام عادل (Fair Use Policy).</li>
+      </ul>
+      <p class="info">
+        المرجع: Wasabi Pricing – <code>https://wasabi.com/pricing/</code>
+      </p>
+
+      <h3>2.3 Backblaze B2 Cloud Storage</h3>
+      <p>
+        وفق صفحة التسعير الرسمية لـ Backblaze B2 (مثل:
+        <code>https://www.backblaze.com/b2/cloud-storage-pricing.html</code>):
+      </p>
+      <ul>
+        <li><strong>التخزين:</strong> تقريبًا <strong>0.005 دولار أمريكي لكل 1 جيجابايت شهريًا</strong>
+          أي حوالي <strong>5 – 6 دولار لكل 1 تيرابايت شهريًا</strong>.</li>
+        <li><strong>الـ Egress (الخروج):</strong> يتم احتسابها لكل جيجابايت، ولكن:</li>
+        <li>Backblaze لديها <strong>شراكة رسمية مع Cloudflare</strong> ضمن برنامج
+          <em>Bandwidth Alliance</em> تسمح بـ <strong>تخفيض أو إلغاء رسوم الـ Egress</strong>
+          عند تقديم الملفات عبر Cloudflare CDN.</li>
+      </ul>
+      <p class="info">
+        المراجع:
+        <br>- Backblaze B2 Pricing – <code>https://www.backblaze.com/b2/cloud-storage-pricing.html</code>
+        <br>- Bandwidth Alliance (Backblaze + Cloudflare) – يمكن مراجعة:
+        <code>https://www.backblaze.com/b2/partner-cloudflare.html</code> و
+        <code>https://www.cloudflare.com/bandwidth-alliance/</code>
+      </p>
+
+      <h3>2.4 Cloudflare CDN</h3>
+      <p>
+        Cloudflare CDN تقدّم خطة مجانية (Free Plan) وخطط مدفوعة. الأهم هنا:
+      </p>
+      <ul>
+        <li>يمكن استخدام Cloudflare CDN أمام مخازن خارجية مثل Wasabi أو Backblaze B2.</li>
+        <li>في حالة Backblaze B2 + Cloudflare، يتم الاستفادة من
+          <strong>Bandwidth Alliance</strong> لتخفيض أو إلغاء رسوم نقل البيانات.</li>
+        <li>في الاستخدام المعتاد لتطبيق مثل Mastermax، غالبًا ستُغطّي الخطة المجانية أو خطة Pro
+          (حوالي 20 دولار شهريًا) الاحتياجات الأساسية من ناحية CDN.</li>
+      </ul>
+      <p class="info">
+        المرجع العام: <code>https://www.cloudflare.com/plans/</code>
+      </p>
+    </section>
+
+    <!-- 3. Cost Scenarios -->
+    <section id="scenarios" class="card ref-section">
+      <h2>3. سيناريوهات التكلفة عند انتشار ضخم (1,000,000 مشاهدة يوميًا)</h2>
+
+      <h3>3.1 الفرضيات المشتركة</h3>
+      <ul>
+        <li>عدد المشاهدات اليومية: <strong>1,000,000 مشاهدة</strong>.</li>
+        <li>متوسط مدة الفيديو/المشاهدة: <strong>2 دقيقة</strong>.</li>
+        <li>عدد الفيديوهات في المكتبة: <strong>100,000 فيديو</strong>.</li>
+        <li>متوسط حجم الدقيقة بعد الضغط (HLS 720p): <strong>3 ميجابايت في الدقيقة</strong>.</li>
+        <li>سعر صرف تقريبي: <strong>1 دولار أمريكي ≈ 3.75 ريال سعودي</strong> (قيمة تقريبية).</li>
+      </ul>
+
+      <h3>3.2 حساب الاستهلاك بالدقائق والحجم</h3>
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>البند</th>
+          <th>القيمة</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>إجمالي الدقائق اليومية</td>
+          <td>1,000,000 مشاهدة × 2 دقيقة = <strong>2,000,000 دقيقة/يوم</strong></td>
+        </tr>
+        <tr>
+          <td>إجمالي الدقائق الشهرية (30 يوم)</td>
+          <td>2,000,000 × 30 = <strong>60,000,000 دقيقة/شهر</strong></td>
+        </tr>
+        <tr>
+          <td>حجم فيديو واحد (6 ميجابايت)</td>
+          <td>2 دقيقة × 3 ميجابايت = <strong>6 ميجابايت للفيديو</strong></td>
+        </tr>
+        <tr>
+          <td>إجمالي تخزين الفيديوهات</td>
+          <td>100,000 فيديو × 6 ميجابايت ≈ <strong>600,000 ميجابايت ≈ 600 جيجابايت</strong> (نحتسبها 1 تيرابايت بهامش أمان)</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h3>3.3 سيناريو A: استخدام Cloudflare Stream فقط</h3>
+      <h4>3.3.1 تكلفة المشاهدات (Delivery)</h4>
+      <ul>
+        <li>سعر Cloudflare Stream الرسمي للمشاهدة:
+          <strong>1 دولار لكل 1000 دقيقة مشاهدة</strong>.</li>
+        <li>إجمالي الدقائق الشهرية: <strong>60,000,000 دقيقة</strong>.</li>
+        <li>عدد وحدات التسعير: 60,000,000 ÷ 1000 = <strong>60,000 وحدة</strong>.</li>
+        <li>التكلفة الشهرية للبث: 60,000 × 1 دولار = <strong>60,000 دولار/شهر</strong> ≈
+          <strong>225,000 ريال سعودي/شهر</strong>.</li>
+      </ul>
+
+      <h4>3.3.2 تكلفة التخزين (Storage)</h4>
+      <ul>
+        <li>إجمالي دقائق المكتبة: 100,000 فيديو × 2 دقيقة = <strong>200,000 دقيقة</strong>.</li>
+        <li>سعر التخزين: <strong>5 دولار لكل 1000 دقيقة مخزّنة</strong>.</li>
+        <li>عدد وحدات التسعير: 200,000 ÷ 1000 = <strong>200 وحدة</strong>.</li>
+        <li>التكلفة الشهرية للتخزين: 200 × 5 دولار = <strong>1,000 دولار/شهر</strong> ≈
+          <strong>3,750 ريال/شهر</strong>.</li>
+      </ul>
+
+      <h4>3.3.3 إجمالي تكلفة Cloudflare Stream</h4>
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>البند</th>
+          <th>شهريًا (دولار)</th>
+          <th>شهريًا (ريال)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>البث (Delivery)</td>
+          <td>60,000</td>
+          <td>≈ 225,000</td>
+        </tr>
+        <tr>
+          <td>التخزين (Storage)</td>
+          <td>1,000</td>
+          <td>≈ 3,750</td>
+        </tr>
+        <tr class="highlight-row">
+          <td><strong>الإجمالي التقريبي</strong></td>
+          <td><strong>61,000 دولار/شهر</strong></td>
+          <td><strong>≈ 228,750 ريال/شهر</strong></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <p class="warning">
+        ملاحظة: هذه الأرقام تقريبية لكنها مبنية مباشرة على أسعار Cloudflare Stream الرسمية
+        (بالدقائق). التغير في مدة الفيديو أو عدد المشاهدات سيغير الإجمالي خطيًا.
+      </p>
+
+      <h3>3.4 سيناريو B: Wasabi / Backblaze + Cloudflare CDN</h3>
+
+      <h4>3.4.1 تكلفة التخزين</h4>
+      <ul>
+        <li>إجمالي الحجم المقدر: نحتسب <strong>1 تيرابايت</strong> كحد أدنى، مع إمكانية النمو حتى 5 تيرابايت.</li>
+        <li><strong>Wasabi:</strong> تقريبًا 5.99–6.99 دولار/تيرابايت/شهر
+          ⇒ 1 تيرابايت ≈ 6–7 دولار ≈ 23–26 ريال/شهر.</li>
+        <li>حتى مع 5 تيرابايت:
+          5 × 6.99 ≈ 35 دولار ≈ <strong>≈ 130 ريال/شهر تقريبًا</strong>.</li>
+        <li><strong>Backblaze B2:</strong> تقريبًا 5–6 دولار/تيرابايت/شهر، أرقام مشابهة لWasabi من حيث التخزين.</li>
+      </ul>
+
+      <h4>3.4.2 تكلفة البث عبر Cloudflare CDN</h4>
+      <ul>
+        <li>عند استخدام <strong>Backblaze B2 + Cloudflare</strong> ضمن
+          <strong>Bandwidth Alliance</strong>، يكون الـ Egress من B2 إلى Cloudflare
+          <strong>مجاني أو مخفض بشدة</strong> وفق السياسة المنشورة.</li>
+        <li>Cloudflare CDN نفسه يمكن أن يكون ضمن الخطة المجانية أو خطة Pro
+          (~20 دولار/شهر)، وغالبًا ما يكون هذا كافيًا للتطبيق في مراحله الأولى.</li>
+        <li>عمليًا: تكلفة نقل البيانات الفعلية تكون قريبة من <strong>0 ريال</strong>
+          مقارنةً بتكلفة Cloudflare Stream بالدقائق.</li>
+      </ul>
+
+      <h4>3.4.3 تكلفة تحويل الفيديو (Transcoding)</h4>
+      <ul>
+        <li>يمكن تنفيذ التحويل عبر:
+          <ul>
+            <li>خادم VPS قوي (مثلاً 30–50 دولار/شهر ≈ 110–190 ريال/شهر).</li>
+            <li>أو خدمات سيرفرلس (مثلاً 0.005–0.01 ريال لكل فيديو).</li>
+          </ul>
+        </li>
+        <li>لنفترض أنك تعالج <strong>1000 فيديو جديد يوميًا</strong> × 0.01 ريال
+          ⇒ <strong>10 ريال/يوم ≈ 300 ريال/شهر</strong>.</li>
+      </ul>
+
+      <h4>3.4.4 إجمالي تكلفة السيناريو الأرخص</h4>
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>البند</th>
+          <th>شهريًا (دولار تقريبًا)</th>
+          <th>شهريًا (ريال تقريبي)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>تخزين Wasabi (حتى 5TB)</td>
+          <td>≈ 35</td>
+          <td>≈ 130</td>
+        </tr>
+        <tr>
+          <td>خادم/خدمة تحويل الفيديو</td>
+          <td>≈ 80</td>
+          <td>≈ 300</td>
+        </tr>
+        <tr>
+          <td>Cloudflare CDN (خطة Pro تقريبًا)</td>
+          <td>≈ 20</td>
+          <td>≈ 75</td>
+        </tr>
+        <tr class="highlight-row">
+          <td><strong>الإجمالي التقريبي</strong></td>
+          <td><strong>≈ 135 دولار/شهر</strong></td>
+          <td><strong>≈ 505 ريال/شهر</strong></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <p class="success">
+        مقارنة مباشرة: عند مليون مشاهدة يوميًا، Cloudflare Stream قد تصل تكلفته
+        إلى ≈ <strong>228,750 ريال/شهر</strong>،
+        بينما السيناريو Wasabi/Backblaze + Cloudflare CDN يدور حول
+        ≈ <strong>500 ريال/شهر تقريبًا</strong> في نفس ظروف المشاهدات،
+        أي فرق بمقدار <strong>آلاف المرات</strong> في التكلفة.
+      </p>
+    </section>
+
+    <!-- 4. Architecture -->
+    <section id="architecture" class="card ref-section">
+      <h2>4. البنية التقنية المقترحة لتطبيق Mastermax</h2>
+
+      <h3>4.1 المكونات الرئيسية</h3>
+      <ul>
+        <li><strong>تطبيق Mastermax (موبايل/ويب):</strong> واجهة المستخدم التي تطلب الفيديوهات وتشغّلها عبر HLS.</li>
+        <li><strong>خادم API رئيسي (Back-End):</strong> مسؤول عن إدارة المستخدمين، الاشتراكات، الروابط الموقعة للفيديو،…إلخ.</li>
+        <li><strong>خدمة تحويل الفيديو (Transcoding Service):</strong> تستقبل الفيديو الخام (MP4) وتحوله إلى HLS بجودات مختلفة.</li>
+        <li><strong>تخزين رئيسي للفيديو (Wasabi أو Backblaze B2):</strong> تخزين ملفات HLS وملفات الـ segments.</li>
+        <li><strong>Cloudflare CDN:</strong> أمام التخزين، لتسريع التوزيع وتقليل الضغط على التخزين.</li>
+        <li><strong>خدمة مراقبة وتحليلات:</strong> لرصد الاستهلاك، الأخطاء، وسرعة التحميل.</li>
+      </ul>
+
+      <h3>4.2 تدفق العمل (من رفع الفيديو إلى المشاهدة)</h3>
+      <ol>
+        <li>المستخدم (المعلم مثلاً) يرفع الفيديو إلى خادم الرفع أو مباشرة إلى التخزين عبر رابط موقّع.</li>
+        <li>خادم الـ API يسجّل الفيديو في قاعدة البيانات ويرسل مهمة تحويل (Transcoding Job).</li>
+        <li>خدمة التحويل تحول الفيديو إلى HLS (مثلاً باستخدام FFmpeg على VPS أو خدمة سحابية).</li>
+        <li>الملفات الناتجة (m3u8 + ts) تُرفع إلى Wasabi/Backblaze B2 داخل مجلد منظم حسب الدورات والفصول.</li>
+        <li>Cloudflare CDN يقرأ الملفات من التخزين ويخدمها للمستخدمين مع Cache قوي.</li>
+        <li>تطبيق Mastermax يحصل على رابط HLS موقّع من API ويشغله عبر مشغل فيديو (Video Player) في التطبيق.</li>
+      </ol>
+
+      <p class="info">
+        هذه البنية تعطي:
+        <strong>سرعة تحميل عالية</strong> (بسبب CDN)،
+        <strong>تكلفة منخفضة جدًا</strong> (بسبب التخزين الرخيص + Bandwidth Alliance)،
+        <strong>مرونة عالية</strong> في التحكم في جودة الفيديو وعدد النسخ.
+      </p>
+    </section>
+
+    <!-- 5. Team & Skills -->
+    <section id="team" class="card ref-section">
+      <h2>5. الفريق، المهارات، وعدد الموظفين الأنسب</h2>
+
+      <h3>5.1 الدور الأساسي المشترك (واحد على الأقل)</h3>
+      <h4>مطور بنيـة فيديو وباك إند (Video/Backend Engineer)</h4>
+      <ul>
+        <li>إتقان لغة <strong>Java أو Node.js أو Go</strong> لبناء الـ API.</li>
+        <li>خبرة في بروتوكولات بث الفيديو مثل <strong>HLS</strong>.</li>
+        <li>خبرة في أدوات التحويل مثل <strong>FFmpeg</strong>.</li>
+        <li>خبرة في العمل مع تخزين S3-Compatible (Wasabi, Backblaze B2, AWS S3).</li>
+        <li>معرفة جيدة بـ <strong>Cloudflare</strong> (CDN, DNS, Page Rules, Cache).</li>
+      </ul>
+
+      <h3>5.2 خيار (1) – موظف واحد فقط</h3>
+      <p><strong>الوصف:</strong> مطوّر واحد <em>Senior Full-Stack + Video</em> يقوم بالآتي:</p>
+      <ul>
+        <li>تطوير واجهة الويب الأساسية (HTML, CSS, JavaScript) للوحة التحكم.</li>
+        <li>تطوير الـ API والبنية الخلفية.</li>
+        <li>إعداد التخزين وCloudflare CDN وربطهما.</li>
+        <li>تنفيذ نظام التحويل (Transcoding) والمراقبة الأساسية.</li>
+      </ul>
+      <p class="info">
+        <strong>المميزات:</strong> أقل تكلفة، تواصل بسيط. <br>
+        <strong>العيوب:</strong> ضغط عالي جدًا، سرعة التطوير أبطأ، المخاطر أعلى عند غياب الشخص.
+      </p>
+
+      <h3>5.3 خيار (2) – موظفان</h3>
+      <ul>
+        <li><strong>الموظف 1 – Video/Backend Engineer (أساسي):</strong>
+          مسؤول عن البنية الخلفية، التخزين، التحويل، التكامل مع Cloudflare.</li>
+        <li><strong>الموظف 2 – Front-End/UX Engineer:</strong>
+          مسؤول عن واجهة لوحة التحكم (ويب) + تحسين تجربة المستخدم.</li>
+      </ul>
+      <p class="info">
+        <strong>المميزات:</strong> توازن جيد بين التكلفة والسرعة والجودة. <br>
+        <strong>التوصية:</strong> هذا الخيار مناسب جدًا لتطبيق مثل Mastermax.
+      </p>
+
+      <h3>5.4 خيار (3) – ثلاثة موظفين</h3>
+      <ul>
+        <li><strong>Video/Backend Engineer.</strong></li>
+        <li><strong>Front-End Engineer (Web + ربما Mobile Web).</strong></li>
+        <li><strong>DevOps/Infrastructure Engineer:</strong> مسؤول عن الخوادم، الـ CI/CD، المراقبة، والأمان.</li>
+      </ul>
+      <p class="info">
+        <strong>المميزات:</strong> أعلى جودة، سرعة في التطوير، قدرة على التوسع. <br>
+        <strong>العيوب:</strong> تكلفة توظيف أعلى.
+      </p>
+
+      <h3>5.5 أيهم الأفضل لتطبيق Mastermax؟</h3>
+      <ul>
+        <li>لبناء أول نسخة عملية (MVP) مع نظام بث فيديو احترافي:
+          <strong>موظفان (خيار 2)</strong> هو الأفضل توازنًا (Backend/Video + Front-End).</li>
+        <li>بعد نجاح التطبيق ووصوله لأرقام مشاهدة كبيرة:
+          يمكن إضافة <strong>DevOps/Infrastructure Engineer</strong> ليصبح الفريق 3 أشخاص.</li>
+      </ul>
+    </section>
+
+    <!-- 6. Process & Phases -->
+    <section id="process" class="card ref-section">
+      <h2>6. خطة العمل و آلية التنفيذ الزمنية</h2>
+
+      <h3>المرحلة 1 – التحليل والتصميم (2–3 أسابيع)</h3>
+      <ul>
+        <li>تحديد متطلبات بث الفيديو (الجودات، أنواع الأجهزة، حدود الحجم،…إلخ).</li>
+        <li>اختيار المزود الأساسي للتخزين (Wasabi أو Backblaze B2).</li>
+        <li>رسم البنية الكاملة (Architecture Diagram).</li>
+        <li>تصميم واجهة لوحة التحكم لإدارة الفيديوهات.</li>
+      </ul>
+
+      <h3>المرحلة 2 – إعداد البنية التحتية (2–3 أسابيع)</h3>
+      <ul>
+        <li>إنشاء حسابات Wasabi/Backblaze وCloudflare.</li>
+        <li>إعداد Bucket للتخزين، وتكوين الأذونات (Policies).</li>
+        <li>ربط التخزين مع Cloudflare CDN (DNS + CNAME + Page Rules).</li>
+        <li>إعداد خادم التحويل (Transcoding Server) أو الخدمة السيرفرلس.</li>
+      </ul>
+
+      <h3>المرحلة 3 – تطوير الـ API وخدمات الفيديو (4–6 أسابيع)</h3>
+      <ul>
+        <li>تطوير endpoints لرفع الفيديوهات، قائمة الفيديوهات، الحصول على روابط HLS.</li>
+        <li>تطوير نظام المهام الخلفية (Background Jobs) للتحويل والرفع الآلي إلى التخزين.</li>
+        <li>تطبيق نظام حماية الروابط (Signed URLs / Tokenized URLs).</li>
+      </ul>
+
+      <h3>المرحلة 4 – تطوير الواجهة الأمامية (3–4 أسابيع)</h3>
+      <ul>
+        <li>بناء واجهة HTML/CSS/JS احترافية للوحة التحكم (رفع، إدارة، إحصائيات).</li>
+        <li>دمج مشغل فيديو يدعم HLS (مثل Video.js مع hls.js).</li>
+      </ul>
+
+      <h3>المرحلة 5 – الاختبار والتحسين (2–3 أسابيع)</h3>
+      <ul>
+        <li>اختبار الأداء تحت حمل متدرج (Load Testing).</li>
+        <li>قياس زمن بدء التشغيل (Time To First Frame) وتحسينه عبر إعدادات Cache.</li>
+        <li>مراجعة الأمان (صلاحيات، حماية الروابط، منع التحميل المباشر غير المسموح).</li>
+      </ul>
+    </section>
+
+    <!-- 7. Simple Cost Calculator -->
+    <section id="calculator" class="card ref-section">
+      <h2>7. حاسبة بسيطة تقريبية للتكلفة (Stream vs Wasabi/B2)</h2>
+      <p>
+        هذه الحاسبة تقريبية وتهدف فقط لإعطاء إحساس بالفرق بين Cloudflare Stream
+        و Wasabi/Backblaze + Cloudflare CDN بناءً على الفرضيات المذكورة أعلاه.
+        في سيناريو Wasabi/Backblaze + Cloudflare CDN نفترض:
+        <br>- تخزين حتى 5TB بسعر تقريبي ثابت شهريًا.
+        <br>- تكلفة تحويل ثابتة تقريبية.
+        <br>- تكلفة نقل بيانات (Egress) تقديرية بسيطة تعتمد على حجم المشاهدات
+        (مثلاً 0.01 دولار لكل 1GB)، رغم أن Bandwidth Alliance يمكن أن يقللها أو يلغيها في الواقع.
+      </p>
+
+      <form id="cost-form" class="calc-form">
+        <div class="form-row">
+          <label for="viewsPerDay">عدد المشاهدات اليومية:</label>
+          <input id="viewsPerDay" type="number" value="1000000" min="1">
+        </div>
+        <div class="form-row">
+          <label for="minutesPerView">متوسط مدة المشاهدة (بالدقائق):</label>
+          <input id="minutesPerView" type="number" value="2" min="0.1" step="0.1">
+        </div>
+        <div class="form-row">
+          <label for="libraryMinutes">إجمالي دقائق مكتبة الفيديو:</label>
+          <input id="libraryMinutes" type="number" value="200000" min="1">
+        </div>
+        <button type="button" id="calcBtn" class="primary-btn">حساب التكلفة التقريبية</button>
+      </form>
+
+      <div id="calcResults" class="calc-results" aria-live="polite"></div>
+    </section>
+
+    <!-- 8. References -->
+    <section id="references" class="card ref-section">
+      <h2>8. المراجع الرسمية</h2>
+      <ul>
+        <li><strong>Cloudflare Stream:</strong>
+          <br><code>https://www.cloudflare.com/products/cloudflare-stream/</code>
+          <br><code>https://developers.cloudflare.com/stream/</code>
+          <br><code>https://www.cloudflare.com/products/cloudflare-stream/pricing/</code>
+        </li>
+        <li><strong>Cloudflare CDN Plans:</strong>
+          <br><code>https://www.cloudflare.com/plans/</code>
+        </li>
+        <li><strong>Wasabi Pricing:</strong>
+          <br><code>https://wasabi.com/pricing/</code>
+        </li>
+        <li><strong>Backblaze B2 Pricing & Cloudflare Integration:</strong>
+          <br><code>https://www.backblaze.com/b2/cloud-storage-pricing.html</code>
+          <br><code>https://www.backblaze.com/b2/partner-cloudflare.html</code>
+          <br><code>https://www.cloudflare.com/bandwidth-alliance/</code>
+        </li>
+      </ul>
+
+      <p class="info">
+        هذا المستند لا يغني عن مراجعة الصفحات الرسمية قبل اتخاذ قرارات مالية نهائية،
+        بل هو <strong>مرجع داخلي منظم</strong> لتطبيق Mastermax مبني على هذه المصادر حتى عام 2025.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>مرجع رسمي داخلي لتطبيق Mastermax – بنية وتكلفة بث الفيديو – 2025</p>
+  </footer>
+
+  <script src="video_infra_reference.js"></script>
+</body>
+</html>
+
+

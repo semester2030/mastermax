@@ -1,14 +1,18 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/car_model.dart';
 import '../services/car_service.dart';
+import '../services/car_image_service.dart';
 import '../../auth/providers/auth_state.dart';
 import '../../../core/utils/logger.dart';
 
 class CarProvider extends ChangeNotifier {
   final CarService _carService;
   final AuthState _authState;
+  final CarImageService _carImageService;
   
-  CarProvider(this._carService, this._authState) {
+  CarProvider(this._carService, this._authState) 
+      : _carImageService = CarImageService() {
     // تجنب التحميل التلقائي عند التهيئة
     logDebug('CarProvider initialized');
   }
@@ -58,13 +62,61 @@ class CarProvider extends ChangeNotifier {
 
       logInfo('Adding new car for user: ${user.id}');
 
+      // ✅ رفع الصور المحلية إلى Cloudflare Images فقط (NOT Firebase Storage)
+      List<String> uploadedImages = [];
+      List<String> localImagePaths = [];
+      
+      // فصل الصور المحلية عن URLs (URLs من Cloudflare Images)
+      for (final image in car.images) {
+        if (image.startsWith('http')) {
+          // صورة موجودة مسبقاً (URL من Cloudflare Images)
+          uploadedImages.add(image);
+        } else {
+          // صورة محلية (مسار ملف) - سيتم رفعها إلى Cloudflare Images
+          localImagePaths.add(image);
+        }
+      }
+
+      // إنشاء معرف مؤقت للسيارة (سيتم استبداله بالمعرف الفعلي بعد الحفظ)
+      final tempCarId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
+
+      // ✅ رفع الصور المحلية إلى Cloudflare Images
+      if (localImagePaths.isNotEmpty) {
+        logInfo('🚀 Uploading ${localImagePaths.length} local images to Cloudflare Images...');
+        for (final imagePath in localImagePaths) {
+          try {
+            final imageFile = File(imagePath);
+            if (await imageFile.exists()) {
+              // ✅ رفع إلى Cloudflare Images فقط (NOT Firebase Storage)
+              final url = await _carImageService.uploadImage(imageFile, tempCarId);
+              uploadedImages.add(url);
+              logInfo('✅ Image uploaded to Cloudflare Images: $url');
+            }
+          } catch (e) {
+            logError('❌ Failed to upload image to Cloudflare Images: $imagePath', e);
+            // نتابع رفع باقي الصور حتى لو فشلت واحدة
+          }
+        }
+      }
+
+      // التحقق من وجود صورة واحدة على الأقل
+      if (uploadedImages.isEmpty) {
+        throw 'الرجاء إضافة صورة واحدة على الأقل';
+      }
+
       final carWithSeller = car.copyWith(
         sellerId: user.id,
         sellerName: user.name,
         sellerPhone: user.extraData?['phoneNumber'] ?? 'لا يوجد',
+        images: uploadedImages,
+        mainImage: uploadedImages.isNotEmpty ? uploadedImages.first : '',
       );
 
       final id = await _carService.addCar(carWithSeller);
+      
+      // إذا كان هناك صور تم رفعها بمعرف مؤقت، يمكن تحديثها بالمعرف الفعلي
+      // (اختياري - يمكن تركه كما هو لأن الصور مرتبطة بالمعرف المؤقت)
+      
       final newCar = await _carService.getCar(id);
       
       if (newCar != null) {
@@ -140,26 +192,125 @@ class CarProvider extends ChangeNotifier {
       });
 
       logInfo('Updating car: ${car.id}');
-      await _carService.updateCar(car);
-      
-      _safeSetState(() {
-        final index = _cars.indexWhere((c) => c.id == car.id);
-        if (index != -1) {
-          _cars[index] = car;
+
+      final resolvedImages = <String>[];
+      for (final image in car.images) {
+        if (image.startsWith('http')) {
+          resolvedImages.add(image);
+        } else {
+          final file = File(image);
+          if (await file.exists()) {
+            final url = await _carImageService.uploadImage(file, car.id);
+            resolvedImages.add(url);
+          }
         }
-        
-        if (_selectedCar?.id == car.id) {
-          _selectedCar = car;
+      }
+      if (resolvedImages.isEmpty) {
+        throw 'الرجاء إضافة صورة واحدة على الأقل';
+      }
+
+      var mainImage = car.mainImage;
+      if (!mainImage.startsWith('http')) {
+        final idx = car.images.indexOf(mainImage);
+        if (idx >= 0 && idx < resolvedImages.length) {
+          mainImage = resolvedImages[idx];
+        } else {
+          mainImage = resolvedImages.first;
+        }
+      } else if (!resolvedImages.contains(mainImage)) {
+        mainImage = resolvedImages.first;
+      }
+
+      final carToSave = car.copyWith(
+        images: resolvedImages,
+        mainImage: mainImage,
+        updatedAt: DateTime.now(),
+      );
+
+      await _carService.updateCar(carToSave);
+
+      _safeSetState(() {
+        final index = _cars.indexWhere((c) => c.id == carToSave.id);
+        if (index != -1) {
+          _cars[index] = carToSave;
+        }
+
+        if (_selectedCar?.id == carToSave.id) {
+          _selectedCar = carToSave;
         }
       });
 
       logInfo('Car updated successfully');
-
     } catch (e, stackTrace) {
       logError('Error updating car', e, stackTrace);
       _safeSetState(() {
         _error = e.toString();
       });
+    } finally {
+      _safeSetState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  /// حذف صورة واحدة من سيارة محددة وتحديث بياناتها
+  Future<void> removeCarImage({
+    required CarModel car,
+    required String imageUrl,
+  }) async {
+    if (_isLoading) return;
+
+    final uid = (_authState.user?.id ?? '').trim();
+    final sid = car.sellerId.trim();
+    if (!_authState.isAdmin && (uid.isEmpty || uid != sid)) {
+      throw Exception('غير مصرح لك بتعديل صور هذه السيارة');
+    }
+
+    try {
+      _safeSetState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      // لا نسمح بحذف آخر صورة حتى لا تبقى السيارة بدون صور
+      if (car.images.length <= 1) {
+        throw 'لا يمكن حذف آخر صورة، يجب أن تبقى صورة واحدة على الأقل للسيارة';
+      }
+
+      logInfo('Removing car image for car: ${car.id}');
+
+      // حذف الصورة من Firebase Storage
+      await _carImageService.deleteImage(imageUrl);
+
+      // إنشاء نسخة محدثة من قائمة الصور بدون الصورة المحذوفة
+      final updatedImages = List<String>.from(car.images)..remove(imageUrl);
+
+      final updatedCar = car.copyWith(
+        images: updatedImages,
+        mainImage: updatedImages.isNotEmpty ? updatedImages.first : car.mainImage,
+      );
+
+      // تحديث السيارة في قاعدة البيانات
+      await _carService.updateCar(updatedCar);
+
+      // تحديث الحالة المحلية
+      _safeSetState(() {
+        final index = _cars.indexWhere((c) => c.id == updatedCar.id);
+        if (index != -1) {
+          _cars[index] = updatedCar;
+        }
+        if (_selectedCar?.id == updatedCar.id) {
+          _selectedCar = updatedCar;
+        }
+      });
+
+      logInfo('Car image removed successfully');
+    } catch (e, stackTrace) {
+      logError('Error removing car image', e, stackTrace);
+      _safeSetState(() {
+        _error = e.toString();
+      });
+      rethrow;
     } finally {
       _safeSetState(() {
         _isLoading = false;

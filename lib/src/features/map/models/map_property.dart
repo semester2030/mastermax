@@ -1,10 +1,10 @@
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapProperty {
   final String id;
   final String title;
   final String description;
-  final Position coordinates;
+  final LatLng coordinates;
   final double price;
   final String type;
   final List<String> images;
@@ -26,7 +26,7 @@ class MapProperty {
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
-      coordinates: Position(
+      coordinates: LatLng(
         json['latitude'] as double,
         json['longitude'] as double,
       ),
@@ -42,8 +42,8 @@ class MapProperty {
       'id': id,
       'title': title,
       'description': description,
-      'latitude': coordinates.lat,
-      'longitude': coordinates.lng,
+      'latitude': coordinates.latitude,
+      'longitude': coordinates.longitude,
       'price': price,
       'type': type,
       'images': images,
@@ -55,7 +55,7 @@ class MapProperty {
     String? id,
     String? title,
     String? description,
-    Position? coordinates,
+    LatLng? coordinates,
     double? price,
     String? type,
     List<String>? images,

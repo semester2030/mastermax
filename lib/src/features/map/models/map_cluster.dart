@@ -1,14 +1,14 @@
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'map_marker.dart';
 
 class MapCluster {
   final String id;
-  final Point point;
+  final LatLng position;
   final List<MapMarker> markers;
 
   MapCluster({
     required this.id,
-    required this.point,
+    required this.position,
     required this.markers,
   });
 

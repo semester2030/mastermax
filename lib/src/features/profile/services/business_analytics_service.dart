@@ -55,6 +55,7 @@ class BusinessAnalyticsService {
     required DateTime endDate,
   }) async {
     try {
+      // فقط للحساب التجريبي، استخدم البيانات التجريبية
       if (businessId == 'trial_user') {
         return _getTrialData(startDate: startDate, endDate: endDate);
       }
@@ -69,11 +70,45 @@ class BusinessAnalyticsService {
       if (doc.exists) {
         return BusinessAnalytics.fromJson(doc.data()!);
       } else {
-        return _getTrialData(startDate: startDate, endDate: endDate);
+        // إرجاع بيانات فارغة للحسابات الجديدة
+        return _getEmptyData(startDate: startDate, endDate: endDate);
       }
     } catch (e) {
-      return _getTrialData(startDate: startDate, endDate: endDate);
+      // إرجاع بيانات فارغة في حالة الخطأ
+      return _getEmptyData(startDate: startDate, endDate: endDate);
     }
+  }
+
+  BusinessAnalytics _getEmptyData({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    // إرجاع بيانات فارغة للحسابات الجديدة
+    return BusinessAnalytics(
+      financialSummary: FinancialSummary(
+        totalRevenue: 0.0,
+        expenses: 0.0,
+        profit: 0.0,
+        monthlySales: {},
+      ),
+      inventory: Inventory(
+        totalItems: 0,
+        totalValue: 0.0,
+        items: [],
+      ),
+      sales: Sales(
+        total: 0,
+        successful: 0,
+      ),
+      marketingMetrics: MarketingMetrics(
+        views: 0,
+        leads: 0,
+        conversions: 0,
+      ),
+      customerInteractions: [],
+      recentSales: [],
+      sourceStats: {},
+    );
   }
 
   BusinessAnalytics _getTrialData({

@@ -5,6 +5,67 @@ import '../models/chat_room.dart';
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// معرف مستند ثابت: محادثة واحدة لكل (مشتري، بائع، فيديو سبوتلايت).
+  /// يضمن عدم دمج محادثات مقاطع مختلفة لنفس الشخصين.
+  static String spotlightRoomDocumentId(
+    String buyerId,
+    String sellerId,
+    String videoId,
+  ) {
+    final ids = [buyerId, sellerId]..sort();
+    final safeVideo =
+        videoId.replaceAll('/', '_').replaceAll('\\', '_').replaceAll(' ', '_');
+    final base = 'sv_${safeVideo}_${ids[0]}_${ids[1]}';
+    if (base.length > 800) {
+      return 'sv_${ids[0]}_${ids[1]}_${safeVideo.hashCode.abs()}';
+    }
+    return base;
+  }
+
+  /// غرفة دردشة مرتبطة بمقطع سبوتلايت محدد (عميل ↔ صاحب الإعلان).
+  Future<ChatRoom> createOrGetSpotlightVideoRoom({
+    required String buyerId,
+    required String sellerId,
+    required String videoId,
+    required String propertyType,
+    String? videoTitle,
+  }) async {
+    final b = buyerId.trim();
+    final s = sellerId.trim();
+    final v = videoId.trim();
+    if (b.isEmpty || s.isEmpty || v.isEmpty) {
+      throw ArgumentError('buyerId, sellerId, videoId مطلوبة');
+    }
+    if (b == s) {
+      throw ArgumentError('لا يمكن فتح محادثة مع نفس المستخدم');
+    }
+
+    final roomId = spotlightRoomDocumentId(b, s, v);
+    final ref = _firestore.collection('chatRooms').doc(roomId);
+
+    await _firestore.runTransaction((tx) async {
+      final snap = await tx.get(ref);
+      if (!snap.exists) {
+        final sorted = [buyerId, sellerId]..sort();
+        final vt = videoTitle?.trim();
+        tx.set(ref, {
+          'user1Id': sorted[0],
+          'user2Id': sorted[1],
+          'lastMessageTime': Timestamp.fromDate(DateTime.now()),
+          'lastMessageText': '',
+          'propertyId': videoId,
+          'propertyType': propertyType,
+          'spotlightBuyerId': buyerId,
+          'spotlightSellerId': sellerId,
+          if (vt != null && vt.isNotEmpty) 'spotlightVideoTitle': vt,
+        });
+      }
+    });
+
+    final created = await ref.get();
+    return ChatRoom.fromFirestore(created);
+  }
+
   // إنشاء أو الحصول على غرفة محادثة
   Future<ChatRoom> createOrGetChatRoom({
     required String currentUserId,
@@ -89,16 +150,19 @@ class ChatService {
               .orderBy('lastMessageTime', descending: true)
               .get();
 
-          // دمج النتائج
-          final allRooms = [
-            ...snapshot1.docs.map((doc) => ChatRoom.fromFirestore(doc)),
-            ...snapshot2.docs.map((doc) => ChatRoom.fromFirestore(doc)),
-          ];
-
-          // ترتيب حسب آخر رسالة
-          allRooms.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
-          
-          return allRooms;
+          // دمج النتائج (بدون تكرار لنفس مستند الغرفة)
+          final byId = <String, ChatRoom>{};
+          for (final doc in snapshot1.docs) {
+            final r = ChatRoom.fromFirestore(doc);
+            byId[r.id] = r;
+          }
+          for (final doc in snapshot2.docs) {
+            final r = ChatRoom.fromFirestore(doc);
+            byId[r.id] = r;
+          }
+          final merged = byId.values.toList();
+          merged.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+          return merged;
         });
   }
 

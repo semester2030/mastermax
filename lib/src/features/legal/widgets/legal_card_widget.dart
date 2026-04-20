@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class LegalCardWidget extends StatefulWidget {
   final String title;
@@ -59,7 +60,7 @@ class _LegalCardWidgetState extends State<LegalCardWidget> with SingleTickerProv
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: ColorUtils.withOpacity(Colors.black, 0.05),
+                  color: ColorUtils.withOpacity(AppColors.textPrimary, 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -91,7 +92,7 @@ class _LegalCardWidgetState extends State<LegalCardWidget> with SingleTickerProv
                 child: Text(
                   widget.subtitle,
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                   ),
                 ),

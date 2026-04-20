@@ -7,7 +7,7 @@ class AuthValidationLayer {
 
   // قواعد التحقق - يمكن تعديلها بسهولة
   static final RegExp _emailRegex = RegExp(
-    r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
+    r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
   static final RegExp _phoneRegex = RegExp(
     r'^\+?[0-9]{10,}$',

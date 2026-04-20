@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import 'package:like_button/like_button.dart';
 import '../models/car_model.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../favorites/providers/favorites_provider.dart' as global_favorites;
+import '../../auth/providers/auth_state.dart';
 
 class CarListItem extends StatelessWidget {
   final CarModel car;
@@ -30,24 +36,63 @@ class CarListItem extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.network(
-                    car.mainImage,
+                  child: CachedNetworkImage(
+                    imageUrl: car.mainImage,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 200,
-                        color: Theme.of(context).colorScheme.surface,
-                        child: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onSurface),
-                      );
-                    },
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      color: Theme.of(context).colorScheme.surface,
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200,
+                      color: Theme.of(context).colorScheme.surface,
+                      child: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    // تحسين الأداء
+                    // ✅ إزالة memCacheWidth/memCacheHeight للحفاظ على الدقة الكاملة
+                    // memCacheWidth: null,
+                    // memCacheHeight: null,
                   ),
                 ),
+                // ✅ شارة عدد الصور في السيارة (إن وجدت صور متعددة)
+                if (car.images.isNotEmpty)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.camera_alt_outlined,
+                            size: 14,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${car.images.length}',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (car.has360View || car.hasInteriorView || car.virtualTourUrl != null)
                   Positioned(
                     top: 8,
-                    right: 8,
+                    right: 48, // ترك مساحة لأيقونة المفضلة
                     child: Row(
                       children: [
                         if (car.has360View)
@@ -68,9 +113,9 @@ class CarListItem extends StatelessWidget {
                                 Text(
                                   '360°',
                                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ],
                             ),
@@ -108,6 +153,46 @@ class CarListItem extends StatelessWidget {
                       ],
                     ),
                   ),
+                // ✅ زر المفضلة (قلب) للسيارة - يستخدم FavoritesProvider الموحد
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Consumer2<global_favorites.FavoritesProvider, AuthState>(
+                    builder: (context, favoritesProvider, authState, _) {
+                      final userId = authState.user?.id;
+                      final isFavorite = userId != null && favoritesProvider.isFavorite(car.id);
+                      return LikeButton(
+                        isLiked: isFavorite,
+                        size: 26,
+                        circleColor: const CircleColor(
+                          start: AppColors.error,
+                          end: AppColors.primary,
+                        ),
+                        bubblesColor: const BubblesColor(
+                          dotPrimaryColor: AppColors.error,
+                          dotSecondaryColor: AppColors.primary,
+                        ),
+                        onTap: (liked) async {
+                          if (userId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('يجب تسجيل الدخول أولاً لحفظ السيارة في المفضلة'),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                            return false;
+                          }
+                          if (liked) {
+                            await favoritesProvider.removeFromFavorites(car.id, userId);
+                          } else {
+                            await favoritesProvider.addToFavorites(car, userId);
+                          }
+                          return !liked;
+                        },
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
             Padding(
@@ -132,7 +217,7 @@ class CarListItem extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                      const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(

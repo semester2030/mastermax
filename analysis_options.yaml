@@ -5,6 +5,17 @@
 # IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
 # invoked from the command line by running `flutter analyze`.
 
+# ── أخطاء حرجة فقط (CI / سكربت) ─────────────────────────────────────────
+# - عرض سطور error فقط:  bash tool/analyze_critical.sh
+# - نجاح إذا لم يوجد error (تجاهل info و warning): 
+#     flutter analyze --no-fatal-infos --no-fatal-warnings
+# - فلترة يدوية:         flutter analyze 2>&1 | grep "error •"
+
+analyzer:
+  # يمكن رفع قواعد محددة إلى error لاحقاً، مثال:
+  # errors:
+  #   invalid_use_of_visible_for_testing_member: error
+
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml

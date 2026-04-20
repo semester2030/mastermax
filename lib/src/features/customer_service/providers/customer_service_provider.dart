@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/support_ticket.dart';
 
 class CustomerServiceProvider extends ChangeNotifier {
@@ -18,8 +19,15 @@ class CustomerServiceProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        _error = 'يجب تسجيل الدخول لعرض تذاكر الدعم';
+        return;
+      }
+
       final snapshot = await _firestore
           .collection('support_tickets')
+          .where('userId', isEqualTo: uid)
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -39,9 +47,14 @@ class CustomerServiceProvider extends ChangeNotifier {
     required String description,
   }) async {
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        throw Exception('يجب تسجيل الدخول لإنشاء تذكرة');
+      }
+
       final ticket = SupportTicket(
         id: '',
-        userId: 'current_user_id', // TODO: Get from auth provider
+        userId: uid,
         title: title,
         description: description,
         status: TicketStatus.open,

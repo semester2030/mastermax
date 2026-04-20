@@ -71,7 +71,7 @@ class MonthlySalesChartWidget extends StatelessWidget {
               width: barWidth,
               height: height,
               decoration: BoxDecoration(
-                color: ColorUtils.withOpacity(AppColors.chartBlue, 0.7),
+                color: ColorUtils.withOpacity(AppColors.primary, 0.7),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
               ),
             ),
@@ -85,7 +85,7 @@ class MonthlySalesChartWidget extends StatelessWidget {
               '${entry.value.toStringAsFixed(0)} ر.س',
               style: const TextStyle(
                 fontSize: 10,
-                color: Colors.grey,
+                color: AppColors.textSecondary,
               ),
             ),
           ],

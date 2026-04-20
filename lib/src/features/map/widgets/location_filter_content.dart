@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class LocationFilterContent extends StatefulWidget {
   const LocationFilterContent({super.key});
@@ -203,7 +204,7 @@ class _LocationFilterContentState extends State<LocationFilterContent> {
         child: Text(
           city,
           style: TextStyle(
-            color: isSelected ? Colors.black : Theme.of(context).colorScheme.onPrimary,
+            color: isSelected ? AppColors.textPrimary : AppColors.white,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -224,7 +225,7 @@ class _LocationFilterContentState extends State<LocationFilterContent> {
         child: Text(
           district,
           style: TextStyle(
-            color: isSelected ? Colors.black : Theme.of(context).colorScheme.onPrimary,
+            color: isSelected ? AppColors.textPrimary : AppColors.white,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),

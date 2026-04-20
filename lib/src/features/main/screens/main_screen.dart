@@ -7,6 +7,7 @@ import '../../favorites/screens/favorites_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../../auth/providers/auth_state.dart';
 import '../../auth/models/user_type.dart';
+import '../../auth/utils/listing_vertical_guard.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
 import '../../real_estate_cars/providers/real_estate_cars_provider.dart';
 import '../../cars/providers/car_provider.dart';
@@ -36,19 +37,14 @@ class _MainScreenState extends State<MainScreen> {
         authState.updateUserType(widget.userType!);
       });
     }
-
-    // فتح شاشة نقل البيانات مباشرة
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.pushNamed(context, '/admin/data-transfer');
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer<AuthState>(
-      builder: (context, authState, _) {
+    return Consumer2<AuthState, RealEstateAndCarsProvider>(
+      builder: (context, authState, listingTab, _) {
         final userId = authState.user?.id ?? 'guest';
         final screens = [
           MainMapScreen(key: ValueKey('map_$userId')),          // الخريطة
@@ -81,47 +77,14 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          floatingActionButton: _currentIndex == 2 ? custom_animations.AnimatedScale(
-            onTap: () async {
-              final provider = Provider.of<RealEstateAndCarsProvider>(context, listen: false);
-              final carProvider = Provider.of<CarProvider>(context, listen: false);
-              
-              if (!carProvider.isLoading) {
-                final route = provider.isCarTab ? '/cars/add' : '/properties/add';
-                await Navigator.pushNamed(context, route);
-                
-                // تحديث القائمة بعد الإضافة
-                if (provider.isCarTab) {
-                  await carProvider.loadCars();
-                }
-              }
-            },
-            child: Container(
-              height: 56,
-              width: 56,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary,
-                    colorScheme.primary.withAlpha(204), // 0.8 * 255 ≈ 204
-                  ],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withAlpha(77), // 0.3 * 255 ≈ 77
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.add,
-                color: colorScheme.onPrimary,
-                size: 30,
-              ),
-            ),
-          ) : null,
+          floatingActionButton: _currentIndex == 2
+              ? _buildListingsAddFab(
+                  context,
+                  colorScheme,
+                  authState,
+                  listingTab,
+                )
+              : null,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -152,4 +115,63 @@ class _MainScreenState extends State<MainScreen> {
       },
     );
   }
-} 
+
+  /// زر الإضافة في تبويب «العروض» فقط عندما يُسمح بنشر نوع الإعلان للتبويب الحالي.
+  Widget? _buildListingsAddFab(
+    BuildContext context,
+    ColorScheme colorScheme,
+    AuthState authState,
+    RealEstateAndCarsProvider listingTab,
+  ) {
+    final t = authState.user?.type ?? authState.userType;
+    final carsOk =
+        ListingVerticalGuard.mayPublishCars(t, isAdmin: authState.isAdmin);
+    final propsOk = ListingVerticalGuard.mayPublishProperties(
+      t,
+      isAdmin: authState.isAdmin,
+    );
+    final wantCar = listingTab.isCarTab;
+    if (!((wantCar && carsOk) || (!wantCar && propsOk))) {
+      return null;
+    }
+
+    return custom_animations.AnimatedScale(
+      onTap: () async {
+        final carProvider = Provider.of<CarProvider>(context, listen: false);
+        if (carProvider.isLoading) return;
+
+        final route = wantCar ? '/cars/add' : '/properties/add';
+        await Navigator.pushNamed(context, route);
+
+        if (wantCar) {
+          await carProvider.loadCars();
+        }
+      },
+      child: Container(
+        height: 56,
+        width: 56,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primary,
+              colorScheme.primary.withAlpha(204),
+            ],
+          ),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.primary.withAlpha(77),
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Icon(
+          Icons.add,
+          color: colorScheme.onPrimary,
+          size: 30,
+        ),
+      ),
+    );
+  }
+}

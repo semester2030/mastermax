@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/car_model.dart';
 import '../../../shared/utils/formatters.dart';
+import '../../../core/theme/app_colors.dart';
 
 class CarSpecsSection extends StatelessWidget {
   final CarModel vehicle;
@@ -75,7 +76,7 @@ class CarSpecsSection extends StatelessWidget {
                 label1,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.grey,
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 4),
@@ -99,7 +100,7 @@ class CarSpecsSection extends StatelessWidget {
                   label2,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),

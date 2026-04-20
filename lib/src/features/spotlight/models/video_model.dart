@@ -76,17 +76,30 @@ class VideoModel {
       realEstateId: map['realEstateId'],
       realEstateType: map['realEstateType'],
       realEstateLocation: map['realEstateLocation'],
-      sellerId: map['sellerId'] ?? '',
+      sellerId: () {
+        final raw = map['sellerId'] ?? map['userId'];
+        if (raw == null) return null;
+        final s = raw.toString().trim();
+        return s.isEmpty ? null : s;
+      }(),
       sellerName: map['sellerName'],
       sellerPhone: map['sellerPhone'],
       price: (map['price'] as num?)?.toDouble(),
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] is Timestamp 
+          ? (map['createdAt'] as Timestamp).toDate()
+          : DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
       viewsCount: map['viewsCount'] ?? 0,
       likesCount: map['likesCount'] ?? 0,
       isFeatured: map['isFeatured'] ?? false,
-      location: map['location'] ?? const GeoPoint(0, 0),
+      location: map['location'] is GeoPoint
+          ? map['location'] as GeoPoint
+          : const GeoPoint(0, 0),
       address: map['address'] ?? '',
     );
+  }
+
+  factory VideoModel.fromJson(Map<String, dynamic> json) {
+    return VideoModel.fromMap(json);
   }
 
   Map<String, dynamic> toMap() {

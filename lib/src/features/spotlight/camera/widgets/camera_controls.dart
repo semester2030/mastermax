@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/color_utils.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class CameraControls extends StatelessWidget {
   final VoidCallback onCapture;
@@ -19,8 +20,8 @@ class CameraControls extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.transparent,
-            ColorUtils.withOpacity(Colors.black, 0.5),
+            AppColors.transparent,
+            ColorUtils.withOpacity(AppColors.textPrimary, 0.5),
           ],
         ),
       ),
@@ -29,7 +30,7 @@ class CameraControls extends StatelessWidget {
         children: [
           // زر الإلغاء
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white, size: 32),
+            icon: const Icon(Icons.close, color: AppColors.white, size: 32),
             onPressed: () => Navigator.of(context).pop(),
           ),
 
@@ -41,22 +42,22 @@ class CameraControls extends StatelessWidget {
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 4),
-                color: isProcessing ? Colors.grey : Colors.white,
+                border: Border.all(color: AppColors.white, width: 4),
+                color: isProcessing ? AppColors.textSecondary : AppColors.white,
               ),
               child: isProcessing
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.white),
                       ),
                     )
-                  : const Icon(Icons.camera, size: 36, color: Colors.black),
+                  : const Icon(Icons.camera, size: 36, color: AppColors.textPrimary),
             ),
           ),
 
           // زر تبديل الكاميرا
           IconButton(
-            icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 32),
+            icon: const Icon(Icons.flip_camera_ios, color: AppColors.white, size: 32),
             onPressed: () {
               // تبديل الكاميرا الأمامية/الخلفية
             },

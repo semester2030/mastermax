@@ -12,6 +12,9 @@ class PropertyProvider extends ChangeNotifier {
 
   PropertyProvider(this._propertyService);
 
+  /// ✅ Service للوصول من خارج الـ Provider
+  PropertyService get service => _propertyService;
+
   /// قائمة العقارات
   List<PropertyModel> get properties => _properties;
 
@@ -25,7 +28,7 @@ class PropertyProvider extends ChangeNotifier {
   String? get error => _error;
 
   /// تحميل العقارات
-  Future<void> loadProperties() async {
+  Future<void> loadProperties({String? ownerId}) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -33,7 +36,7 @@ class PropertyProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final loadedProperties = await _propertyService.getProperties();
+      final loadedProperties = await _propertyService.getProperties(ownerId: ownerId);
       _properties = loadedProperties;
       _error = null;
     } catch (e) {
@@ -48,17 +51,44 @@ class PropertyProvider extends ChangeNotifier {
   /// إلب عقار بواسطة المعرف
   Future<void> fetchPropertyById(String propertyId) async {
     try {
+      // ✅ التحقق من أن propertyId غير فارغ
+      if (propertyId.isEmpty) {
+        debugPrint('❌ fetchPropertyById: Property ID is empty');
+        _error = 'معرف العقار غير صحيح';
+        _isLoading = false;
+        _selectedProperty = null;
+        notifyListeners();
+        return;
+      }
+      
+      debugPrint('🔍 fetchPropertyById: Loading property with ID: $propertyId');
+      
       _isLoading = true;
       _error = null;
+      _selectedProperty = null;
       notifyListeners();
 
+      // ✅ جلب العقار من Firestore
       _selectedProperty = await _propertyService.getPropertyById(propertyId);
+      
+      if (_selectedProperty == null) {
+        debugPrint('❌ fetchPropertyById: Property not found in Firestore: $propertyId');
+        _error = 'لم يتم العثور على العقار';
+      } else {
+        debugPrint('✅ fetchPropertyById: Property loaded successfully');
+        debugPrint('✅ Property ID: ${_selectedProperty!.id}');
+        debugPrint('✅ Property title: ${_selectedProperty!.title}');
+        debugPrint('✅ Property images count: ${_selectedProperty!.images.length}');
+      }
       
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
-      _error = 'حدث خطأ أثناء تحميل العقار';
+    } catch (e, stackTrace) {
+      debugPrint('❌ fetchPropertyById: Error loading property $propertyId: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
+      _error = 'حدث خطأ أثناء تحميل العقار: $e';
       _isLoading = false;
+      _selectedProperty = null;
       notifyListeners();
     }
   }
@@ -70,11 +100,19 @@ class PropertyProvider extends ChangeNotifier {
   }
 
   /// إضافة عقار جديد
-  Future<void> addProperty(PropertyModel property) async {
+  /// 
+  /// ✅ يُرجع العقار المُضاف مع ID الصحيح من Firestore
+  Future<PropertyModel> addProperty(PropertyModel property) async {
     try {
+      // ✅ إضافة العقار إلى Firestore والحصول على ID الصحيح
       final newProperty = await _propertyService.addProperty(property);
+      
+      // ✅ إضافة العقار إلى القائمة المحلية
       _properties.add(newProperty);
       notifyListeners();
+      
+      // ✅ إرجاع العقار مع ID الصحيح
+      return newProperty;
     } catch (e) {
       debugPrint('Error adding property: $e');
       rethrow;
@@ -82,7 +120,7 @@ class PropertyProvider extends ChangeNotifier {
   }
 
   /// تحديث عقار
-  Future<void> updateProperty(PropertyModel property) async {
+  Future<PropertyModel> updateProperty(PropertyModel property) async {
     try {
       final updatedProperty = await _propertyService.updateProperty(property);
       final index = _properties.indexWhere((p) => p.id == property.id);
@@ -90,6 +128,7 @@ class PropertyProvider extends ChangeNotifier {
         _properties[index] = updatedProperty;
         notifyListeners();
       }
+      return updatedProperty;
     } catch (e) {
       debugPrint('Error updating property: $e');
       rethrow;

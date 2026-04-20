@@ -1,9 +1,11 @@
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/map_marker.dart';
 import 'geocoding_service.dart';
+import 'places_service.dart';
 
 class SearchService {
   final GeocodingService _geocodingService;
+  final PlacesService _placesService = PlacesService();
   
   SearchService(this._geocodingService);
 
@@ -13,7 +15,7 @@ class SearchService {
     return results.map((place) {
       return MapMarker(
         id: 'search_${place['name']}',
-        point: place['point'] as Point,
+        position: place['location'] as LatLng,
         title: place['name'] as String,
         subtitle: place['address'] as String,
         type: MarkerType.custom,
@@ -26,10 +28,21 @@ class SearchService {
     return results.map((place) => place['address'] as String).toList();
   }
 
-  Future<List<MapMarker>> searchNearbyPlaces(Point center, {double radius = 1000}) async {
-    // Note: This is a placeholder. Mapbox's nearby search requires additional setup
-    // and possibly a different API endpoint
-    return [];
+  Future<List<MapMarker>> searchNearbyPlaces(LatLng center, {double radius = 1000}) async {
+    final results = await _placesService.nearbySearch(
+      location: center,
+      radius: radius,
+    );
+    
+    return results.map((place) {
+      return MapMarker(
+        id: 'nearby_${place['place_id']}',
+        position: place['location'] as LatLng,
+        title: place['name'] as String,
+        subtitle: place['address'] as String,
+        type: MarkerType.custom,
+      );
+    }).toList();
   }
 }
 

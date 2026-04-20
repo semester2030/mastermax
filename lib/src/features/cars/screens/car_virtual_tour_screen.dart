@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
 
 class CarVirtualTourScreen extends StatefulWidget {
   final String carId;
@@ -32,7 +33,7 @@ class _CarVirtualTourScreenState extends State<CarVirtualTourScreen> {
   void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.black)
+      ..setBackgroundColor(AppColors.textPrimary)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -74,7 +75,7 @@ class _CarVirtualTourScreenState extends State<CarVirtualTourScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         leading: custom_animations.AnimatedScale(
           duration: const Duration(milliseconds: 120),

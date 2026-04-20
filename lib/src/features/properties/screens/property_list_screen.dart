@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/property_model.dart';
 import '../providers/property_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/color_utils.dart';
 import 'property_details_screen.dart';
 import '../../map/providers/map_state.dart';
+import '../../auth/providers/auth_state.dart';
+import '../../auth/utils/listing_vertical_guard.dart';
+import '../../../core/constants/route_constants.dart';
 
 class PropertyListScreen extends StatefulWidget {
   const PropertyListScreen({super.key});
@@ -62,16 +66,21 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<PropertyProvider, MapState>(
-      builder: (context, propertyProvider, mapState, _) {
+    return Consumer3<PropertyProvider, MapState, AuthState>(
+      builder: (context, propertyProvider, mapState, authState, _) {
         final properties = mapState.visibleProperties.isNotEmpty 
             ? mapState.visibleProperties 
             : propertyProvider.properties;
-        
+        final t = authState.user?.type ?? authState.userType;
+        final canAddProperty = ListingVerticalGuard.mayPublishProperties(
+          t,
+          isAdmin: authState.isAdmin,
+        );
+
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppColors.transparent,
             elevation: 0,
             title: const Text(
               'العقارات',
@@ -91,13 +100,15 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
             ],
           ),
           body: _buildBody(properties),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // TODO: Navigate to add property screen
-            },
-            backgroundColor: AppColors.accent,
-            child: const Icon(Icons.add, color: AppColors.text),
-          ),
+          floatingActionButton: canAddProperty
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.addProperty);
+                  },
+                  backgroundColor: AppColors.accent,
+                  child: const Icon(Icons.add, color: AppColors.text),
+                )
+              : null,
         );
       },
     );
@@ -173,14 +184,21 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
       );
     }
 
+    // ✅ تصفية العقارات بدون ID قبل العرض
+    final validProperties = properties.where((p) => p.id.isNotEmpty).toList();
+    
+    if (validProperties.length != properties.length) {
+      debugPrint('⚠️ Filtered out ${properties.length - validProperties.length} properties with empty IDs');
+    }
+    
     return RefreshIndicator(
       onRefresh: _loadProperties,
       color: AppColors.primary,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: properties.length,
+        itemCount: validProperties.length,
         itemBuilder: (context, index) {
-          final property = properties[index];
+          final property = validProperties[index];
           return _buildPropertyCard(property);
         },
       ),
@@ -193,12 +211,27 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         onTap: () {
           HapticFeedback.mediumImpact();
           
+          // ✅ التحقق من أن property.id غير فارغ
+          if (property.id.isEmpty) {
+            debugPrint('❌ Property ID is empty, cannot navigate to details');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('خطأ: معرف العقار غير صحيح'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+          
+          debugPrint('✅ Navigating to property details: ${property.id}');
+          debugPrint('✅ Property title: ${property.title}');
+          
           // تحديث الموقع في الخريطة
           final mapState = context.read<MapState>();
           mapState.setSelectedProperty(property);
           mapState.moveToLocation(
-            property.location.coordinates.lng.toDouble(),
-            property.location.coordinates.lat.toDouble(),
+            property.location.longitude,
+            property.location.latitude,
           );
         
           Navigator.push(
@@ -245,26 +278,50 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                           : PageView.builder(
                               itemCount: property.images.length,
                               itemBuilder: (context, index) {
+                                final image = property.images[index];
                                 return Hero(
                                   tag: 'property_image_${property.id}_$index',
                                   child: Container(
-                                    color: Colors.transparent,
-                                    child: Image.asset(
-                                      property.images[index],
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          color: AppColors.surface,
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons.error_outline,
-                                              color: AppColors.error,
-                                              size: 32,
+                                    color: AppColors.transparent,
+                                    child: image.startsWith('http')
+                                        ? CachedNetworkImage(
+                                            imageUrl: image,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) => Container(
+                                              color: AppColors.surface,
+                                              child: const Center(
+                                                child: CircularProgressIndicator(
+                                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
+                                                ),
+                                              ),
                                             ),
+                                            errorWidget: (context, url, error) => Container(
+                                              color: AppColors.surface,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.error_outline,
+                                                  color: AppColors.error,
+                                                  size: 32,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Image.asset(
+                                            image,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                color: AppColors.surface,
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons.error_outline,
+                                                    color: AppColors.error,
+                                                    size: 32,
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                        );
-                                      },
-                                    ),
                                   ),
                                 );
                               },
@@ -275,7 +332,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                   if (_isLoading)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.black26,
+                        color: ColorUtils.withOpacity(AppColors.black, 0.26),
                         child: const Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),

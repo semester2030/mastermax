@@ -32,7 +32,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
         Text(
           'نوع العقار',
           style: TextStyle(
-            color: ColorUtils.withOpacity(Colors.white, 0.9),
+            color: ColorUtils.withOpacity(AppColors.white, 0.9),
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -52,7 +52,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
             Text(
               'نطاق المساحة',
               style: TextStyle(
-                color: ColorUtils.withOpacity(Colors.white, 0.9),
+                color: ColorUtils.withOpacity(AppColors.white, 0.9),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -60,7 +60,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
             Text(
               '${_currentRangeValues.start.round()} - ${_currentRangeValues.end.round()} متر مربع',
               style: TextStyle(
-                color: ColorUtils.withOpacity(Colors.white, 0.7),
+                color: ColorUtils.withOpacity(AppColors.white, 0.7),
                 fontSize: 14,
               ),
             ),
@@ -89,7 +89,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
         Text(
           'معلومات إضافية',
           style: TextStyle(
-            color: ColorUtils.withOpacity(Colors.white, 0.9),
+            color: ColorUtils.withOpacity(AppColors.white, 0.9),
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -108,7 +108,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white24,
+                  backgroundColor: AppColors.white.withOpacity(0.24),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -117,7 +117,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
                 child: const Text(
                   'إلغاء',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 16,
                   ),
                 ),
@@ -140,7 +140,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
                 child: const Text(
                   'تطبيق',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -166,7 +166,7 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
         child: Text(
           type,
           style: TextStyle(
-            color: isSelected ? Colors.black : Colors.white,
+            color: isSelected ? AppColors.textPrimary : AppColors.white,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -183,14 +183,14 @@ class _AreaFilterContentState extends State<AreaFilterContent> {
           Text(
             label,
             style: TextStyle(
-              color: ColorUtils.withOpacity(Colors.white, 0.7),
+              color: ColorUtils.withOpacity(AppColors.white, 0.7),
               fontSize: 14,
             ),
           ),
           Text(
             value,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),

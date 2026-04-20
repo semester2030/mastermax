@@ -8,7 +8,8 @@ class CarModel {
   final String brand;          // الماركة
   final String model;          // موديل السيارة
   final int year;             // سنة الصنع
-  final double price;         // السعر
+  final double price;         // السعر (سعر البيع المعروض)
+  final double? purchasePrice; // ✅ سعر الشراء/التكلفة (لحساب الربح في CRM - للسيارات الجاهزة: سعر الشراء، للسيارات المجمعة: التكلفة)
   final String sellerId;      // معرف البائع
   final String sellerName;    // اسم البائع
   final String sellerPhone;   // رقم البائع
@@ -43,6 +44,7 @@ class CarModel {
     required this.model,
     required this.year,
     required this.price,
+    this.purchasePrice, // ✅ سعر الشراء/التكلفة (اختياري)
     required this.sellerId,
     required this.sellerName,
     required this.sellerPhone,
@@ -70,6 +72,11 @@ class CarModel {
     this.interiorPanoramaUrl,
   });
 
+  factory CarModel.fromJson(Map<String, dynamic> json) {
+    final id = json['id'] as String? ?? '';
+    return CarModel.fromMap(json, id);
+  }
+
   factory CarModel.fromMap(Map<String, dynamic> map, String id) {
     final locationData = map['location'];
     final GeoPoint? location = locationData is GeoPoint ? locationData : null;
@@ -82,6 +89,7 @@ class CarModel {
       model: map['model'] ?? '',
       year: map['year'] ?? 0,
       price: (map['price'] ?? 0).toDouble(),
+      purchasePrice: map['purchasePrice'] != null ? (map['purchasePrice'] as num).toDouble() : null,
       sellerId: map['sellerId'] ?? '',
       sellerName: map['sellerName'] ?? '',
       sellerPhone: map['sellerPhone'] ?? '',
@@ -97,8 +105,16 @@ class CarModel {
       transmission: map['transmission'] ?? '',
       fuelType: map['fuelType'] ?? '',
       features: List<String>.from(map['features'] ?? []),
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: map['createdAt'] is Timestamp
+          ? (map['createdAt'] as Timestamp).toDate()
+          : map['createdAt'] is String
+              ? DateTime.parse(map['createdAt'] as String)
+              : DateTime.now(),
+      updatedAt: map['updatedAt'] is Timestamp
+          ? (map['updatedAt'] as Timestamp).toDate()
+          : map['updatedAt'] is String
+              ? DateTime.parse(map['updatedAt'] as String)
+              : DateTime.now(),
       isActive: map['isActive'] ?? true,
       isFeatured: map['isFeatured'] ?? false,
       isVerified: map['isVerified'] ?? false,
@@ -118,6 +134,7 @@ class CarModel {
       'model': model,
       'year': year,
       'price': price,
+      'purchasePrice': purchasePrice, // ⚠️ حساس - لا يعرض للعامة (CRM فقط)
       'sellerId': sellerId,
       'sellerName': sellerName,
       'sellerPhone': sellerPhone,
@@ -154,6 +171,7 @@ class CarModel {
     String? model,
     int? year,
     double? price,
+    double? purchasePrice,
     String? sellerId,
     String? sellerName,
     String? sellerPhone,
@@ -188,6 +206,7 @@ class CarModel {
       model: model ?? this.model,
       year: year ?? this.year,
       price: price ?? this.price,
+      purchasePrice: purchasePrice ?? this.purchasePrice,
       sellerId: sellerId ?? this.sellerId,
       sellerName: sellerName ?? this.sellerName,
       sellerPhone: sellerPhone ?? this.sellerPhone,
@@ -226,6 +245,7 @@ class CarModel {
       model: '',
       year: 0,
       price: 0,
+      purchasePrice: null,
       sellerId: '',
       sellerName: '',
       sellerPhone: '',

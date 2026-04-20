@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Mastermax 2030 New</string>
+	<string>دار كار</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,6 +26,20 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>نحتاج الوصول للكاميرا لالتقاط الصور والفيديوهات في Spotlight</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>نحتاج الوصول للميكروفون لتسجيل الصوت مع الفيديوهات</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>نحتاج الوصول للمكتبة لحفظ الصور والفيديوهات</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نحتاج الوصول للمكتبة لاختيار الصور والفيديوهات</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نحتاج الوصول لموقعك لتحديد موقع العقارات والمركبات على الخريطة</string>
+	<key>GMSApiKey</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,13 +57,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>MBXAccessToken</key>
-	<string>pk.eyJ1IjoiZmF6MjAiLCJhIjoiY202czI0cWk5MDNxeTJqcHo1MnhpOWw4MSJ9.sxsMCAyMMqqLUf8xoVbLBg</string>
-	<key>MGLMapboxMetricsEnable</key>
-	<false/>
 </dict>
 </plist>

@@ -43,7 +43,7 @@ class _FAQScreenState extends State<FAQScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: const Text(
           'الأسئلة الشائعة',
@@ -94,7 +94,7 @@ class _FAQScreenState extends State<FAQScreen> {
                 ),
                 child: Theme(
                   data: Theme.of(context).copyWith(
-                    dividerColor: Colors.transparent,
+                    dividerColor: AppColors.transparent,
                     colorScheme: const ColorScheme.dark(
                       primary: AppColors.brightGold,
                     ),

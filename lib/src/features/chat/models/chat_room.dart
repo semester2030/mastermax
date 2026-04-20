@@ -8,6 +8,10 @@ class ChatRoom {
   final String lastMessageText;
   final String? propertyId; // معرف العقار أو السيارة المرتبطة بالمحادثة
   final String? propertyType; // نوع العقار (عقار/سيارة)
+  /// معرّف البائع في محادثة سبوتلايت (ثابت حتى مع ترتيب user1/user2 أبجدياً).
+  final String? spotlightSellerId;
+  final String? spotlightBuyerId;
+  final String? spotlightVideoTitle;
 
   ChatRoom({
     required this.id,
@@ -17,19 +21,28 @@ class ChatRoom {
     required this.lastMessageText,
     this.propertyId,
     this.propertyType,
+    this.spotlightSellerId,
+    this.spotlightBuyerId,
+    this.spotlightVideoTitle,
   });
 
   // تحويل البيانات من Firestore
   factory ChatRoom.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final lastTs = data['lastMessageTime'];
     return ChatRoom(
       id: doc.id,
       user1Id: data['user1Id'] ?? '',
       user2Id: data['user2Id'] ?? '',
-      lastMessageTime: (data['lastMessageTime'] as Timestamp).toDate(),
+      lastMessageTime: lastTs is Timestamp
+          ? lastTs.toDate()
+          : DateTime.fromMillisecondsSinceEpoch(0),
       lastMessageText: data['lastMessageText'] ?? '',
-      propertyId: data['propertyId'],
-      propertyType: data['propertyType'],
+      propertyId: data['propertyId'] as String?,
+      propertyType: data['propertyType'] as String?,
+      spotlightSellerId: data['spotlightSellerId'] as String?,
+      spotlightBuyerId: data['spotlightBuyerId'] as String?,
+      spotlightVideoTitle: data['spotlightVideoTitle'] as String?,
     );
   }
 
@@ -42,6 +55,9 @@ class ChatRoom {
       'lastMessageText': lastMessageText,
       'propertyId': propertyId,
       'propertyType': propertyType,
+      if (spotlightSellerId != null) 'spotlightSellerId': spotlightSellerId,
+      if (spotlightBuyerId != null) 'spotlightBuyerId': spotlightBuyerId,
+      if (spotlightVideoTitle != null) 'spotlightVideoTitle': spotlightVideoTitle,
     };
   }
 
@@ -54,6 +70,9 @@ class ChatRoom {
     String? lastMessageText,
     String? propertyId,
     String? propertyType,
+    String? spotlightSellerId,
+    String? spotlightBuyerId,
+    String? spotlightVideoTitle,
   }) {
     return ChatRoom(
       id: id ?? this.id,
@@ -63,6 +82,9 @@ class ChatRoom {
       lastMessageText: lastMessageText ?? this.lastMessageText,
       propertyId: propertyId ?? this.propertyId,
       propertyType: propertyType ?? this.propertyType,
+      spotlightSellerId: spotlightSellerId ?? this.spotlightSellerId,
+      spotlightBuyerId: spotlightBuyerId ?? this.spotlightBuyerId,
+      spotlightVideoTitle: spotlightVideoTitle ?? this.spotlightVideoTitle,
     );
   }
 

@@ -1,0 +1,13 @@
+{
+  "name": "mastermax-functions",
+  "description": "Cloudflare Stream/Images proxies — secrets live in Secret Manager only.",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.1.0"
+  },
+  "private": true
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'app_colors.dart';
 import 'dart:ui';
 
@@ -27,35 +28,51 @@ class AppAnimations {
       builder: (context, setState) {
         bool isHovered = false;
         bool isPressed = false;
-        return MouseRegion(
-          onEnter: (_) => setState(() => isHovered = true),
-          onExit: (_) => setState(() => isHovered = false),
-          child: GestureDetector(
-            onTapDown: (_) => setState(() => isPressed = true),
-            onTapUp: (_) => setState(() => isPressed = false),
-            onTapCancel: () => setState(() => isPressed = false),
-            onTap: isEnabled ? onPressed : null,
-            child: AnimatedScale(
-              scale: isPressed ? scale : (isHovered ? 1.03 : 1.0),
-              duration: short,
-              curve: defaultCurve,
-              child: Material(
-                color: Colors.transparent,
+        
+        // ignore: dead_code
+        final double currentScale = isPressed 
+            ? scale 
+            // ignore: dead_code
+            : (kIsWeb && isHovered) 
+                ? 1.03 
+                : 1.0;
+        
+        Widget buttonContent = GestureDetector(
+          onTapDown: (_) => setState(() => isPressed = true),
+          onTapUp: (_) => setState(() => isPressed = false),
+          onTapCancel: () => setState(() => isPressed = false),
+          onTap: isEnabled ? onPressed : null,
+          child: AnimatedScale(
+            scale: currentScale,
+            duration: short,
+            curve: defaultCurve,
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: borderRadius,
+              child: InkWell(
                 borderRadius: borderRadius,
-                child: InkWell(
-                  borderRadius: borderRadius,
-                  splashColor: rippleColor ?? AppColors.primary.withOpacity(0.08),
-                  highlightColor: rippleColor ?? AppColors.primary.withOpacity(0.04),
-                  onTap: isEnabled ? onPressed : null,
-                  child: Padding(
-                    padding: padding ?? EdgeInsets.zero,
-                    child: child,
-                  ),
+                splashColor: rippleColor ?? AppColors.primary.withOpacity(0.08),
+                highlightColor: rippleColor ?? AppColors.primary.withOpacity(0.04),
+                onTap: isEnabled ? onPressed : null,
+                child: Padding(
+                  padding: padding ?? EdgeInsets.zero,
+                  child: child,
                 ),
               ),
             ),
           ),
         );
+        
+        // ✅ إضافة MouseRegion فقط على Web
+        if (kIsWeb) {
+          return MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: buttonContent,
+          );
+        }
+        
+        return buttonContent;
       },
     );
   }
@@ -203,9 +220,9 @@ class AppAnimations {
           ? ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
                 colors: [
-                  baseColor ?? AppColors.primary.withOpacity(0.2),
-                  highlightColor ?? AppColors.primary.withOpacity(0.05),
-                  baseColor ?? AppColors.primary.withOpacity(0.2),
+                  baseColor ?? AppColors.primaryLight,
+                  highlightColor ?? AppColors.primaryLightLighter,
+                  baseColor ?? AppColors.primaryLight,
                 ],
                 stops: const [0.0, 0.5, 1.0],
                 begin: Alignment.topLeft,

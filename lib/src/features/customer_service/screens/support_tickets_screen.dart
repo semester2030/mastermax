@@ -3,6 +3,7 @@ import '../models/support_ticket.dart';
 import '../providers/customer_service_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
 
 class SupportTicketsScreen extends StatefulWidget {
   final SupportTicket? initialTicket;
@@ -132,7 +133,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('تذاكر الدعم', style: textTheme.titleLarge?.copyWith(color: colorScheme.secondary)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
       ),
       body: Container(
@@ -151,7 +152,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen> {
             if (provider.isLoading) {
               return const Center(
                 child: custom_animations.AnimatedGlow(
-                  glowColor: Colors.amber,
+                  glowColor: AppColors.accent,
                   child: CircularProgressIndicator(),
                 ),
               );

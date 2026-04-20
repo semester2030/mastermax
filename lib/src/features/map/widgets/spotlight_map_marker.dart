@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class SpotlightMapMarker extends StatefulWidget {
   final String type;
@@ -65,7 +66,7 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
     return LinearGradient(
       colors: [
         widget.type.contains('عقار') ? colorScheme.primary : colorScheme.secondary,
-        ColorUtils.withOpacity(Colors.white, 0.3),
+        ColorUtils.withOpacity(AppColors.white, 0.3),
         widget.type.contains('عقار') ? colorScheme.primary : colorScheme.secondary,
       ],
       begin: Alignment.topLeft,
@@ -111,7 +112,7 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
                       spreadRadius: widget.isSelected ? 5 : 2,
                     ),
                     BoxShadow(
-                      color: ColorUtils.withOpacity(Colors.white, 0.5),
+                      color: ColorUtils.withOpacity(AppColors.white, 0.5),
                       blurRadius: 15,
                       spreadRadius: -2,
                       offset: const Offset(0, -5),
@@ -124,8 +125,8 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
                     borderRadius: BorderRadius.circular(widget.isSelected ? 30 : 20),
                     gradient: LinearGradient(
                       colors: [
-                        ColorUtils.withOpacity(Colors.white, 0.4),
-                        ColorUtils.withOpacity(Colors.white, 0.1),
+                        ColorUtils.withOpacity(AppColors.white, 0.4),
+                        ColorUtils.withOpacity(AppColors.white, 0.1),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -161,7 +162,7 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
         Icon(
           widget.type.contains('عقار') ? Icons.home : Icons.directions_car,
           size: widget.isSelected ? 35 : 30,
-          color: Colors.black26,
+          color: AppColors.textPrimary.withOpacity(0.26),
         ),
         // الأيقونة الرئيسية
         Icon(
@@ -173,7 +174,7 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
         Icon(
           widget.type.contains('عقار') ? Icons.home : Icons.directions_car,
           size: widget.isSelected ? 35 : 30,
-          color: ColorUtils.withOpacity(Colors.white, 0.5),
+          color: ColorUtils.withOpacity(AppColors.white, 0.5),
         ),
       ],
     );
@@ -197,7 +198,7 @@ class _SpotlightMapMarkerState extends State<SpotlightMapMarker> with SingleTick
               fontWeight: FontWeight.bold,
               shadows: [
                 Shadow(
-                  color: ColorUtils.withOpacity(Colors.black, 0.3),
+                  color: ColorUtils.withOpacity(AppColors.textPrimary, 0.3),
                   blurRadius: 5,
                   offset: const Offset(0, 2),
                 ),

@@ -12,7 +12,7 @@ class ImageOptimizer {
   ImageOptimizer._internal();
 
   Future<File?> compressImage(File file, {
-    int quality = 85,
+    int quality = 95, // ✅ رفع الجودة الافتراضية من 85 إلى 95
     int? targetWidth,
     int? targetHeight,
     int? minWidth = 0,
@@ -51,7 +51,7 @@ class ImageOptimizer {
   }
 
   Future<List<File>?> compressImages(List<File> files, {
-    int quality = 85,
+    int quality = 95, // ✅ رفع الجودة الافتراضية من 85 إلى 95
     int? targetWidth,
     int? targetHeight,
     int? minWidth = 0,
@@ -87,7 +87,7 @@ class ImageOptimizer {
   Future<File?> resizeImage(File file, {
     required int width,
     required int height,
-    int quality = 85,
+    int quality = 95, // ✅ رفع الجودة الافتراضية من 85 إلى 95
   }) async {
     try {
       final dir = await getTemporaryDirectory();

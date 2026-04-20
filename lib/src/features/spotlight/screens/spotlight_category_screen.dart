@@ -1,14 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/spotlight_category.dart';
+import '../providers/video_provider.dart';
+import '../../settings/providers/app_user_settings_provider.dart';
 import 'spotlight_feed_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/constants/app_brand.dart';
 
-class SpotlightCategoryScreen extends StatelessWidget {
+class SpotlightCategoryScreen extends StatefulWidget {
   const SpotlightCategoryScreen({super.key});
 
-  void _navigateToFeed(BuildContext context, SpotlightCategory category) {
-    Navigator.push(
+  @override
+  State<SpotlightCategoryScreen> createState() => _SpotlightCategoryScreenState();
+}
+
+class _SpotlightCategoryScreenState extends State<SpotlightCategoryScreen> with WidgetsBindingObserver {
+  int _carsCount = 0;
+  int _realEstateCount = 0;
+  int _totalCount = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _loadVideoCounts();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // تحديث العدد عند العودة للتطبيق (قد يكون تم إضافة/حذف فيديو)
+    if (state == AppLifecycleState.resumed) {
+      _loadVideoCounts();
+    }
+  }
+
+  Future<void> _loadVideoCounts() async {
+    try {
+      final userSettings = context.read<AppUserSettingsProvider>();
+      final videoProvider = context.read<VideoProvider>();
+      await userSettings.ensureLoaded();
+      if (!mounted) return;
+      await videoProvider.setVideoQuality(userSettings.videoQuality);
+
+      // جلب عدد الفيديوهات لكل نوع
+      final counts = await videoProvider.getAllVideoCounts();
+      
+      if (mounted) {
+        setState(() {
+          _carsCount = counts[SpotlightCategory.cars] ?? 0;
+          _realEstateCount = counts[SpotlightCategory.realEstate] ?? 0;
+          _totalCount = counts[SpotlightCategory.mixed] ?? 0;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading video counts: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  String _getCountText(int count) {
+    if (count == 0) return 'لا توجد مقاطع';
+    if (count == 1) return 'مقطع واحد';
+    if (count == 2) return 'مقطعان';
+    if (count <= 10) return 'مقاطع';
+    return 'مقطع';
+  }
+
+  Future<void> _navigateToFeed(BuildContext context, SpotlightCategory category) async {
+    await Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => SpotlightFeedScreen(category: category),
@@ -58,9 +130,9 @@ class SpotlightCategoryScreen extends StatelessWidget {
                             colors: [AppColors.primary, AppColors.primaryLight],
                           ).createShader(bounds),
                           child: Text(
-                            'أضواء ماكس',
+                            AppBrand.displayName,
                             style: TextStyle(
-                              color: AppColors.text,
+                              color: AppColors.textPrimary,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               shadows: [
@@ -86,25 +158,43 @@ class SpotlightCategoryScreen extends StatelessWidget {
                         children: [
                           _CategoryIcon(
                             title: 'السيارات',
-                            subtitle: '12 شاهد أحدث السيارات',
+                            subtitle: _isLoading 
+                                ? 'جاري التحميل...' 
+                                : '$_carsCount ${_getCountText(_carsCount)}',
                             icon: Icons.directions_car,
-                            onTap: () => _navigateToFeed(context, SpotlightCategory.cars),
+                            onTap: () async {
+                              await _navigateToFeed(context, SpotlightCategory.cars);
+                              // تحديث العدد بعد العودة
+                              _loadVideoCounts();
+                            },
                           ),
                           const SizedBox(height: 32),
                           
                           _CategoryIcon(
                             title: 'العقارات',
-                            subtitle: '8 استكشف العقارات',
+                            subtitle: _isLoading 
+                                ? 'جاري التحميل...' 
+                                : '$_realEstateCount ${_getCountText(_realEstateCount)}',
                             icon: Icons.home,
-                            onTap: () => _navigateToFeed(context, SpotlightCategory.realEstate),
+                            onTap: () async {
+                              await _navigateToFeed(context, SpotlightCategory.realEstate);
+                              // تحديث العدد بعد العودة
+                              _loadVideoCounts();
+                            },
                           ),
                           const SizedBox(height: 32),
                           
                           _CategoryIcon(
                             title: 'الكل',
-                            subtitle: '20 جميع العروض',
+                            subtitle: _isLoading 
+                                ? 'جاري التحميل...' 
+                                : '$_totalCount ${_getCountText(_totalCount)}',
                             icon: Icons.grid_view,
-                            onTap: () => _navigateToFeed(context, SpotlightCategory.mixed),
+                            onTap: () async {
+                              await _navigateToFeed(context, SpotlightCategory.mixed);
+                              // تحديث العدد بعد العودة
+                              _loadVideoCounts();
+                            },
                           ),
                         ],
                       ),
@@ -179,13 +269,13 @@ class StarryBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
             AppColors.background,
-            AppColors.backgroundSecondary,
+            ColorUtils.withOpacity(AppColors.primary, 0.06),
           ],
         ),
       ),

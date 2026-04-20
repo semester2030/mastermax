@@ -1,44 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' show 
-  MapWidget, 
-  MapboxMap, 
-  Point, 
-  Position, 
-  CameraOptions,
-  MapboxStyles,
-  PointAnnotationOptions,
-  MapAnimationOptions,
-  GestureListener,
-  ScreenCoordinate;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../providers/map_state.dart';
+import '../models/map_marker.dart';
+import '../widgets/property_full_screen_view.dart';
+import '../widgets/car_full_screen_view.dart';
+import '../widgets/map_controls.dart';
+import '../widgets/list_container.dart';
+import '../widgets/search_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../properties/models/property_model.dart';
+import '../../properties/models/property_type.dart';
 import '../../cars/models/car_model.dart';
 import '../../properties/providers/property_provider.dart';
 import '../../cars/providers/car_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 import './map_filter_screen.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:like_button/like_button.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
-import '../../../core/utils/color_utils.dart';
-
-/// ثوابت واجهة المستخدم
-class UIConstants {
-  static const double cardBorderRadius = 12.0;
-  static const double iconSize = 20.0;
-  static const Duration animationDuration = Duration(milliseconds: 300);
-  static const double defaultPadding = 16.0;
-  static const double defaultMargin = 8.0;
-}
+import '../../spotlight/models/video_model.dart';
 
 class MainMapScreen extends StatefulWidget {
-  const MainMapScreen({super.key});
+  final bool showBackButton; // ✅ إظهار زر الرجوع عند فتحها من Spotlight
+  
+  const MainMapScreen({
+    super.key,
+    this.showBackButton = false, // افتراضياً لا نعرض زر الرجوع (عند فتحها من MainScreen)
+  });
 
   @override
   State<MainMapScreen> createState() => _MainMapScreenState();
@@ -59,8 +48,11 @@ class _MainMapScreenState extends State<MainMapScreen> {
   
   /// حالة تهيئة البيانات
   bool _isInitialized = false;
+  
+  /// ✅ Markers للعرض على الخريطة
+  final Set<Marker> _markers = {};
 
-  DateTime? _lastClickTime;
+  // ✅ تم إزالة _lastClickTime لأنها غير مستخدمة حالياً
 
   // دالة لتحميل الصور من الإنترنت
   Future<Uint8List> loadImageFromNetwork(String imageUrl) async {
@@ -83,7 +75,44 @@ class _MainMapScreenState extends State<MainMapScreen> {
     _mapState = context.read<MapState>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
+      // ✅ إذا كانت الخريطة مفتوحة من Spotlight، انتقل إلى موقع الفيديو
+      if (widget.showBackButton) {
+        _handleVideoLocation();
+      }
     });
+  }
+
+  /// معالجة موقع الفيديو عند فتح الخريطة من Spotlight
+  void _handleVideoLocation() {
+    try {
+      // جلب arguments من route
+      final route = ModalRoute.of(context);
+      if (route == null) return;
+      
+      final args = route.settings.arguments;
+      if (args != null && args is Map && args.containsKey('selectedVideo')) {
+        final video = args['selectedVideo'];
+        if (video != null && video is VideoModel) {
+          // الانتقال إلى موقع الفيديو بعد تأخير بسيط (لضمان تهيئة الخريطة)
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (!mounted) return;
+            try {
+              final location = video.location;
+              _mapState.moveToLocation(
+                location.longitude,
+                location.latitude,
+                animate: true,
+              );
+              debugPrint('✅ Moved map to video location: ${location.latitude}, ${location.longitude}');
+            } catch (e) {
+              debugPrint('Error moving to video location: $e');
+            }
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error handling video location: $e');
+    }
   }
 
   @override
@@ -113,16 +142,23 @@ class _MainMapScreenState extends State<MainMapScreen> {
       _updateMapData(propertyProvider.properties, carProvider.cars);
     } catch (e) {
       if (!mounted) return;
+      setState(() {
+        _isInitialized = true;
+      });
       _showErrorMessage('حدث خطأ أثناء تحميل البيانات: $e');
     }
   }
 
   void _updateMapData(List<PropertyModel> properties, List<CarModel> cars) {
     if (!mounted) return;
-    setState(() {
-      _mapState.updateVisibleProperties();
-      _mapState.updateVisibleCars(cars);
-    });
+    
+    // ✅ تحديث العقارات في MapState
+    _mapState.updateProperties(properties);
+    
+    // ✅ تحديث السيارات في MapState
+    _mapState.updateVisibleCars(cars);
+    
+    debugPrint('✅ Updated map data: ${properties.length} properties, ${cars.length} cars');
   }
 
   void _showErrorMessage(String message) {
@@ -130,29 +166,13 @@ class _MainMapScreenState extends State<MainMapScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  Future<void> _launchPhoneCall(String? phone) async {
-    if (phone?.isEmpty ?? true) {
-      _showErrorMessage('رقم الهاتف غير متوفر');
-      return;
-    }
-
-    final Uri url = Uri.parse('tel:$phone');
-    try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url);
-      } else {
-        _showErrorMessage('لا يمكن الاتصال بالرقم');
-      }
-    } catch (e) {
-      _showErrorMessage('حدث خطأ أثناء محاولة الاتصال');
-    }
-  }
+  // ✅ تم نقل _launchPhoneCall إلى MapHelpers.launchPhoneCall
 
   @override
   Widget build(BuildContext context) {
@@ -161,34 +181,88 @@ class _MainMapScreenState extends State<MainMapScreen> {
         final isPortrait = orientation == Orientation.portrait;
         return Consumer2<CarProvider, PropertyProvider>(
           builder: (context, carProvider, propertyProvider, child) {
-            if (carProvider.isLoading || propertyProvider.isLoading) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
+            final firstLoadPending = !_isInitialized &&
+                (carProvider.isLoading || propertyProvider.isLoading);
 
             return Scaffold(
+              // ✅ إضافة AppBar مع زر رجوع عند فتحها من Spotlight
+              appBar: widget.showBackButton
+                  ? AppBar(
+                      backgroundColor: AppColors.primary,
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        tooltip: 'رجوع',
+                      ),
+                      title: const Text(
+                        'الخريطة',
+                        style: TextStyle(color: AppColors.white),
+                      ),
+                      elevation: 0,
+                    )
+                  : null,
               body: Stack(
                 children: [
                   SizedBox.expand(
-                    child: MapWidget(
-                      key: const ValueKey('mainMap'),
-                      onMapCreated: _onMapCreated,
-                      styleUri: MapboxStyles.MAPBOX_STREETS,
-                      textureView: true,
-                      cameraOptions: CameraOptions(
-                        center: Point(
-                          coordinates: Position(46.6753, 24.7136), // الرياض
-                        ),
-                        zoom: 12.0,
-                      ),
+                    child: Consumer<MapState>(
+                      builder: (context, mapState, child) {
+                        // ✅ تحديث markers عند تغيير state
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _updateMarkers();
+                        });
+                        
+                        return GoogleMap(
+                          key: const ValueKey('mainMap'),
+                          onMapCreated: _onMapCreated,
+                          onTap: _onMapTap, // ✅ إضافة onTap لإغلاق bottom sheets
+                          markers: _markers, // ✅ عرض markers على الخريطة
+                          initialCameraPosition: const CameraPosition(
+                            target: LatLng(24.7136, 46.6753), // الرياض (افتراضي - سيتم تحديثه تلقائياً)
+                            zoom: 12.0,
+                          ),
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true, // تفعيل زر الموقع الحالي
+                          mapType: MapType.normal,
+                          onCameraMove: _mapState.onCameraMove,
+                          onCameraIdle: () {
+                            _mapState.updateMarkers();
+                          },
+                        );
+                      },
                     ),
                   ),
-                  _buildSearchBar(isPortrait),
-                  _buildMapControls(isPortrait),
-                  _buildListContainer(isPortrait),
+                  if (firstLoadPending)
+                    const Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: LinearProgressIndicator(
+                        minHeight: 3,
+                        backgroundColor: Colors.transparent,
+                      ),
+                    ),
+                  MapSearchBar(
+                    searchController: _searchController,
+                    selectedFilterType: _selectedFilterType,
+                    onSearch: _handleSearch,
+                    onShowPropertyFilters: _showPropertyFilters,
+                    onShowCarFilters: _showCarFilters,
+                    onFilterTypeChanged: _onFilterTypeChanged,
+                  ),
+                  MapControls(
+                    isPortrait: isPortrait,
+                    is3DMode: _is3DMode,
+                    onToggle3D: () => _updateMapView3D(!_is3DMode),
+                  ),
+                  ListContainer(
+                    isPortrait: isPortrait,
+                    selectedFilterType: _selectedFilterType,
+                    onPropertyTap: _onPropertyTap,
+                    onCarTap: _onCarTap,
+                    onError: _showErrorMessage,
+                  ),
                 ],
               ),
             );
@@ -198,59 +272,124 @@ class _MainMapScreenState extends State<MainMapScreen> {
     );
   }
 
-  void _onMapCreated(MapboxMap controller) async {
+  void _onMapCreated(GoogleMapController controller) async {
     try {
-      await controller.style.setStyleURI(MapboxStyles.MAPBOX_STREETS);
       _mapState.setController(controller);
       _updateMapView3D(true);
-      
-      // إضافة تأخير قبل تحميل العلامات
-      await Future.delayed(const Duration(seconds: 2));
-      
-      final defaultIcon = await _loadDefaultImage('assets/images/markers/property_marker.png');
-      final pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-      await pointAnnotationManager.create(PointAnnotationOptions(
-        geometry: Point(coordinates: Position(46.6753, 24.7136)),
-        image: defaultIcon,
-        iconSize: 1.0,
-      ));
-      
       _updateMapMarkers();
-      
-      debugPrint('Successfully loaded default markers');
     } catch (e) {
       debugPrint('Error initializing map: $e');
     }
   }
 
-  void _onMapTap(Point point) {
+  /// ✅ معالجة النقر على الخريطة الفارغة (ليس على marker)
+  /// - إغلاق أي bottom sheet مفتوح
+  /// - إزالة التحديد من marker محدد
+  void _onMapTap(LatLng point) {
+    if (!mounted) return;
+    
+    // ✅ إغلاق أي bottom sheet مفتوح (إذا كان هناك واحد)
     try {
-      final now = DateTime.now();
-      final controller = _mapState.mapController;
-      if (controller == null) return;
-      
-      if (_lastClickTime != null && 
-          now.difference(_lastClickTime!) < const Duration(milliseconds: 300)) {
-        // نقر مزدوج - تكبير الخريطة
-        controller.flyTo(
-          CameraOptions(
-            center: point,
-            zoom: 18.0,
-            bearing: 0,
-            pitch: 60,
-          ),
-          MapAnimationOptions(
-            duration: 1000,
-            startDelay: 0,
-          ),
-        );
-      } else {
-        // نقر مفرد - تحريك الخريطة
-        _centerMapOnMarker(point);
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
       }
-      _lastClickTime = now;
     } catch (e) {
-      debugPrint('Error handling map tap: $e');
+      // قد لا يكون هناك bottom sheet مفتوح
+      debugPrint('No bottom sheet to close: $e');
+    }
+    
+    // ✅ إزالة التحديد من marker محدد
+    _mapState.setSelectedProperty(null);
+    _mapState.setSelectedCar(null);
+  }
+
+  /// ✅ معالجة النقر على marker (الصورة الصغيرة في الخريطة)
+  /// - البحث عن العقار/السيارة من marker ID
+  /// - فتح PropertyFullScreenView أو CarFullScreenView
+  void _onMarkerTap(MarkerId markerId) async {
+    if (!mounted) return;
+    
+    try {
+      final markerIdString = markerId.value;
+      debugPrint('📍 Marker tapped: $markerIdString');
+      
+      // ✅ البحث عن العقار/السيارة من marker ID
+      if (markerIdString.startsWith('selected_property_')) {
+        // Marker محدد (من صورة العقار)
+        final propertyId = markerIdString.replaceFirst('selected_property_', '');
+        PropertyModel? property;
+        try {
+          property = _mapState.visibleProperties.firstWhere(
+            (p) => p.id == propertyId,
+          );
+        } catch (e) {
+          property = _mapState.selectedProperty;
+        }
+        if (property != null) {
+          _onPropertyTap(property);
+        }
+      } else if (markerIdString.startsWith('selected_car_')) {
+        // Marker محدد (من صورة السيارة)
+        final carId = markerIdString.replaceFirst('selected_car_', '');
+        CarModel? car;
+        try {
+          car = _mapState.visibleCars.firstWhere(
+            (c) => c.id == carId,
+          );
+        } catch (e) {
+          car = _mapState.selectedCar;
+        }
+        if (car != null) {
+          _onCarTap(car);
+        }
+      } else {
+        // ✅ Marker عادي من cluster
+        // البحث في clusters
+        for (final cluster in _mapState.clusters) {
+          if (cluster.isCluster()) {
+            // Cluster - لا نفتح شاشة، فقط نركز على الموقع
+            if (cluster.id == markerIdString) {
+              _centerMapOnLocation(
+                cluster.position.longitude,
+                cluster.position.latitude,
+              );
+              return;
+            }
+          } else if (cluster.markers.isNotEmpty) {
+            // Marker فردي
+            final marker = cluster.markers.firstWhere(
+              (m) => m.id == markerIdString,
+              orElse: () => cluster.markers.first,
+            );
+            
+            if (marker.type == MarkerType.property) {
+              // البحث عن العقار
+              try {
+                final property = _mapState.visibleProperties.firstWhere(
+                  (p) => p.id == marker.id,
+                );
+                _onPropertyTap(property);
+                return;
+              } catch (e) {
+                debugPrint('Property not found for marker: ${marker.id}');
+              }
+            } else if (marker.type == MarkerType.car) {
+              // البحث عن السيارة
+              try {
+                final car = _mapState.visibleCars.firstWhere(
+                  (c) => c.id == marker.id,
+                );
+                _onCarTap(car);
+                return;
+              } catch (e) {
+                debugPrint('Car not found for marker: ${marker.id}');
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error handling marker tap: $e');
     }
   }
 
@@ -273,7 +412,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
     
     // رسم الظل
     final shadowPaint = Paint()
-      ..color = ColorUtils.withOpacity(Colors.black, 0.3)
+      ..color = AppColors.textPrimary.withValues(alpha: 0.3)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
     canvas.drawCircle(
       const Offset(width / 2, height / 2),
@@ -283,7 +422,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
 
     // رسم الدائرة الخارجية
     final borderPaint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
     canvas.drawCircle(
@@ -305,7 +444,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
     // رسم أيقونة المنزل
     const iconSize = 40.0;
     final iconPaint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -335,394 +474,56 @@ class _MainMapScreenState extends State<MainMapScreen> {
       _is3DMode = enable;
       final controller = _mapState.mapController;
       if (controller != null) {
-        controller.setCamera(
-          CameraOptions(
-            pitch: enable ? 60.0 : 0.0,
-            bearing: enable ? 45.0 : 0.0,
-            zoom: enable ? 16.0 : 15.0,
-          ),
-        );
+        controller.getVisibleRegion().then((bounds) {
+          // التحقق من أن الـ controller لا يزال موجوداً
+          final currentController = _mapState.mapController;
+          if (currentController == null) return;
+          
+          final center = LatLng(
+            (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+            (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+          );
+          
+          try {
+            currentController.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: center,
+                tilt: enable ? 60.0 : 0.0,
+                bearing: enable ? 45.0 : 0.0,
+                zoom: enable ? 16.0 : 15.0,
+              ),
+            ),
+          );
+          } catch (e) {
+            debugPrint('Error animating camera: $e');
+          }
+        }).catchError((e) {
+          debugPrint('Error getting visible region: $e');
+        });
       }
     });
   }
 
-  Widget _buildSearchBar(bool isPortrait) {
-    return Positioned(
-      top: MediaQuery.of(context).padding.top + 8,
-      left: 16,
-      right: 16,
-      child: Column(
-        children: [
-          Container(
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: [
-                BoxShadow(
-                  color: ColorUtils.withOpacity(Colors.black, 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: ColorUtils.withOpacity(AppColors.primary, 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.search,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'ابحث عن موقع...',
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                    onSubmitted: _handleSearch,
-                  ),
-                ),
-                Container(
-                  height: 30,
-                  width: 1,
-                  color: ColorUtils.withOpacity(Colors.grey, 0.2),
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (_selectedFilterType == MapFilterType.realEstate) {
-                      _showPropertyFilters();
-                    } else {
-                      _showCarFilters();
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: ColorUtils.withOpacity(AppColors.primary, 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.tune,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  height: 30,
-                  width: 1,
-                  color: ColorUtils.withOpacity(Colors.grey, 0.2),
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildTypeButton(
-                        isSelected: _selectedFilterType == MapFilterType.realEstate,
-                        icon: Icons.home_work_outlined,
-                        onTap: () => _onFilterTypeChanged(MapFilterType.realEstate),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildTypeButton(
-                        isSelected: _selectedFilterType == MapFilterType.cars,
-                        icon: Icons.directions_car_outlined,
-                        onTap: () => _onFilterTypeChanged(MapFilterType.cars),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ✅ تم نقل _buildSearchBar إلى widgets/search_bar.dart
 
-  Widget _buildMapControls(bool isPortrait) {
-    return Positioned(
-      bottom: isPortrait ? MediaQuery.of(context).size.height * 0.45 + 16 : 16,
-      right: 16,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            heroTag: '3d',
-            onPressed: () => _updateMapView3D(!_is3DMode),
-            backgroundColor: AppColors.primary,
-            child: Icon(
-              _is3DMode ? Icons.view_in_ar : Icons.map,
-              color: AppColors.textLight,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ✅ تم نقل _buildMapControls إلى widgets/map_controls.dart
 
-  Widget _buildListContainer(bool isPortrait) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: isPortrait ? MediaQuery.of(context).size.height * 0.45 : null,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Expanded(
-              child: Consumer<MapState>(
-                builder: (context, mapState, _) {
-                  if (_selectedFilterType == MapFilterType.realEstate) {
-                    return ListView.builder(
-                      itemCount: mapState.visibleProperties.length,
-                      itemBuilder: (context, index) {
-                        final property = mapState.visibleProperties[index];
-                        return _buildPropertyListItem(property);
-                      },
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: mapState.visibleCars.length,
-                      itemBuilder: (context, index) {
-                        final car = mapState.visibleCars[index];
-                        return _buildCarListItem(car);
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // ✅ تم نقل _buildListContainer إلى widgets/list_container.dart
 
-  Widget _buildPropertyListItem(PropertyModel property) {
-    return GestureDetector(
-      onTap: () => _onPropertyTap(property),
-      child: Card(
-        margin: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: CachedNetworkImage(
-                    imageUrl: property.images.first,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => ShimmerPlaceholder(
-                      child: Container(color: Colors.white),
-                    ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
-                const Positioned(
-                  top: 8,
-                  right: 8,
-                  child: LikeButton(
-                    circleColor: CircleColor(
-                      start: Color(0xFFFF5722),
-                      end: Color(0xFFE91E63),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    property.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '﷼ ${property.price}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          property.address,
-                          style: TextStyle(color: Colors.grey[600]),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // ✅ تم نقل _buildOptimizedImage إلى widgets/optimized_image.dart
 
-  Widget _buildCarListItem(CarModel car) {
-    return GestureDetector(
-      onTap: () => _onCarTap(car),
-      child: Card(
-        margin: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: CachedNetworkImage(
-                    imageUrl: car.images.first,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => ShimmerPlaceholder(
-                      child: Container(color: Colors.white),
-                    ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
-                const Positioned(
-                  top: 8,
-                  right: 8,
-                  child: LikeButton(
-                    circleColor: CircleColor(
-                      start: Color(0xFFFF5722),
-                      end: Color(0xFFE91E63),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    car.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '﷼ ${car.price}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          car.address,
-                          style: TextStyle(color: Colors.grey[600]),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // ✅ تم نقل _buildPropertyListItem إلى widgets/property_list_item.dart
+  // ✅ تم نقل _buildCarListItem إلى widgets/car_list_item.dart
 
-  Widget _buildTypeButton({
-    required bool isSelected,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          icon,
-          color: isSelected ? Colors.white : Colors.grey,
-          size: 20,
-        ),
-      ),
-    );
-  }
+  // ✅ تم نقل _buildTypeButton إلى widgets/search_bar.dart
 
   void _onFilterTypeChanged(MapFilterType type) {
+    _mapState.setFilterType(type);
     setState(() {
       _selectedFilterType = type;
-      _mapState.setFilterType(type);
     });
+    _updateMarkers();
   }
 
   void _showPropertyFilters() async {
@@ -731,9 +532,214 @@ class _MainMapScreenState extends State<MainMapScreen> {
       isRealEstate: true,
     );
     if (result != null && mounted) {
-      setState(() {
-        // تحديث حالة الفلتر
-      });
+      await _applyPropertyFilters(result);
+    }
+  }
+  
+  /// ✅ تطبيق فلاتر العقارات على البيانات من Firestore
+  Future<void> _applyPropertyFilters(Map<String, dynamic> filters) async {
+    try {
+      final propertyProvider = context.read<PropertyProvider>();
+      
+      // ✅ تحويل نوع العقار من النص إلى PropertyType
+      PropertyType? propertyType;
+      if (filters['propertyType'] != null) {
+        final typeString = filters['propertyType'] as String;
+        switch (typeString) {
+          case 'شقة':
+            propertyType = PropertyType.apartment;
+            break;
+          case 'فيلا':
+            propertyType = PropertyType.villa;
+            break;
+          case 'أرض':
+            propertyType = PropertyType.land;
+            break;
+          case 'محل تجاري':
+            propertyType = PropertyType.commercial;
+            break;
+          default:
+            propertyType = null;
+        }
+      }
+      
+      // ✅ استخراج نطاق السعر
+      final priceRange = filters['priceRange'] as RangeValues?;
+      final minPrice = priceRange?.start;
+      final maxPrice = priceRange?.end;
+      
+      // ✅ استخراج نطاق المساحة
+      final areaRange = filters['areaRange'] as RangeValues?;
+      final minArea = areaRange?.start;
+      final maxArea = areaRange?.end;
+      
+      // ✅ استخراج عدد الغرف
+      final roomsRange = filters['roomsRange'] as RangeValues?;
+      final minRooms = roomsRange?.start.round();
+      
+      // ✅ استخراج عدد الحمامات
+      final bathroomsRange = filters['bathroomsRange'] as RangeValues?;
+      final minBathrooms = bathroomsRange?.start.round();
+      
+      // ✅ استخراج المدينة
+      final city = filters['city'] as String?;
+      
+      // ✅ استخراج نوع العرض (للبيع / للإيجار)
+      final offerType = filters['offerType'] as OfferType?;
+      
+      // ✅ جلب العقارات المفلترة من Firestore
+      final filteredProperties = await propertyProvider.service.getProperties(
+        type: propertyType,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        minRooms: minRooms,
+        location: city,
+      );
+      
+      // ✅ تطبيق فلاتر إضافية محلياً (المميزات، إلخ)
+      var finalProperties = filteredProperties;
+      
+      // ✅ فلترة حسب نوع العرض (للبيع / للإيجار)
+      if (offerType != null) {
+        finalProperties = finalProperties.where((p) => p.offerType == offerType).toList();
+      }
+      
+      // فلترة حسب المميزات
+      final amenities = filters['amenities'] as List<String>?;
+      if (amenities != null && amenities.isNotEmpty) {
+        finalProperties = finalProperties.where((property) {
+          final propertyFeatures = property.features;
+          return amenities.every((amenity) {
+            // تحويل المميزة من النص إلى key في features
+            switch (amenity) {
+              case 'مكيف':
+                return propertyFeatures['تكييف'] == true || propertyFeatures['تكييف مركزي'] == true;
+              case 'مفروش':
+                return propertyFeatures.containsKey('مفروش');
+              case 'مطبخ':
+                return propertyFeatures.containsKey('مطبخ');
+              case 'مصعد':
+                return propertyFeatures['مصعد'] == true;
+              case 'حديقة':
+                return propertyFeatures['حديقة'] == true;
+              default:
+                return propertyFeatures[amenity] == true;
+            }
+          });
+        }).toList();
+      }
+      
+      // ✅ فلترة حسب المميزات الإضافية
+      if (filters['hasParking'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['موقف سيارات'] == true).toList();
+      }
+      if (filters['hasPool'] == true || filters['hasSwimmingPool'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['مسبح'] == true).toList();
+      }
+      if (filters['hasGarden'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['حديقة'] == true).toList();
+      }
+      
+      // ✅ فلترة حسب المساحة
+      if (minArea != null) {
+        finalProperties = finalProperties.where((p) => p.area >= minArea).toList();
+      }
+      if (maxArea != null) {
+        finalProperties = finalProperties.where((p) => p.area <= maxArea).toList();
+      }
+      
+      // ✅ فلترة حسب عدد الحمامات
+      if (minBathrooms != null) {
+        finalProperties = finalProperties.where((p) => p.bathrooms >= minBathrooms).toList();
+      }
+      
+      // ✅ فلترة حسب المميزات الإضافية الأخرى
+      if (filters['hasElevator'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['مصعد'] == true).toList();
+      }
+      if (filters['hasSecurity'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['حراسة أمنية'] == true || p.features['أمن'] == true).toList();
+      }
+      
+      // ✅ فلترة حسب المميزات الإضافية المتقدمة
+      if (filters['hasRoofTop'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['سطح خاص'] == true || p.features['سطح'] == true).toList();
+      }
+      if (filters['hasGym'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['صالة رياضية'] == true || p.features['جيم'] == true).toList();
+      }
+      if (filters['hasStorage'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['غرفة تخزين'] == true || p.features['مستودع'] == true).toList();
+      }
+      if (filters['hasIntercom'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['انتركم'] == true || p.features['اتصال داخلي'] == true).toList();
+      }
+      if (filters['hasBasement'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['قبو'] == true || p.features['بدروم'] == true).toList();
+      }
+      if (filters['hasDriverRoom'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['غرفة سائق'] == true).toList();
+      }
+      if (filters['hasMaidRoom'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['غرفة خادمة'] == true).toList();
+      }
+      if (filters['hasCarEntrance'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['مدخل سيارة'] == true || p.features['موقف داخلي'] == true).toList();
+      }
+      if (filters['hasYard'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['حوش'] == true || p.features['فناء'] == true).toList();
+      }
+      if (filters['hasTent'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['خيمة'] == true || p.features['مظلة'] == true).toList();
+      }
+      if (filters['hasGuardRoom'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['غرفة حارس'] == true || p.features['غرفة أمن'] == true).toList();
+      }
+      if (filters['hasWellWater'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['بئر ماء'] == true || p.features['بئر'] == true).toList();
+      }
+      if (filters['hasAirConditioners'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['مكيفات'] == true || p.features['تكييف'] == true).toList();
+      }
+      if (filters['hasKitchenCabinets'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['مطبخ راكب'] == true || p.features['مطبخ مجهز'] == true).toList();
+      }
+      if (filters['hasCentralAC'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['تكييف مركزي'] == true).toList();
+      }
+      if (filters['hasGardenLighting'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['إضاءة حديقة'] == true || p.features['إضاءة خارجية'] == true).toList();
+      }
+      if (filters['hasElectricGate'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['بوابة كهربائية'] == true || p.features['بوابة أتوماتيك'] == true).toList();
+      }
+      if (filters['hasFireAlarm'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['نظام إنذار حريق'] == true || p.features['إنذار حريق'] == true).toList();
+      }
+      if (filters['hasSecurityCameras'] == true) {
+        finalProperties = finalProperties.where((p) => p.features['كاميرات مراقبة'] == true || p.features['كاميرات'] == true).toList();
+      }
+      
+      // ✅ فلترة حسب الخصائص الإضافية
+      if (filters['isNegotiable'] == true) {
+        finalProperties = finalProperties.where((p) => p.isNegotiable == true).toList();
+      }
+      if (filters['has360View'] == true) {
+        finalProperties = finalProperties.where((p) => p.has360View == true).toList();
+      }
+      if (filters['hasVirtualTour'] == true) {
+        finalProperties = finalProperties.where((p) => p.virtualTourUrl != null && p.virtualTourUrl!.isNotEmpty).toList();
+      }
+      
+      // ✅ تحديث العقارات المرئية في الخريطة
+      if (mounted) {
+        _mapState.applyPropertyFilters(finalProperties);
+        _showSuccessMessage('تم العثور على ${finalProperties.length} عقار');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorMessage('حدث خطأ أثناء تطبيق الفلاتر: $e');
+      }
     }
   }
 
@@ -743,9 +749,185 @@ class _MainMapScreenState extends State<MainMapScreen> {
       isRealEstate: false,
     );
     if (result != null && mounted) {
-      setState(() {
-        // تحديث حالة الفلتر
-      });
+      await _applyCarFilters(result);
+    }
+  }
+  
+  /// ✅ تطبيق فلاتر السيارات على البيانات من Firestore
+  Future<void> _applyCarFilters(Map<String, dynamic> filters) async {
+    try {
+      final carProvider = context.read<CarProvider>();
+      
+      // ✅ جلب جميع السيارات من Firestore
+      await carProvider.loadCars();
+      var filteredCars = carProvider.cars;
+      
+      // ✅ فلترة حسب الماركة
+      final carMake = filters['carMake'] as String?;
+      if (carMake != null && carMake.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => car.brand == carMake).toList();
+      }
+      
+      // ✅ فلترة حسب نوع السيارة (من خلال features)
+      final carType = filters['carType'] as String?;
+      if (carType != null && carType.isNotEmpty) {
+        filteredCars = filteredCars.where((car) {
+          // البحث في features أو model
+          return car.features.contains(carType) || 
+                 car.model.toLowerCase().contains(carType.toLowerCase());
+        }).toList();
+      }
+      
+      // ✅ فلترة حسب نطاق السعر
+      final priceRange = filters['priceRange'] as RangeValues?;
+      if (priceRange != null) {
+        filteredCars = filteredCars.where((car) => 
+          car.price >= priceRange.start && car.price <= priceRange.end
+        ).toList();
+      }
+      
+      // ✅ فلترة حسب نطاق السنة
+      final yearRange = filters['yearRange'] as RangeValues?;
+      if (yearRange != null) {
+        filteredCars = filteredCars.where((car) => 
+          car.year >= yearRange.start.round() && car.year <= yearRange.end.round()
+        ).toList();
+      }
+      
+      // ✅ فلترة حسب نطاق الكيلومترات
+      final kmRange = filters['kmRange'] as RangeValues?;
+      if (kmRange != null) {
+        filteredCars = filteredCars.where((car) => 
+          car.kilometers >= kmRange.start.round() && car.kilometers <= kmRange.end.round()
+        ).toList();
+      }
+      
+      // ✅ فلترة حسب نوع الوقود
+      final fuelType = filters['fuelType'] as String?;
+      if (fuelType != null && fuelType.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => car.fuelType == fuelType).toList();
+      }
+      
+      // ✅ فلترة حسب نوع القير
+      final transmission = filters['transmission'] as String?;
+      if (transmission != null && transmission.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => car.transmission == transmission).toList();
+      }
+      
+      // ✅ فلترة حسب المميزات
+      final features = filters['features'] as List<String>?;
+      if (features != null && features.isNotEmpty) {
+        filteredCars = filteredCars.where((car) {
+          return features.every((feature) => car.features.contains(feature));
+        }).toList();
+      }
+      
+      // ✅ فلترة حسب حالة السيارة
+      final condition = filters['carCondition'] as String?;
+      if (condition != null && condition.isNotEmpty) {
+        filteredCars = filteredCars.where((car) {
+          // مطابقة مرنة للحالة
+          final carCondition = car.condition.toLowerCase();
+          final filterCondition = condition.toLowerCase();
+          return carCondition.contains(filterCondition) || 
+                 filterCondition.contains(carCondition);
+        }).toList();
+      }
+      
+      // ✅ فلترة حسب اللون (من خلال features أو description)
+      final color = filters['carColor'] as String?;
+      if (color != null && color.isNotEmpty) {
+        filteredCars = filteredCars.where((car) {
+          return car.features.any((feature) => feature.toLowerCase().contains(color.toLowerCase())) ||
+                 car.description.toLowerCase().contains(color.toLowerCase()) ||
+                 car.title.toLowerCase().contains(color.toLowerCase());
+        }).toList();
+      }
+      
+      // ✅ فلترة حسب المميزات المتقدمة
+      if (filters['isWarranty'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('ضمان') || car.features.contains('تحت الضمان')).toList();
+      }
+      if (filters['isInsurance'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('تأمين') || car.features.contains('مؤمن')).toList();
+      }
+      if (filters['hasPanoramicRoof'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('سقف بانورامي') || car.features.contains('فتحة سقف')).toList();
+      }
+      if (filters['has360Camera'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('كاميرا 360') || car.has360View == true).toList();
+      }
+      if (filters['hasHeadUpDisplay'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('شاشة عرض أمامية') || car.features.contains('HUD')).toList();
+      }
+      if (filters['hasWirelessCharging'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('شحن لاسلكي') || car.features.contains('wireless charging')).toList();
+      }
+      if (filters['hasRemoteStart'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('تشغيل عن بعد') || car.features.contains('remote start')).toList();
+      }
+      if (filters['hasVentilatedSeats'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('مقاعد مهواة') || car.features.contains('مقاعد مبردة')).toList();
+      }
+      if (filters['hasMemorySeats'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('مقاعد بذاكرة') || car.features.contains('memory seats')).toList();
+      }
+      if (filters['hasMassageSeats'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('مقاعد مساج') || car.features.contains('massage seats')).toList();
+      }
+      if (filters['hasThirdRow'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('صف ثالث') || car.features.contains('7 مقاعد') || car.features.contains('8 مقاعد')).toList();
+      }
+      if (filters['hasAdaptiveCruiseControl'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('مثبت سرعة ذكي') || car.features.contains('adaptive cruise')).toList();
+      }
+      if (filters['hasBlindSpotMonitoring'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('نظام مراقبة النقاط العمياء') || car.features.contains('blind spot')).toList();
+      }
+      if (filters['hasLaneAssist'] == true) {
+        filteredCars = filteredCars.where((car) => car.features.contains('نظام المساعدة في الحارة') || car.features.contains('lane assist')).toList();
+      }
+      if (filters['has360View'] == true) {
+        filteredCars = filteredCars.where((car) => car.has360View == true).toList();
+      }
+      if (filters['hasVirtualTour'] == true) {
+        filteredCars = filteredCars.where((car) => car.virtualTourUrl != null && car.virtualTourUrl!.isNotEmpty).toList();
+      }
+      if (filters['hasInteriorView'] == true) {
+        filteredCars = filteredCars.where((car) => car.hasInteriorView == true).toList();
+      }
+      
+      // ✅ فلترة حسب bodyStyle, seatsCount, cylinders, trimLevel (من خلال features)
+      final bodyStyle = filters['bodyStyle'] as String?;
+      if (bodyStyle != null && bodyStyle.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => 
+          car.features.any((f) => f.toLowerCase().contains(bodyStyle.toLowerCase()))
+        ).toList();
+      }
+      
+      final seatsCount = filters['seatsCount'] as String?;
+      if (seatsCount != null && seatsCount.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => 
+          car.features.any((f) => f.contains(seatsCount.replaceAll('مقاعد', '').trim()))
+        ).toList();
+      }
+      
+      final cylinders = filters['cylinders'] as String?;
+      if (cylinders != null && cylinders.isNotEmpty) {
+        filteredCars = filteredCars.where((car) => 
+          car.features.any((f) => f.contains(cylinders.replaceAll('سلندر', '').trim()))
+        ).toList();
+      }
+      
+      // ✅ تحديث السيارات المرئية في الخريطة
+      if (mounted) {
+        _mapState.applyCarFilters(filteredCars);
+        _showSuccessMessage('تم العثور على ${filteredCars.length} سيارة');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorMessage('حدث خطأ أثناء تطبيق الفلاتر: $e');
+      }
     }
   }
 
@@ -782,588 +964,145 @@ class _MainMapScreenState extends State<MainMapScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  void _centerMapOnMarker(Point geometry) {
-    final controller = _mapState.mapController;
-    if (controller == null) return;
+  // ✅ تم إزالة _centerMapOnMarker لأنها غير مستخدمة (يتم استخدام _centerMapOnLocation بدلاً منها)
+
+  /// ✅ تحديث markers على الخريطة (نفس منطق MapView)
+  void _updateMarkers() {
+    if (!mounted) return;
     
-    controller.flyTo(
-      CameraOptions(
-        center: geometry,
-        zoom: 16.0,
-        bearing: 0,
-        pitch: 60,
-      ),
-      MapAnimationOptions(
-        duration: 1000,
-        startDelay: 0,
-      ),
-    );
+    setState(() {
+      _markers.clear();
+      
+      final sel = _mapState.selectedMarker;
+      if (sel != null) {
+        final matchesFilter = (_mapState.filterType == MapFilterType.realEstate &&
+                sel.type == MarkerType.property) ||
+            (_mapState.filterType == MapFilterType.cars && sel.type == MarkerType.car);
+        if (matchesFilter) {
+          _markers.add(sel.toGoogleMarker(onTap: _onMarkerTap));
+        }
+      }
+      
+      // ✅ إضافة cluster markers (هذه هي الطريقة الصحيحة - markers تأتي من clusters)
+      for (final cluster in _mapState.clusters) {
+        if (cluster.isCluster()) {
+          // ✅ Cluster يحتوي على عدة markers - عرض cluster marker
+          _markers.add(
+            Marker(
+              markerId: MarkerId(cluster.id),
+              position: cluster.position,
+              infoWindow: InfoWindow(
+                title: '${cluster.size} عنصر',
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueViolet,
+              ),
+              onTap: () => _onMarkerTap(MarkerId(cluster.id)),
+            ),
+          );
+        } else if (cluster.markers.isNotEmpty) {
+          // ✅ Cluster يحتوي على marker واحد - عرض marker الفردي
+          for (final clusterMarker in cluster.markers) {
+            // ✅ تجنب إضافة marker مكرر (إذا كان نفس ID كـ selectedMarker)
+            if (_mapState.selectedMarker?.id != clusterMarker.id) {
+              _markers.add(clusterMarker.toGoogleMarker(onTap: _onMarkerTap));
+            }
+          }
+        }
+      }
+      
+      debugPrint('✅ Updated ${_markers.length} markers on map');
+      debugPrint('✅ Visible properties: ${_mapState.visibleProperties.length}');
+      debugPrint('✅ Clusters: ${_mapState.clusters.length}');
+    });
   }
-
+  
   Future<void> _updateMapMarkers() async {
-    final controller = _mapState.mapController;
-    if (controller == null) {
-      debugPrint('Map controller is null');
-      return;
-    }
-
-    try {
-      final pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-      await pointAnnotationManager.deleteAll();
-
-      if (_selectedFilterType == MapFilterType.realEstate) {
-        debugPrint('Loading ${_mapState.visibleProperties.length} property markers');
-        
-        for (final property in _mapState.visibleProperties) {
-          try {
-            final location = property.location.coordinates;
-            Uint8List markerIcon;
-            
-            if (property.images.isNotEmpty) {
-              try {
-                // تحميل الصورة من الأصول المحلية
-                final ByteData data = await rootBundle.load(property.images.first);
-                markerIcon = await _createCircularMarkerIcon(data.buffer.asUint8List());
-              } catch (e) {
-                debugPrint('Error loading image for property ${property.id}: $e');
-                markerIcon = await _createSimpleMarkerIcon();
-              }
-            } else {
-              debugPrint('No images available for property ${property.id}');
-              markerIcon = await _createSimpleMarkerIcon();
-            }
-            
-            await pointAnnotationManager.create(
-              PointAnnotationOptions(
-                geometry: Point(
-                  coordinates: Position(
-                    location.lng.toDouble(),
-                    location.lat.toDouble(),
-                  ),
-                ),
-                image: markerIcon,
-                iconSize: 1.0,
-                textField: property.price.toString(),
-                textSize: 12,
-                textColor: Colors.white.toARGB32(),
-                textHaloColor: Colors.black.toARGB32(),
-                textHaloWidth: 1.0,
-              ),
-            );
-            
-            // إضافة تأخير صغير بين كل علامة
-            await Future.delayed(const Duration(milliseconds: 100));
-            
-          } catch (e) {
-            debugPrint('Error adding property marker: $e');
-          }
-        }
-      } else {
-        debugPrint('Loading ${_mapState.visibleCars.length} car markers');
-        
-        for (final car in _mapState.visibleCars) {
-          try {
-            final location = car.location;
-            if (location == null) {
-              debugPrint('No location available for car ${car.id}');
-              continue;
-            }
-            
-            Uint8List markerIcon;
-            
-            if (car.images.isNotEmpty) {
-              try {
-                final response = await http.get(Uri.parse(car.images.first));
-                if (response.statusCode == 200) {
-                  markerIcon = await _createCircularMarkerIcon(response.bodyBytes);
-                } else {
-                  debugPrint('Failed to load image for car ${car.id}: ${response.statusCode}');
-                  markerIcon = await _createSimpleMarkerIcon();
-                }
-              } catch (e) {
-                debugPrint('Error loading image for car ${car.id}: $e');
-                markerIcon = await _createSimpleMarkerIcon();
-              }
-            } else {
-              debugPrint('No images available for car ${car.id}');
-              markerIcon = await _createSimpleMarkerIcon();
-            }
-            
-            await pointAnnotationManager.create(
-              PointAnnotationOptions(
-                geometry: Point(
-                  coordinates: Position(
-                    location.longitude.toDouble(),
-                    location.latitude.toDouble(),
-                  ),
-                ),
-                image: markerIcon,
-                iconSize: 1.0,
-                textField: car.price.toString(),
-                textSize: 12,
-                textColor: Colors.white.toARGB32(),
-                textHaloColor: Colors.black.toARGB32(),
-                textHaloWidth: 1.0,
-              ),
-            );
-            
-            // إضافة تأخير صغير بين كل علامة
-            await Future.delayed(const Duration(milliseconds: 100));
-            
-          } catch (e) {
-            debugPrint('Error adding car marker: $e');
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error updating map markers: $e');
-    }
+    // ✅ تم استبدالها بـ _updateMarkers() أعلاه
+    _updateMarkers();
   }
 
-  Future<Uint8List> _createCircularMarkerIcon(Uint8List imageBytes) async {
-    try {
-      final ui.Image originalImage = await decodeImageFromList(imageBytes);
-      
-      final pictureRecorder = ui.PictureRecorder();
-      final canvas = Canvas(pictureRecorder);
-      const width = 100.0;
-      const height = 100.0;
+  // ✅ تم إزالة _createCircularMarkerIcon لأنها غير مستخدمة (يتم استخدام _createCircularMarkerFromImage في map_state.dart)
 
-      // رسم الظل
-      final shadowPaint = Paint()
-        ..color = ColorUtils.withOpacity(Colors.black, 0.3)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
-      canvas.drawCircle(
-        const Offset(width / 2, height / 2),
-        width / 2,
-        shadowPaint,
-      );
-
-      // رسم الإطار الخارجي
-      final borderPaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4.0;
-      canvas.drawCircle(
-        const Offset(width / 2, height / 2),
-        (width / 2) - 2,
-        borderPaint,
-      );
-
-      // إنشاء مسار للقص
-      final clipPath = Path()
-        ..addOval(Rect.fromCircle(
-          center: const Offset(width / 2, height / 2),
-          radius: (width / 2) - 4,
-        ));
-      
-      canvas.save();
-      canvas.clipPath(clipPath);
-
-      // حساب نسبة العرض إلى الارتفاع للصورة الأصلية
-      final aspectRatio = originalImage.width / originalImage.height;
-      
-      // حساب أبعاد الصورة المناسبة للدائرة
-      double targetWidth = width;
-      double targetHeight = height;
-      
-      if (aspectRatio > 1) {
-        targetWidth = height * aspectRatio;
-        final offset = (targetWidth - width) / 2;
-        canvas.drawImageRect(
-          originalImage,
-          Rect.fromLTWH(0, 0, originalImage.width.toDouble(), originalImage.height.toDouble()),
-          Rect.fromLTWH(-offset, 0, targetWidth, height),
-          Paint()..filterQuality = FilterQuality.high,
-        );
-      } else {
-        targetHeight = width / aspectRatio;
-        final offset = (targetHeight - height) / 2;
-        canvas.drawImageRect(
-          originalImage,
-          Rect.fromLTWH(0, 0, originalImage.width.toDouble(), originalImage.height.toDouble()),
-          Rect.fromLTWH(0, -offset, width, targetHeight),
-          Paint()..filterQuality = FilterQuality.high,
-        );
-      }
-      
-      canvas.restore();
-
-      final picture = pictureRecorder.endRecording();
-      final img = await picture.toImage(width.toInt(), height.toInt());
-      final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-      
-      return byteData!.buffer.asUint8List();
-    } catch (e) {
-      debugPrint('Error creating circular marker icon: $e');
-      return _createSimpleMarkerIcon();
-    }
-  }
-
-  void _onPropertyTap(PropertyModel property) {
-    final location = property.location.coordinates;
+  void _onPropertyTap(PropertyModel property) async {
+    final location = property.location;
     
     _mapState.setSelectedProperty(property);
+    
+    // ✅ إنشاء marker مخصص من صورة العقار
+    await _mapState.createSelectedPropertyMarker(property);
+    
     _centerMapOnLocation(
-      location.lng.toDouble(),
-      location.lat.toDouble(),
+      location.longitude,
+      location.latitude,
     );
     
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildPropertyDetailsSheet(property),
+    if (!mounted) return;
+    // ✅ فتح شاشة كاملة بدلاً من bottom sheet
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PropertyFullScreenView(property: property),
+        fullscreenDialog: true,
+      ),
     );
   }
 
-  void _onCarTap(CarModel car) {
+  void _onCarTap(CarModel car) async {
     final location = car.location;
     if (location == null) return;
     
     _mapState.setSelectedCar(car);
+    
+    // ✅ إنشاء marker مخصص من صورة السيارة
+    await _mapState.createSelectedCarMarker(car);
+    
     _centerMapOnLocation(
       location.longitude.toDouble(),
       location.latitude.toDouble(),
     );
     
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildCarDetailsSheet(car),
+    if (!mounted) return;
+    // ✅ فتح شاشة كاملة بدلاً من bottom sheet
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CarFullScreenView(car: car),
+        fullscreenDialog: true,
+      ),
     );
   }
 
-  Widget _buildPropertyDetailsSheet(PropertyModel property) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.3,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // صور العقار
-                SizedBox(
-                  height: 250,
-                  child: PageView.builder(
-                    itemCount: property.images.length,
-                    itemBuilder: (context, index) {
-                      return CachedNetworkImage(
-                        imageUrl: property.images[index],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => ShimmerPlaceholder(
-                          child: Container(color: Colors.white),
-                        ),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        property.title,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '﷼ ${property.price}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // تفاصيل العقار
-                      _buildPropertyFeatures(property),
-                      const SizedBox(height: 16),
-                      // زر الاتصال
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => _launchPhoneCall(property.contactPhone),
-                          icon: const Icon(Icons.phone),
-                          label: const Text('اتصال بالمالك'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.all(16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCarDetailsSheet(CarModel car) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.3,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // صور السيارة
-                SizedBox(
-                  height: 250,
-                  child: PageView.builder(
-                    itemCount: car.images.length,
-                    itemBuilder: (context, index) {
-                      return CachedNetworkImage(
-                        imageUrl: car.images[index],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => ShimmerPlaceholder(
-                          child: Container(color: Colors.white),
-                        ),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        car.title,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '﷼ ${car.price}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // تفاصيل السيارة
-                      _buildCarFeatures(car),
-                      const SizedBox(height: 16),
-                      // زر الاتصال
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => _launchPhoneCall(car.sellerPhone),
-                          icon: const Icon(Icons.phone),
-                          label: const Text('اتصال بالمالك'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.all(16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   void _centerMapOnLocation(double longitude, double latitude) {
     final controller = _mapState.mapController;
     if (controller == null) return;
     
-    controller.flyTo(
-      CameraOptions(
-        center: Point(coordinates: Position(longitude, latitude)),
-        zoom: 16.0,
-        bearing: 0,
-        pitch: 60,
-      ),
-      MapAnimationOptions(
-        duration: 1000,
-        startDelay: 0,
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(latitude, longitude),
+          zoom: 16.0,
+          bearing: 0,
+          tilt: 60,
+        ),
       ),
     );
   }
 
-  Widget _buildPropertyFeatures(PropertyModel property) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'المميزات',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildFeatureChip(
-              icon: Icons.square_foot,
-              label: '${property.area} م²',
-            ),
-            _buildFeatureChip(
-              icon: Icons.king_bed,
-              label: '${property.rooms} غرف',
-            ),
-            _buildFeatureChip(
-              icon: Icons.bathtub,
-              label: '${property.bathrooms} حمام',
-            ),
-            if (property.features['parking'] == true)
-              _buildFeatureChip(
-                icon: Icons.local_parking,
-                label: 'موقف سيارات',
-              ),
-            if (property.features['pool'] == true)
-              _buildFeatureChip(
-                icon: Icons.pool,
-                label: 'مسبح',
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCarFeatures(CarModel car) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'المواصفات',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildFeatureChip(
-              icon: Icons.calendar_today,
-              label: '${car.year}',
-            ),
-            _buildFeatureChip(
-              icon: Icons.speed,
-              label: '${car.kilometers} كم',
-            ),
-            _buildFeatureChip(
-              icon: Icons.local_gas_station,
-              label: car.fuelType,
-            ),
-            _buildFeatureChip(
-              icon: Icons.settings,
-              label: car.transmission,
-            ),
-            if (car.isVerified)
-              _buildFeatureChip(
-                icon: Icons.verified,
-                label: 'موثق',
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFeatureChip({
-    required IconData icon,
-    required String label,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: ColorUtils.withOpacity(AppColors.primary, 0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 16,
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ✅ تم نقل جميع الدوال المساعدة إلى FeatureChips و MapHelpers
 }
 
-class ShimmerPlaceholder extends StatelessWidget {
-  final Widget child;
+// ✅ تم نقل _PropertyFullScreenView إلى ملف منفصل: widgets/property_full_screen_view.dart
+// ✅ تم نقل _CarFullScreenView إلى ملف منفصل: widgets/car_full_screen_view.dart
 
-  const ShimmerPlaceholder({
-    required this.child, super.key,
-  });
+// ✅ تم نقل _PropertyDetailsSheetWidget إلى widgets/property_details_sheet.dart
+// ✅ تم نقل _CarDetailsSheetWidget إلى widgets/car_details_sheet.dart
 
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: child,
-    );
-  }
-}
+// ✅ تم نقل ShimmerPlaceholder إلى widgets/shimmer_placeholder.dart

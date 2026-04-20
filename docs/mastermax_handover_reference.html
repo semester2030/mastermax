@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="مرجع تسليم MasterMax — Firebase، خطة الإصلاح، تحليل التحويل إلى REST/Swagger، الصيانة، لوحة الإدارة، ومسارات التطبيق." />
+  <title>MasterMax · مرجع التسليم الفني الرسمي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --p: #7c3aed;
+      --p-dark: #4c1d95;
+      --p-mid: #5b21b6;
+      --p-light: #ede9fe;
+      --p-faint: #f5f3ff;
+      --ink: #1e1b4b;
+      --muted: #64748b;
+      --ok: #059669;
+      --bad: #dc2626;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+      --display: "Outfit", var(--sans);
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(76, 29, 149, 0.08);
+      --shadow-lg: 0 24px 64px rgba(76, 29, 149, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    @media (min-width: 1024px) {
+      .layout { grid-template-columns: 280px minmax(0, 1fr); }
+    }
+    aside.nav-rail {
+      background: linear-gradient(180deg, var(--p-dark) 0%, #312e81 100%);
+      color: #e0e7ff;
+      padding: 1.75rem 1.25rem;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      min-height: 100vh;
+      border-inline-end: 1px solid rgba(255,255,255,0.08);
+    }
+    @media (max-width: 1023px) {
+      aside.nav-rail {
+        position: relative;
+        min-height: auto;
+        border-inline-end: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+    }
+    .brand {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.25rem;
+      color: #fff;
+    }
+    .brand-sub { font-size: 0.72rem; opacity: 0.75; margin-bottom: 1.5rem; line-height: 1.4; }
+    .nav-rail a {
+      display: block;
+      color: #c7d2fe;
+      text-decoration: none;
+      padding: 0.45rem 0.65rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 2px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-rail a:hover, .nav-rail a:focus-visible { background: rgba(255,255,255,0.1); color: #fff; outline: none; }
+    .nav-rail a.active { background: var(--p); color: #fff; }
+    .nav-rail .sec-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.5;
+      margin: 1.25rem 0 0.5rem;
+    }
+    .content-wrap { padding: 0; }
+    header.doc-hero {
+      background: linear-gradient(135deg, var(--p) 0%, var(--p-mid) 45%, var(--p-dark) 100%);
+      color: #fff;
+      padding: 2.5rem 1.75rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    header.doc-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 0%, rgba(255,255,255,0.18), transparent 55%),
+                  radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255,255,255,0.1), transparent 50%);
+      pointer-events: none;
+    }
+    .doc-hero-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+    .doc-hero h1 {
+      font-family: var(--display);
+      font-size: clamp(1.5rem, 3.5vw, 2.15rem);
+      font-weight: 700;
+      margin: 0 0 0.6rem;
+      letter-spacing: -0.02em;
+    }
+    .doc-hero .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .pill {
+      background: rgba(255,255,255,0.15);
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+    }
+    .content { max-width: 920px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem 1.65rem;
+      margin-bottom: 1.35rem;
+    }
+    .card h2 {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      color: var(--p-mid);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card h2 .idx {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      background: var(--p-light);
+      color: var(--p-mid);
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    h3 { font-size: 0.95rem; color: var(--muted); margin: 1.1rem 0 0.45rem; font-weight: 600; }
+    p { margin: 0 0 0.75rem; color: #334155; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin: 0.65rem 0;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 0.45rem 0.55rem;
+      text-align: right;
+      vertical-align: top;
+    }
+    th { background: var(--p-faint); color: var(--p-mid); font-weight: 600; }
+    .code-ref {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--p-mid);
+      background: var(--p-faint);
+      padding: 0.12rem 0.35rem;
+      border-radius: 5px;
+    }
+    .block {
+      position: relative;
+      margin: 0.75rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: #0f172a;
+    }
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0.65rem;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+    }
+    .block-header span { font-family: var(--mono); font-size: 0.68rem; color: #94a3b8; }
+    .block-header button {
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      padding: 0.25rem 0.55rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--p);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .block-header button:hover { filter: brightness(1.08); }
+    pre {
+      margin: 0;
+      padding: 0.85rem 1rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      line-height: 1.55;
+      color: #e2e8f0;
+    }
+    .callout {
+      border-radius: 12px;
+      padding: 1rem 1.15rem;
+      margin: 0.85rem 0;
+      border-inline-end: 4px solid;
+    }
+    .callout.danger { background: #fef2f2; border-color: var(--bad); color: #7f1d1d; }
+    .callout.ok { background: #ecfdf5; border-color: var(--ok); color: #064e3b; }
+    .callout.info { background: #eff6ff; border-color: #3b82f6; color: #1e3a5f; }
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+    .kpi {
+      background: linear-gradient(145deg, #fff, var(--p-faint));
+      border: 1px solid var(--p-light);
+      border-radius: 12px;
+      padding: 1rem 0.75rem;
+      text-align: center;
+    }
+    .kpi b {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      color: var(--p);
+      display: block;
+    }
+    .kpi small { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
+    footer.doc-ft {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+    }
+    @media print {
+      aside.nav-rail { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      .block-header button { display: none; }
+    }
+    .compliance-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.1rem 1.2rem;
+      background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 45%, #eff6ff 100%);
+      border-radius: 14px;
+      border: 1px solid #6ee7b7;
+      margin: 1rem 0;
+    }
+    .compliance-row svg { color: #047857; flex-shrink: 0; }
+    .compliance-row .txt h4 { margin: 0 0 0.4rem; font-size: 1.02rem; color: var(--p-mid); font-family: var(--display); }
+    .compliance-row .txt p { margin: 0 0 0.5rem; font-size: 0.88rem; }
+    .tag-soon {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: #fef3c7;
+      color: #92400e;
+      margin-inline-start: 0.35rem;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="nav-rail" aria-label="فهرس">
+      <div class="brand">MasterMax</div>
+      <div class="brand-sub">مرجع التسليم الفني · أدلة من المستودع<br /><code style="opacity:0.8">mastermax/mastermax</code></div>
+      <div class="sec-label">أقسام</div>
+      <a href="#s01">01 الهوية والإصدار</a>
+      <a href="#s02">02 أرقام المستودع</a>
+      <a href="#s03">03 دخول التطبيق</a>
+      <a href="#s04">04 مسارات الموبايل</a>
+      <a href="#s05">05 ويب السيارات والعقارات</a>
+      <a href="#s06">06 Firebase</a>
+      <a href="#s07">07 الأمان</a>
+      <a href="#s08">08 خدمات معرض السيارات</a>
+      <a href="#s09">09 شاشات قيد التطوير</a>
+      <a href="#s10">10 ملفات ضخمة</a>
+      <a href="#s11">11 التحليل الثابت</a>
+      <a href="#s12">12 لوحة الإدارة (Admin Web)</a>
+      <a href="#s13">13 الصيانة · المخاطر · إدماج الفريق</a>
+      <a href="#s14">14 خطة الإصلاح التفصيلية</a>
+      <a href="#s15">15 Firebase ← REST / Swagger</a>
+      <a href="#s16">16 الامتثال: نفاذ · آبل · Spotlight</a>
+    </aside>
+    <div class="content-wrap">
+      <header class="doc-hero">
+        <div class="doc-hero-inner">
+          <h1>مرجع التسليم الفني الرسمي</h1>
+          <p style="margin:0;opacity:0.92;max-width:40rem;font-size:0.95rem">
+            وثيقة تفاعلية للفريق التقني: أرقام مُستخرجة بأوامر، مسارات من <span class="code-ref">app_router.dart</span> وملفات الويب، مقارنة قواعد Firebase، مقتطفات كود بمراجع أسطر، وتحذيرات إنتاج صريحة.
+          </p>
+          <div class="meta-line">
+            <span class="pill">Package: mastermax_2030</span>
+            <span class="pill">version: 0.1.0 — pubspec.yaml:19</span>
+            <span class="pill">SDK: &gt;=3.0.6 &lt;4.0.0</span>
+          </div>
+        </div>
+      </header>
+      <div class="content">
+
+        <section id="s01" class="card">
+          <h2><span class="idx">01</span> هوية المشروع في الكود</h2>
+          <p>اسم الحزمة والإصدار معرّفان في <span class="code-ref">pubspec.yaml</span>:</p>
+          <div class="block">
+            <div class="block-header"><span>pubspec.yaml · الأسطر 1–22</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-pub">name: mastermax_2030
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.6 &lt;4.0.0'</pre>
+          </div>
+
+          <h3>سجل إغلاق الثغرات والتحديثات (مرجع — مارس 2026)</h3>
+          <p>هذا القسم يكمّل «الهوية» بربط المستودع الحالي بما نُفِّذ فعليًا في الكود، مع <strong>أمر أو مسار يثبت</strong> كل بند. أعد تشغيل الأوامر من جذر <span class="code-ref">mastermax/mastermax</span> عند كل إصدار.</p>
+          <table>
+            <thead><tr><th>البند</th><th>الحالة</th><th>إثبات (مسار / أمر)</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>قواعد Firestore (لم تعد <code>match /{document=**}</code> فقط)</td>
+                <td><strong>مُنفَّذ في المستودع</strong> — يتطلب <code>firebase deploy --only firestore:rules,firestore:indexes</code> لمزامنة السحابة</td>
+                <td><span class="code-ref">firestore.rules</span> (~198 سطر): <code>match /users/{userId}</code>، <code>/cars/{carId}</code>، <code>/properties/…</code>، <code>isAdmin()</code>، مجموعات صريحة بدل قاعدة واحدة مفتوحة</td>
+              </tr>
+              <tr>
+                <td>فهارس مركّبة (تذاكر دعم، طلبات تحقق)</td>
+                <td>مُنفَّذ في المستودع</td>
+                <td><span class="code-ref">firestore.indexes.json</span> — <code>support_tickets</code> (<code>userId</code> + <code>createdAt</code>)، <code>verification_requests</code> (<code>status</code> + <code>submittedAt</code>)</td>
+              </tr>
+              <tr>
+                <td>أسرار أداة الهجرة</td>
+                <td>مُنفَّذ — لا مفاتيح ثابتة في الملف</td>
+                <td><span class="code-ref">lib/src/utils/data_migrator.dart</span> + <span class="code-ref">lib/src/utils/firebase_data_transfer.dart</span> — <code>String.fromEnvironment</code> (<code>MIGRATE_OLD_FIREBASE_*</code>، <code>MIGRATE_NEW_FIREBASE_*</code>، <code>MIGRATE_EMAIL</code> / <code>MIGRATE_PASSWORD</code>)</td>
+              </tr>
+              <tr>
+                <td><code>userId</code> في الدفع والدعم</td>
+                <td>مُنفَّذ</td>
+                <td><span class="code-ref">payment_processor.dart</span> — <code>processPayment(SpotlightPlan plan, String userId)</code>؛ <span class="code-ref">spotlight_subscription_service.dart</span> يمرّر <code>userId</code>؛ <span class="code-ref">customer_service_provider.dart</span> — <code>FirebaseAuth</code> + استعلام <code>where('userId', …)</code></td>
+              </tr>
+              <tr>
+                <td>تسجيل دخول أدمن تجريبي</td>
+                <td>مُنفَّذ — لا بريد/كلمة مرور في Release</td>
+                <td><span class="code-ref">lib/admin_web/screens/admin_login_screen.dart</span> — <code>kDebugMode</code> + <code>ADMIN_LOGIN_DEBUG_EMAIL</code> فقط (اختياري)</td>
+              </tr>
+              <tr>
+                <td>زر «جرب التطبيق» / دخول زائر وهمي</td>
+                <td>مُزال من الواجهة + إزالة مسار الزائر الوهمي</td>
+                <td>حُذف الزر من <span class="code-ref">welcome_screen.dart</span> و<span class="code-ref">login_screen.dart</span>؛ حُذف <code>loginAsGuest</code> من <span class="code-ref">auth_state.dart</span> و<span class="code-ref">auth_service.dart</span>؛ <code>isTrialMode</code> يعيد <code>false</code></td>
+              </tr>
+              <tr>
+                <td>راوتر مكرّر (<code>AppRouter</code> مرتين)</td>
+                <td>مُنفَّذ — موجّه واحد للموبايل</td>
+                <td>حُذف <span class="code-ref">lib/src/core/router/app_router.dart</span>؛ دُمجت مسارات الجولة/360 في <span class="code-ref">lib/src/navigation/app_router.dart</span> (<code>Routes.property360View</code> …)</td>
+              </tr>
+              <tr>
+                <td>توحيد كامل لـ <span class="code-ref">route_constants</span> مع كل <code>case</code></td>
+                <td><strong>جزئي</strong></td>
+                <td>تعليق توجيهي في <span class="code-ref">route_constants.dart</span>؛ نقطة الدخول <code>Routes.home</code> في الراوتر؛ بقية المسارات ما زالت سلاسل في <code>switch</code> — يُكمّل تدريجيًا</td>
+              </tr>
+              <tr>
+                <td>تحليل ثابت <code>lib/</code></td>
+                <td>لا أخطاء <code>error</code>؛ تحذيرات ومعلومات قائمة</td>
+                <td>من الجذر: <code class="code-ref">dart analyze lib/</code> — آخر مسجَّل: <strong>0</strong> error، <strong>45</strong> warning، <strong>736</strong> info، المجموع <strong>781</strong> issues (يُحدَّث بالأمر)</td>
+              </tr>
+              <tr>
+                <td>تدوير مفاتيح/كلمات مرور سبق disclosing في Git</td>
+                <td><strong>متبقٍّ — عمل تشغيلي</strong></td>
+                <td>لا يُثبت بالكود؛ يتطلب إجراءات Firebase/Auth خارج المستودع</td>
+              </tr>
+              <tr>
+                <td>RBAC مخصّص، Cloud Functions للعمليات الحساسة، توحيد مسار تحقق الموبايل/الويب</td>
+                <td>متبقٍّ (تحسين معماري)</td>
+                <td>انظر القسم 12.5 و14 وبنود P2/P3</td>
+              </tr>
+              <tr>
+                <td>تعديل مركبة من CRM (إدارة المركبات والمبيعات) — ويب وموبايل</td>
+                <td><strong>مُنفَّذ</strong></td>
+                <td><span class="code-ref">vehicles_tab.dart</span> → <code>/cars/edit</code> + <span class="code-ref">edit_car_screen.dart</span>؛ <span class="code-ref">car_web_router.dart</span> نفس المسار؛ <span class="code-ref">car_form.dart</span> (<code>initialCar</code>)؛ <span class="code-ref">car_provider.dart</span> — <code>updateCar</code> يحل الصور المحلية ثم <code>Firestore.update</code></td>
+              </tr>
+              <tr>
+                <td>نفاذ (هوية رقمية للوسطاء/الشركات العقارية — شرط تنظيمي سعودي)</td>
+                <td><strong>غير منفذ</strong> — مخطط لاحقًا (تقدير 1–2 شهر)</td>
+                <td>لا تطابق في المستودع لـ <code>nafath</code> / <code>نفاذ</code>؛ التفاصيل والخطة في <a href="#s16" style="color:var(--p-mid);font-weight:600">القسم 16</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout info">
+            <strong>أوامر تحقق سريعة:</strong>
+            <code class="code-ref">dart analyze lib/</code>
+            · <code class="code-ref">find lib -name '*.dart' | wc -l</code>
+            · <code class="code-ref">wc -l firestore.rules</code>
+            · بحث ثغرات قديمة: <code class="code-ref">rg "current-user-id|current_user_id|loginAsGuest" lib --glob "*.dart"</code> (يجب ألا يُرجع تطابقات حرجة بعد الإصلاح)
+          </div>
+        </section>
+
+        <section id="s02" class="card">
+          <h2><span class="idx">02</span> أدلة رقمية (أوامر التحقق)</h2>
+          <p>نُفّذت من جذر <span class="code-ref">mastermax/mastermax</span>. أعد تشغيلها عند كل إصدار للتحديث.</p>
+          <table>
+            <thead><tr><th>المقياس</th><th>الأمر</th><th>نتيجة مُسجَّلة</th></tr></thead>
+            <tbody>
+              <tr><td>ملفات Dart في lib</td><td><code class="code-ref">find lib -name '*.dart' | wc -l</code></td><td><strong>432</strong></td></tr>
+              <tr><td>مجموع حجم ملفات Dart</td><td><code class="code-ref">find lib -name '*.dart' -exec wc -c {} + | tail -1</code></td><td><strong>2946874</strong> بايت</td></tr>
+              <tr><td>ملفات فيها <code>class …Screen extends</code></td><td><code class="code-ref">grep -rl "class .*Screen extends" lib --include='*.dart' | wc -l</code></td><td><strong>81</strong></td></tr>
+              <tr><td>ملفات تحت lib/src</td><td><code class="code-ref">find lib/src -name '*.dart' | wc -l</code></td><td><strong>394</strong></td></tr>
+              <tr><td>ويب + أدمن</td><td><code class="code-ref">find lib/admin_web lib/car_web lib/web -name '*.dart' | wc -l</code></td><td><strong>36</strong></td></tr>
+              <tr><td>تحليل ثابت</td><td><code class="code-ref">dart analyze lib/</code></td><td>آخر مسجَّل: <strong>0</strong> error، <strong>45</strong> warning، <strong>736</strong> info (<strong>781</strong> issues)</td></tr>
+            </tbody>
+          </table>
+          <div class="grid-kpi">
+            <div class="kpi"><b>432</b><small>ملف Dart / lib</small></div>
+            <div class="kpi"><b>81</b><small>ملف شاشة (تقريب)</small></div>
+            <div class="kpi"><b>42+</b><small>فرع case صريح في app_router + جولات/360</small></div>
+          </div>
+        </section>
+
+        <section id="s03" class="card">
+          <h2><span class="idx">03</span> نقطة دخول التطبيق الرئيسي</h2>
+          <p><span class="code-ref">lib/main.dart</span> يربط <span class="code-ref">MaterialApp</span> بـ <span class="code-ref">AppRouter.onGenerateRoute</span> من <span class="code-ref">lib/src/navigation/app_router.dart</span> (استيراد عبر مسار المشروع الفعلي في الملف).</p>
+          <div class="block">
+            <div class="block-header"><span>main.dart · إعداد MaterialApp (حوالي 333–356)</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-main">      child: MaterialApp(
+        title: 'RECA',
+        theme: AppTheme.lightTheme,
+        darkTheme: DarkTheme.theme,
+        themeMode: ThemeMode.system,
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        onGenerateRoute: AppRouter.onGenerateRoute,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [ Locale('ar', '') ],
+        locale: const Locale('ar', ''),
+        builder: (context, child) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: child ?? const SizedBox(),
+          );
+        },
+      ),</pre>
+          </div>
+        </section>
+
+        <section id="s04" class="card">
+          <h2><span class="idx">04</span> مسارات الموبايل — <span class="code-ref">lib/src/navigation/app_router.dart</span></h2>
+          <p>يحتوي الملف على <strong>أكثر من 40 فرع <code>case</code></strong> صريحًا (بما فيها الجولات الافتراضية و360 عبر <code>Routes.*</code>)، إضافة إلى مسارات ديناميكية لـ <code>/spotlight/edit/…</code> و <code>/spotlight/seller/…</code> في الفرع <code>default</code>.</p>
+          <h3>جدول المسارات ← الشاشة / السلوك</h3>
+          <table>
+            <thead><tr><th>المسار</th><th>الشاشة أو السلوك</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+              <tr><td><code>Routes.property360View</code></td><td>Scaffold نصّي (الميزة غير مفعّلة مؤقتًا)</td><td>بداية <code>switch</code></td></tr>
+              <tr><td><code>Routes.propertyVirtualTour</code></td><td><code>PropertyVirtualTourScreen</code></td><td>مع <code>arguments</code></td></tr>
+              <tr><td><code>Routes.car360View</code></td><td>Scaffold نصّي</td><td>—</td></tr>
+              <tr><td><code>Routes.carVirtualTour</code></td><td><code>CarVirtualTourScreen</code></td><td>مع <code>arguments</code></td></tr>
+              <tr><td><code>Routes.home</code> (<code>/</code>)</td><td><code>LoginScreen</code></td><td>نفس المسار</td></tr>
+              <tr><td><code>/forgot-password</code></td><td><code>ForgotPasswordScreen</code></td><td>بعد حالات الجولات</td></tr>
+              <tr><td><code>/register</code></td><td><code>RegisterScreen</code> + <code>UserType</code></td><td>—</td></tr>
+              <tr><td><code>/user-type-selection</code></td><td><code>UserTypeSelectionScreen</code></td><td>—</td></tr>
+              <tr><td><code>/auth/otp</code></td><td><code>OtpVerificationScreen</code></td><td>—</td></tr>
+              <tr><td><code>/main</code></td><td><code>MainScreen</code></td><td>—</td></tr>
+              <tr><td><code>/map</code></td><td><code>MainMapScreen</code></td><td>—</td></tr>
+              <tr><td><code>/properties/add</code></td><td><code>AddPropertyScreen</code></td><td>—</td></tr>
+              <tr><td><code>/cars/add</code></td><td><code>AddCarScreen</code></td><td>—</td></tr>
+              <tr><td><code>/cars/edit</code></td><td><code>EditCarScreen</code> (يتطلب <code>CarModel</code> في <code>arguments</code>)</td><td>حارس <code>ListingVerticalGuard</code> لنشر السيارات</td></tr>
+              <tr><td><code>/subscription</code></td><td>إن عُطّلت الربحية: <code>SpotlightMonetizationUnavailableScreen</code> — وإلا <code>SubscriptionScreen</code></td><td>يُتحكم بـ <span class="code-ref">SpotlightMonetizationConfig.subscriptionsAndPaymentsEnabled</span> (القسم 16)</td></tr>
+              <tr><td><code>/spotlight/payments/mada</code></td><td><code>SpotlightMadaPaymentScreen</code></td><td>—</td></tr>
+              <tr><td><code>/spotlight/payments/bank-transfer</code></td><td><code>BankTransferScreen</code></td><td>—</td></tr>
+              <tr><td><code>/spotlight/payments/confirmation</code></td><td><code>SpotlightPaymentConfirmationScreen</code></td><td>—</td></tr>
+              <tr><td><code>/team-management</code></td><td><code>TeamManagementScreen</code></td><td>—</td></tr>
+              <tr><td><code>/car-details</code></td><td><code>CarDetailsScreen</code> (معرّف السيارة)</td><td>—</td></tr>
+              <tr><td><code>/profile/real-estate/features/sales</code></td><td><code>RealEstateSalesManagementScreen</code></td><td>—</td></tr>
+              <tr><td><code>/sales-management</code></td><td>نفس شاشة مبيعات العقارات</td><td>—</td></tr>
+              <tr><td><code>/customers-management</code></td><td><code>CustomersManagementScreen</code></td><td>—</td></tr>
+              <tr><td><code>/inventory-management</code></td><td>Scaffold نصّي: «قيد التطوير»</td><td>—</td></tr>
+              <tr><td><code>/branches-management</code></td><td><code>BranchesManagementScreen</code></td><td>—</td></tr>
+              <tr><td><code>/appointments</code></td><td>Scaffold نصّي: «قيد التطوير»</td><td>—</td></tr>
+              <tr><td><code>Routes.camera</code></td><td><code>CameraScreen</code></td><td>—</td></tr>
+              <tr><td><code>/chat</code></td><td><code>ChatScreen</code></td><td>—</td></tr>
+              <tr><td><code>/legal</code> … <code>/complaints</code></td><td>شاشات قانونية متعددة</td><td>—</td></tr>
+              <tr><td><code>/profile/edit</code></td><td><code>EditProfileScreen</code></td><td>—</td></tr>
+              <tr><td>مسارات Spotlight إدارية / بائع / رفع</td><td>عدة شاشات</td><td>—</td></tr>
+              <tr><td><code>default</code> + بادئات</td><td>تعديل فيديو، بائع من URL، 404</td><td>نهاية الملف</td></tr>
+            </tbody>
+          </table>
+          <div class="callout ok">
+            <strong>تحديث مارس 2026:</strong> لم يعد هناك ملف <span class="code-ref">lib/src/core/router/app_router.dart</span> — دُمجت مسارات الجولة الافتراضية و360 في هذا الملف الواحد (<span class="code-ref">lib/src/navigation/app_router.dart</span>).
+          </div>
+        </section>
+
+        <section id="s05" class="card">
+          <h2><span class="idx">05</span> تطبيقات الويب المنفصلة</h2>
+          <table>
+            <thead><tr><th>الهدف</th><th>main</th><th>الراوتر</th></tr></thead>
+            <tbody>
+              <tr><td>CRM عقارات (ويب)</td><td><span class="code-ref">lib/web/web_main.dart</span></td><td><span class="code-ref">lib/web/web_router.dart</span></td></tr>
+              <tr><td>CRM / واجهة معارض السيارات</td><td><span class="code-ref">lib/car_web/car_web_main.dart</span></td><td><span class="code-ref">lib/car_web/car_web_router.dart</span></td></tr>
+              <tr><td>لوحة أدمن</td><td>تحت <span class="code-ref">lib/admin_web/</span></td><td>شاشات متفرقة</td></tr>
+            </tbody>
+          </table>
+          <p>ويب السيارات يضم مسارات مثل <code>/dashboard</code>، <code>/vehicles-crm</code>، <code>/after-sales</code>، <code>/warranty-maintenance</code>، … — تعريفها في <span class="code-ref">car_web_router.dart</span> وقائمة الجانب <span class="code-ref">car_web_layout.dart</span>.</p>
+        </section>
+
+        <section id="s06" class="card">
+          <h2><span class="idx">06</span> إعداد Firebase في المستودع</h2>
+          <p>ملف <span class="code-ref">firebase.json</span> يربط القواعد والفهارس والاستضافة:</p>
+          <div class="block">
+            <div class="block-header"><span>firebase.json</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-fb">{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "hosting": {
+    "public": "build/web",
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+  }
+}</pre>
+          </div>
+          <div class="callout info" style="margin-top:0.75rem">
+            <strong>تصحيح للمستند (دقة المستودع):</strong> ملف <span class="code-ref">firebase.json</span> الفعلي في الجذر يعرّف <strong>مصفوفة</strong> <code>hosting</code> بعدة أهداف: <code>admin</code> → <code>build/web-admin</code>، <code>realestate</code> → <code>build/web-realestate</code>، <code>car</code> → <code>build/web-car</code> — المقتطف أعلاه يوضّح الحد الأدنى (Firestore/Storage) فقط؛ راجع الملف الكامل عند النشر.
+          </div>
+          <h3>Firestore — القواعد في المستودع (محدَّث)</h3>
+          <div class="callout ok">
+            <strong>تحديث مارس 2026:</strong> أُعيدت كتابة <span class="code-ref">firestore.rules</span> (~198 سطر): قواعد لـ <code>users</code> (مع تمييز أدمن عبر <code>isAdmin</code> في المستند)، <code>cars</code> / <code>properties</code> (ملكية)، <code>support_tickets</code>، <code>subscriptions</code>، <code>favorites</code>، <code>bank_transfers</code>، <code>verification_requests</code>، مجموعات أخرى صريحة — <strong>لا</strong> يوجد <code>match /{document=**}</code> الواسع السابق فقط.
+          </div>
+          <p><strong>متبقٍّ تشغيليًا:</strong> نشر القواعد والفهارس إلى Firebase: <code>firebase deploy --only firestore:rules,firestore:indexes</code>؛ مراجعة سلوك الأدمن/الاستعلامات بعد النشر.</p>
+          <div class="block">
+            <div class="block-header"><span>firestore.rules · مقتطف إثبات (بداية الملف)</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-fs">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authed() { return request.auth != null; }
+    function isAdmin() { … get(…users/$(request.auth.uid))… }
+    match /users/{userId} { … }
+    match /cars/{carId} { allow read: if true; … sellerId … }
+    match /properties/{propertyId} { … ownerId … }
+    …
+  }
+}</pre>
+          </div>
+          <h3>Storage — مقارنة (أكثر تقييدًا من Firestore حاليًا)</h3>
+          <p>مثال من <span class="code-ref">storage.rules</span>: مسار الفيديوهات يسمح بالكتابة فقط إذا <code>request.auth.uid == userId</code>:</p>
+          <div class="block">
+            <div class="block-header"><span>storage.rules · مقتطف</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-st">match /videos/{userId}/{fileName} {
+  allow read: if request.auth != null;
+  allow write: if request.auth != null && request.auth.uid == userId;
+}</pre>
+          </div>
+        </section>
+
+        <section id="s07" class="card">
+          <h2><span class="idx">07</span> الأمان والتشفير — إثبات من الكود</h2>
+          <div class="callout ok">
+            صنف <span class="code-ref">SecurityEncryption</span> (نمط singleton) يهيئ مفتاح <code>AES</code> عبر <code>FlutterSecureStorage</code>؛ الملف يستورد أيضًا <code>crypto</code> لعمليات التجزئة.
+          </div>
+          <div class="block">
+            <div class="block-header"><span>lib/src/features/auth/services/security_encryption.dart · 1–37</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-sec">import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// نظام تشفير البيانات الحساسة
+class SecurityEncryption {
+  static final SecurityEncryption _instance = SecurityEncryption._internal();
+  factory SecurityEncryption() =&gt; _instance;
+
+  static const String _masterKeyId = 'master_encryption_key';
+  late final encrypt.Key _key;
+  late final encrypt.IV _iv;
+
+  final _secureStorage = const FlutterSecureStorage();
+
+  SecurityEncryption._internal();
+
+  Future&lt;void&gt; initialize() async {
+    String? storedKey = await _secureStorage.read(key: _masterKeyId);
+    if (storedKey == null) {
+      final key = _generateSecureKey();
+      await _secureStorage.write(key: _masterKeyId, value: base64.encode(key));
+      storedKey = base64.encode(key);
+    }
+    _key = encrypt.Key(base64.decode(storedKey));
+    _iv = encrypt.IV.fromSecureRandom(16);
+  }</pre>
+          </div>
+          <p>ملفات ذات صلة: <span class="code-ref">lib/src/features/auth/services/app_protection.dart</span>، <span class="code-ref">lib/src/core/security/data_encryptor.dart</span>، <span class="code-ref">lib/src/features/auth/services/auth_service.dart</span>.</p>
+        </section>
+
+        <section id="s08" class="card">
+          <h2><span class="idx">08</span> خدمات CRM معرض السيارات (9) — ربط الكود</h2>
+          <p>المعرّف في <span class="code-ref">profile_screen.dart</span> ضمن <code>userType == UserType.carDealer</code> (حوالي 705–827).</p>
+          <table>
+            <thead><tr><th>الخدمة</th><th>الدليل في الكود</th></tr></thead>
+            <tbody>
+              <tr><td>إدارة المركبات / المبيعات / العملاء</td><td><code>VehiclesAndSalesManagementScreen(initialTabIndex: …)</code></td></tr>
+              <tr><td>الفريق</td><td><code>Navigator.pushNamed(context, '/team-management')</code></td></tr>
+              <tr><td>التحليلات</td><td><code>BusinessAnalyticsScreen(businessId: …)</code></td></tr>
+              <tr><td>الأربع الأخيرة (ما بعد البيع، ضمان، عروض، تمويل)</td><td><code>showComingSoonFeatureDialog</code> من <span class="code-ref">lib/src/features/profile/widgets/coming_soon_feature.dart</span></td></tr>
+            </tbody>
+          </table>
+          <div class="block">
+            <div class="block-header"><span>coming_soon_feature.dart · السطور 4–6</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-soon">const String kComingSoonFeatureMessage =
+    'هذه الخدمة قيد التجهيز وستُتاح قريباً. نعمل على إطلاقها — نشكر صبرك.';</pre>
+          </div>
+        </section>
+
+        <section id="s09" class="card">
+          <h2><span class="idx">09</span> شاشات / مسارات «قيد التطوير» داخل app_router</h2>
+          <p>ليست فقط SnackBar في الملف الشخصي؛ يوجد <strong>Scaffold نصّي</strong> داخل الراوتر نفسه:</p>
+          <ul style="margin:0.5rem 0;padding-right:1.2rem;color:#334155">
+            <li><span class="code-ref">/inventory-management</span> — «شاشة إدارة المخزون قيد التطوير» (أسطر 177–185)</li>
+            <li><span class="code-ref">/appointments</span> — «شاشة جدولة المواعيد قيد التطوير» (192–200)</li>
+          </ul>
+        </section>
+
+        <section id="s10" class="card">
+          <h2><span class="idx">10</span> أكبر ملفات Dart (&gt; 40KB) — أمر التحقق</h2>
+          <p><code class="code-ref">find lib -name '*.dart' -size +40k -exec wc -c {} \; | sort -rn</code></p>
+          <table>
+            <thead><tr><th>البايت</th><th>المسار</th></tr></thead>
+            <tbody>
+              <tr><td>77685</td><td>lib/src/features/profile/screens/real_estate/rentals/add_rental_screen.dart</td></tr>
+              <tr><td>52109</td><td>lib/src/features/properties/screens/add_property_screen.dart</td></tr>
+              <tr><td>43403</td><td>lib/src/features/map/screens/main_map_screen.dart</td></tr>
+              <tr><td>42837</td><td>lib/src/features/profile/screens/profile_screen.dart</td></tr>
+            </tbody>
+          </table>
+          <p><strong>خطة التقسيم:</strong> استخراج ويدجتات إلى مجلدات <code>widgets/</code> لكل ميزة؛ فصل نماذج النماذج الطويلة؛ تقليل عرض <code>profile_screen.dart</code> أولًا.</p>
+        </section>
+
+        <section id="s11" class="card">
+          <h2><span class="idx">11</span> التحليل الثابت (أرقام مُحدَّثة من المستودع)</h2>
+          <p>أمر التحقق من جذر <span class="code-ref">mastermax/mastermax</span>:</p>
+          <p><code class="code-ref">flutter analyze</code></p>
+          <table>
+            <thead><tr><th>النوع</th><th>العدد (آخر مسجَّل)</th><th>الأمر</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+              <tr><td><code>error</code></td><td><strong>0</strong></td><td rowspan="4" style="vertical-align:middle"><code class="code-ref">dart analyze lib/</code><br /><small>من جذر mastermax/mastermax</small></td><td>لا توجد أسطر تبدأ بـ <code>error -</code> في المخرجات</td></tr>
+              <tr><td><code>warning</code></td><td><strong>45</strong></td><td>عدّ يدوي: <code>grep -c "warning -"</code> على مخرجات الأمر</td></tr>
+              <tr><td><code>info</code></td><td><strong>736</strong></td><td>أغلبها <code>deprecated_member_use</code> و<code>avoid_print</code></td></tr>
+              <tr><td>المجموع</td><td><strong>781</strong></td><td>سطر الختام: <code>781 issues found</code> (قد يتغير مع التعديلات)</td></tr>
+            </tbody>
+          </table>
+          <p class="code-ref" style="margin-top:0.5rem">بديل: <code>flutter analyze</code> يغطي الحزمة بأكملها؛ الأرقام أعلاه من <code>dart analyze lib/</code> لتركيز مجلد التطبيق. «1 package is discontinued» و«packages have newer versions…» قد تظهر مع <code>flutter analyze</code> — راجع <code>flutter pub outdated</code>.</p>
+          <p>يُعاد تشغيل التحليل قبل كل تسليم رئيسي ويُفضّل تثبيت عتبة (مثلاً عدم زيادة التحذيرات دون قرار).</p>
+        </section>
+
+        <section id="s12" class="card">
+          <h2><span class="idx">12</span> تقرير لوحة الإدارة (Admin Web) — تنفيذ، متبقّي، ومستهدف</h2>
+          <p>لوحة الإدارة هي <strong>تطبيق Flutter ويب مستقل</strong> تحت المجلد <span class="code-ref">lib/admin_web/</span> (حوالي <strong>26</strong> ملف Dart: شاشات، تخطيط، راوتر، حارس صلاحية، خدمة تحقق). لا تُدمج في <span class="code-ref">main.dart</span> الرئيسي؛ نقطة الدخول هي <span class="code-ref">lib/admin_web/admin_main.dart</span> التي تهيئ Firebase ثم تشغّل <span class="code-ref">AdminApp</span> مع <span class="code-ref">AuthService</span> و<span class="code-ref">AuthState</span> و<span class="code-ref">AdminVerificationService</span>.</p>
+          <div class="callout info">
+            <strong>تشغيل محلي (للفريق):</strong> من جذر المشروع: <code class="code-ref">flutter run -t lib/admin_web/admin_main.dart -d chrome</code> (أو أي جهاز ويب). استضافة منفصلة عن تطبيق المستخدم النهائي موصى بها في الإنتاج.
+          </div>
+
+          <h3>12.1 بنية التطبيق والمسارات (دليل من الكود)</h3>
+          <p><span class="code-ref">AdminRouter.onGenerateRoute</span> في <span class="code-ref">lib/admin_web/admin_router.dart</span> يعرّف المسارات التالية؛ معظمها ملفوف بـ <span class="code-ref">AdminGuard</span> ثم <span class="code-ref">AdminLayout</span> (شريط جانبي + رأس).</p>
+          <table>
+            <thead><tr><th>المسار</th><th>الشاشة</th><th>ملف</th><th>أسطر تقريبية</th></tr></thead>
+            <tbody>
+              <tr><td><code>/</code></td><td>تسجيل دخول الأدمن</td><td><span class="code-ref">admin_login_screen.dart</span></td><td>—</td></tr>
+              <tr><td><code>/dashboard</code></td><td>لوحة نظرة عامة</td><td><span class="code-ref">admin_dashboard_screen.dart</span></td><td>24–33</td></tr>
+              <tr><td><code>/verification</code></td><td>طلبات التحقق المعلقة</td><td><span class="code-ref">verification_pending_screen.dart</span></td><td>—</td></tr>
+              <tr><td><code>/verification/history</code></td><td>سجل التحقق</td><td><span class="code-ref">verification_history_screen.dart</span></td><td>—</td></tr>
+              <tr><td><code>/users</code></td><td>قائمة المستخدمين</td><td><span class="code-ref">users_list_screen.dart</span></td><td>27–35</td></tr>
+              <tr><td><code>/users/detail</code></td><td>تفاصيل مستخدم (قراءة فقط)</td><td><span class="code-ref">user_detail_screen.dart</span></td><td>31</td></tr>
+              <tr><td><code>/security/logs</code></td><td>سجل الأمان</td><td><span class="code-ref">security_logs_screen.dart</span></td><td>25–28</td></tr>
+              <tr><td><code>/security/failed-logins</code></td><td>محاولات دخول فاشلة</td><td><span class="code-ref">failed_logins_screen.dart</span></td><td>24–28</td></tr>
+              <tr><td><code>/content/videos</code></td><td>قائمة فيديوهات Spotlight</td><td><span class="code-ref">videos_management_screen.dart</span></td><td>24–27</td></tr>
+              <tr><td><code>/content/orphaned</code></td><td>واجهة توضيحية (لا تنفيذ خادمي)</td><td><span class="code-ref">orphaned_videos_screen.dart</span></td><td>29–31</td></tr>
+              <tr><td><code>/reports</code></td><td>بلاغات المستخدمين</td><td><span class="code-ref">user_reports_screen.dart</span></td><td>25–28</td></tr>
+              <tr><td><code>/settings</code></td><td>إعدادات (نص توجيهي)</td><td><span class="code-ref">app_settings_screen.dart</span></td><td>38–40</td></tr>
+              <tr><td><code>/settings/admins</code></td><td>عرض حسابات أدمن مُستنتجة</td><td><span class="code-ref">admin_accounts_screen.dart</span></td><td>24–37</td></tr>
+            </tbody>
+          </table>
+          <div class="block">
+            <div class="block-header"><span>admin_router.dart · هيكل الحماية (مثال /dashboard)</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-adm-route">      case '/dashboard':
+        return MaterialPageRoute(
+          builder: (_) =&gt; AdminGuard(
+            child: AdminLayout(
+              title: 'لوحة التحكم',
+              currentRoute: '/dashboard',
+              child: const AdminDashboardScreen(),
+            ),
+          ),
+        );</pre>
+          </div>
+
+          <h3>12.2 ماذا نُفّذ بالضبط (مع مجموعات Firestore)</h3>
+          <table>
+            <thead><tr><th>الميزة</th><th>الحالة</th><th>دليل في الكود</th></tr></thead>
+            <tbody>
+              <tr><td>حارس الدخول + رفض غير الأدمن</td><td><strong>منفذ</strong></td><td><span class="code-ref">admin_guard.dart</span> يتحقق من <code>authState.isAuthenticated</code> و<code>authState.isAdmin</code> (15–61)</td></tr>
+              <tr><td>تعريف «من هو الأدمن»</td><td><strong>منفذ</strong></td><td><span class="code-ref">auth_state.dart</span>: بريد <code>admin@mastermax.com</code> أو <code>extraData.isAdmin</code> أو بريد Firebase الحالي (29–49)</td></tr>
+              <tr><td>تسجيل دخول ثم التحقق من الأدمن</td><td><strong>منفذ</strong></td><td><span class="code-ref">admin_login_screen.dart</span> يستدعي <code>login</code> ثم يرفض الجلسة إن لم يكن <code>isAdmin</code> (44–52)</td></tr>
+              <tr><td>طلبات التحقق: جلب معلّق، قبول، رفض</td><td><strong>منفذ</strong></td><td><span class="code-ref">admin_verification_service.dart</span> — مجموعة <code>verification_requests</code> + تحديث <code>users</code> في دفعة واحدة (<code>batch</code>) عند الموافقة/الرفض (10–84)</td></tr>
+              <tr><td>واجهة مراجعة المستندات (ويب)</td><td><strong>منفذ</strong></td><td><span class="code-ref">verification_pending_screen.dart</span> — <code>approve</code> / <code>reject</code> مع <code>reviewerId</code> من <code>AuthState</code> (51–72)</td></tr>
+              <tr><td>سجل التحقق مع فلتر حالة</td><td><strong>منفذ</strong></td><td><span class="code-ref">verification_history_screen.dart</span> يستدعي <code>getAllRequests(status: _filter)</code> (25–33)</td></tr>
+              <tr><td>قائمة مستخدمين + فلتر نوع الحساب</td><td><strong>منفذ</strong></td><td><span class="code-ref">users_list_screen.dart</span> — <code>users</code> مع <code>orderBy('createdAt')</code> وحتى 200 وثيقة (27–35)</td></tr>
+              <tr><td>تفاصيل مستخدم</td><td><strong>قراءة فقط</strong></td><td><span class="code-ref">user_detail_screen.dart</span> — <code>get()</code> على <code>users/{id}</code> بدون أزرار تعليق/حذف (31–77)</td></tr>
+              <tr><td>سجل أمان + فشل دخول</td><td><strong>منفذ (عرض)</strong></td><td>قراءة <code>security_logs</code> مع <code>orderBy('timestamp')</code> أو <code>where('eventType'…)</code> — <span class="code-ref">security_logs_screen.dart</span> (25–28)، <span class="code-ref">failed_logins_screen.dart</span> (24–28)</td></tr>
+              <tr><td>قائمة فيديوهات إدارية</td><td><strong>جزئي</strong></td><td>عرض من <code>spotlight_videos</code> فقط؛ لا حذف/تعطيل من الواجهة (<span class="code-ref">videos_management_screen.dart</span> 24–27)</td></tr>
+              <tr><td>البلاغات</td><td><strong>جزئي</strong></td><td>قائمة من <code>reports</code>؛ معالجة الحالة/ملاحظة الأدمن غير ظاهرة في الواجهة (<span class="code-ref">user_reports_screen.dart</span>)</td></tr>
+              <tr><td>حسابات الأدمن</td><td><strong>عرض فقط</strong></td><td>فلترة عملاء من <code>users</code> حسب البريد الثابت أو <code>extraData.isAdmin</code> (28–37 في <span class="code-ref">admin_accounts_screen.dart</span>)</td></tr>
+              <tr><td>لوحة التحكم — أرقام فعلية</td><td><strong>جزئي</strong></td><td>عدد الطلبات المعلّقة من الخدمة فقط؛ بطاقات المستخدمين/الأمان/الفيديو تعرض <code>—</code> (<span class="code-ref">admin_dashboard_screen.dart</span> 64–84)</td></tr>
+            </tbody>
+          </table>
+
+          <h3>12.3 مسار موازٍ على الموبايل (يجب توحيده مع الويب)</h3>
+          <p>يوجد مسار في التطبيق الرئيسي: <span class="code-ref">/admin/verification</span> → <span class="code-ref">AdminVerificationScreen</span> في <span class="code-ref">lib/src/features/auth/screens/admin_verification_screen.dart</span> مع <span class="code-ref">DocumentVerificationService</span>. هذا <strong>مسار تنفيذ ثانٍ</strong> بجانب <span class="code-ref">AdminVerificationService</span> في الويب — يسهّل تضارب السلوك أو ازدواج الصيانة؛ يُفضّل لاحقًا استخراج طبقة خدمة مشتركة أو الاعتماد على الويب للمراجعين فقط.</p>
+          <p>مسارات إدارية أخرى في الموبايل مرتبطة بـ Spotlight: <span class="code-ref">/spotlight/admin/delete-videos</span> و<span class="code-ref">/spotlight/admin/find-orphaned</span> في <span class="code-ref">lib/src/navigation/app_router.dart</span> (253–262 تقريبًا) — بينما صفحة «فيديوهات يتيمة» في لوحة الويب صرّحت أن التشغيل الكامل يحتاج التطبيق أو Cloud Function.</p>
+
+          <h3>12.4 المتبقّي والثغرات (أدلة سلوكية من الكود)</h3>
+          <ul style="margin:0.5rem 0;padding-right:1.2rem;color:#334155">
+            <li><strong>إعدادات التطبيق:</strong> الشاشة تذكر صراحةً إمكانية إضافة <code>app_config</code> لاحقًا — لا يوجد ربط Firestore بعد (<span class="code-ref">app_settings_screen.dart</span> 38–40).</li>
+            <li><strong>فيديوهات يتيمة (ويب):</strong> نص يوضح الاعتماد على الموبايل أو Cloud Function (<span class="code-ref">orphaned_videos_screen.dart</span> 29–31).</li>
+            <li><strong>تسجيل دخول الأدمن:</strong> <span class="code-ref">admin_login_screen.dart</span> — في <code>release</code> لا تُعبَّأ الحقول؛ في <code>debug</code> فقط يمكن تمرير بريد عبر <code>--dart-define=ADMIN_LOGIN_DEBUG_EMAIL=…</code> (لا كلمة مرور في الكود).</li>
+            <li><strong>قواعد Firestore:</strong> أُعيدت كتابة <span class="code-ref">firestore.rules</span> في المستودع (انظر القسم 06) — <strong>يُشترط النشر</strong> إلى المشروع السحابي؛ لوحة الأدمن لا تغني عن Cloud Functions للعمليات الحساسة جدًا إن رُغم ذلك.</li>
+          </ul>
+          <div class="callout danger">
+            <strong>تحذير:</strong> وجود كلمات مرور/بريد في سكربتات التهيئة أو أدوات الهجرة (مثل <span class="code-ref">data_migrator.dart</span>) يتطلب مراجعة يدوية وإزالة من المستودع العام — لا تُلصق أسرار في هذا الملف HTML.
+          </div>
+
+          <h3>12.5 ما يجب أن تكون عليه لوحة الإدارة (خدمات مقترحة للإضافة)</h3>
+          <p>القائمة التالية مبنية على فجوات الكود الحالية ومتطلبات تشغيل آمن:</p>
+          <table>
+            <thead><tr><th>الخدمة</th><th>الغرض</th><th>ملاحظة تقنية</th></tr></thead>
+            <tbody>
+              <tr><td>صلاحيات متدرّجة (RBAC)</td><td>مراجع تحقق vs سوبر أدمن vs دعم</td><td>Custom Claims في Firebase Auth أو حقل صلاحيات في Firestore + تحقق في Rules</td></tr>
+              <tr><td>قواعد Firestore/Storage صارمة</td><td>منع قراءة <code>users</code> لغير الأدمن</td><td>استبدال <code>match /{document=**}</code> الحالي</td></tr>
+              <tr><td>عمليات حساسة عبر Cloud Functions</td><td>حذف فيديو، تنظيف يتيم، حظر مستخدم</td><td>استدعاء من الويب مع تحقق Admin SDK</td></tr>
+              <tr><td>إكمال «فيديوهات يتيمة» على الويب</td><td>نفس منطق <code>FindOrphaned</code> من الموبايل</td><td>إعادة استخدام الخدمة أو Function</td></tr>
+              <tr><td>إجراءات على الفيديو من القائمة</td><td>إخفاء، حذف، إنذار المالك</td><td>تحديث <code>spotlight_videos</code> + سجل تدقيق</td></tr>
+              <tr><td>سير عمل البلاغات</td><td>تعيين حالة، ملاحظة أدمن، إشعار</td><td>حقول <code>ReportModel.adminNote</code> موجودة في النموذج — ربطها بالواجهة</td></tr>
+              <tr><td>إدارة المستخدم (كتابة)</td><td>تعليق، إعادة تعيين، علم تحقق</td><td>حاليًا التفاصيل للقراءة فقط</td></tr>
+              <tr><td><code>app_config</code></td><td>صيانة، إيقاف تسجيل، إصدار إجباري</td><td>كما اقترحت <span class="code-ref">app_settings_screen</span></td></tr>
+              <tr><td>لوحة أرقام حية</td><td>عدد المستخدمين، البلاغات المفتوحة، الفيديو</td><td>استعلامات مجمّعة أو Cloud Functions مجدولة</td></tr>
+              <tr><td>سجل تدقيق أدمن</td><td>من وافق/رفض وماذا غيّر</td><td>مجموعة <code>admin_audit_logs</code> مع كتابة من الوظائف الآمنة</td></tr>
+            </tbody>
+          </table>
+
+          <h3>12.6 إثبات تهيئة التطبيق (Providers)</h3>
+          <div class="block">
+            <div class="block-header"><span>admin_main.dart · 11–25</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-adm-main">void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ar', null);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider&lt;AuthService&gt;(create: (_) =&gt; AuthService(), lazy: false),
+        ChangeNotifierProvider(create: (_) =&gt; AuthState()),
+        Provider&lt;AdminVerificationService&gt;(create: (_) =&gt; AdminVerificationService()),
+      ],
+      child: const AdminApp(),
+    ),
+  );
+}</pre>
+          </div>
+        </section>
+
+        <section id="s13" class="card">
+          <h2><span class="idx">13</span> الصيانة، إدماج مبرمجين جدد، ومخاطر المشروع (بدليل من الكود)</h2>
+
+          <h3>13.1 هل المشروع «قابل للصيانة»؟</h3>
+          <p><strong>نعم بشكل نسبي:</strong> الكود منظم تحت <span class="code-ref">lib/src/features/</span> حسب المجال، ويوجد تطبيق ويب منفصل للأدمن وويب للسيارات وويب للعقارات مع نقاط <code>main</code> مختلفة. <strong>لكن</strong> تكلفة دخول المطور الجديد ترتفع بسبب: عدة راوترات، ثوابت مسارات طويلة قد لا تطابق التنفيذ الفعلي، ملفات ضخمة (انظر القسم 10)، وعدم وجود دليل تشغيل تقني في <span class="code-ref">README.md</span> (ما زال نص Flutter الافتراضي — أسطر 1–16 تقريبًا).</p>
+          <div class="callout ok">
+            <strong>ما يساعد الصيانة الآن:</strong> هذا المستند (<code>docs/mastermax_handover_reference.html</code>)، أقسام لوحة الأدمن (12)، ووجود <code>TODO</code> صريحة في الكود يحدد نواقص واجهات (انظر 13.4).
+          </div>
+
+          <h3>13.2 كيف ندير إدماج مبرمجين جدد مستقبلًا (عملية مقترحة)</h3>
+          <ol style="margin:0.5rem 0;padding-right:1.25rem;color:#334155;line-height:1.75">
+            <li><strong>يوم 0 — بيئة:</strong> Flutter SDK ضمن نطاق <span class="code-ref">pubspec.yaml</span>، استنساخ المستودع، <code>flutter pub get</code>، تشغيل التطبيق الرئيسي من <span class="code-ref">lib/main.dart</span>.</li>
+            <li><strong>نقاط دخول واضحة في الوثائق الداخلية:</strong> توثيق أوامر مثل <code>flutter run -t lib/admin_web/admin_main.dart -d chrome</code> و<code>-t lib/car_web/car_web_main.dart</code> و<code>-t lib/web/web_main.dart</code> (حسب ما يُفعّل في المشروع) في <span class="code-ref">README.md</span> أو <span class="code-ref">docs/</span> — حاليًا غير موجودة في README الرسمي.</li>
+            <li><strong>خريطة المسارات:</strong> المصدر الحقيقي للموبايل هو <span class="code-ref">lib/src/navigation/app_router.dart</span>؛ لا الاعتماد فقط على <span class="code-ref">lib/src/core/constants/route_constants.dart</span> دون مقارنة (مسارات مثل <code>/auth/login</code> في الثوابت مقابل <code>/</code> لتسجيل الدخول في الراوتر الفعلي).</li>
+            <li><strong>أمن وإنتاج:</strong> قراءة القسم 06 و13.3 قبل أي نشر؛ عدم دمج أسرار في Git.</li>
+            <li><strong>تخصيص مسؤول:</strong> «مالك» لكل مجال (عقارات / سيارات / Spotlight / أدمن) + مراجعة دورية لـ <code>flutter analyze</code> وقائمة <code>TODO</code>.</li>
+          </ol>
+
+          <h3>13.3 جدول المخاطر والأخطاء العامة — الإثبات، العلاج، والخطورة</h3>
+          <p>«عائق الآن» = يمنع التطوير المحلي أو البناء؛ «خطر لاحق» = يصبح حرجًا مع المستخدمين الحقيقيين أو تسريب المستودع.</p>
+          <table>
+            <thead><tr><th>الموضوع</th><th>الدليل في المستودع</th><th>العلاج المقترح</th><th>عائق الآن؟</th><th>خطر لاحق؟</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>قواعد Firestore مفتوحة لأي مستخدم مصادق</td>
+                <td><strong>عُولج في المستودع (مارس 2026):</strong> <span class="code-ref">firestore.rules</span> — قواعد مجزّأة (~198 سطر). الإصدار القديم (<code>match /{document=**}</code> فقط) لم يعد يمثل الملف الحالي.</td>
+                <td>نشر القواعد؛ مراجعة بعد النشر؛ عمليات حساسة عبر Cloud Functions عند الحاجة</td>
+                <td>لا</td>
+                <td>يظل يتطلب مراقبة بعد الإطلاق</td>
+              </tr>
+              <tr>
+                <td>أسرار / بيانات اعتماد داخل أداة هجرة</td>
+                <td><strong>عُولج في المستودع:</strong> <span class="code-ref">data_migrator.dart</span> / <span class="code-ref">firebase_data_transfer.dart</span> — <code>String.fromEnvironment</code> فقط.</td>
+                <td>تدوير أي مفاتيح سبق ظهورها في تاريخ Git؛ عدم إلصاق أسرار في الوثائق</td>
+                <td>لا</td>
+                <td>تدوير المفاتيح ما زال إلزاميًا إن وُجد تسريب تاريخي</td>
+              </tr>
+              <tr>
+                <td>تعبئة تجريبية لحقول تسجيل دخول الأدمن</td>
+                <td><strong>عُولج:</strong> <span class="code-ref">admin_login_screen.dart</span> — <code>kDebugMode</code> + <code>ADMIN_LOGIN_DEBUG_EMAIL</code> فقط.</td>
+                <td>—</td>
+                <td>لا</td>
+                <td>منخفض إذا وُجدت بنيات release نظيفة</td>
+              </tr>
+              <tr>
+                <td>راوتران باسم <code>app_router</code></td>
+                <td><strong>عُولج:</strong> حُذف <span class="code-ref">lib/src/core/router/app_router.dart</span>؛ الدمج في <span class="code-ref">navigation/app_router.dart</span>.</td>
+                <td>—</td>
+                <td>لا</td>
+                <td>منخفض</td>
+              </tr>
+              <tr>
+                <td>انحراف ثوابت المسارات عن التنفيذ</td>
+                <td><strong>جزئي:</strong> تعليق في <span class="code-ref">route_constants.dart</span> + <code>Routes.home</code> في الراوتر؛ بقية الحالات ما زالت نصوصًا في <code>switch</code>.</td>
+                <td>توحيد تدريجي لـ <code>pushNamed</code> مع ثوابت موحّدة</td>
+                <td>لا</td>
+                <td>متوسط</td>
+              </tr>
+              <tr>
+                <td>معرّف مستخدم وهمي في مسار دفع</td>
+                <td><strong>عُولج:</strong> <span class="code-ref">payment_processor.dart</span> — <code>processPayment(plan, userId)</code>؛ <span class="code-ref">spotlight_subscription_service.dart</span> يمرّر المعرف.</td>
+                <td>اختبار مسار دفع على بيئة تجريبية</td>
+                <td>لا</td>
+                <td>منخفض بعد التحقق اليدوي</td>
+              </tr>
+              <tr>
+                <td>دخول زائر وهمي (<code>loginAsGuest</code> / «جرب التطبيق»)</td>
+                <td><strong>عُولج:</strong> أُزيلت من الواجهة؛ حُذفت الدوال من <span class="code-ref">auth_state.dart</span> و<span class="code-ref">auth_service.dart</span>؛ <code>isTrialMode == false</code>.</td>
+                <td>—</td>
+                <td>لا</td>
+                <td>كان حرجًا (صلاحيات وهمية) — مُغلق</td>
+              </tr>
+              <tr>
+                <td>ديون التحليل الثابت</td>
+                <td>القسم 11 — آخر مسجَّل: <strong>781</strong> issues (<strong>45</strong> warning، <strong>736</strong> info، <strong>0</strong> error) عبر <code>dart analyze lib/</code></td>
+                <td>خطة تدريجية: إزالة التحذيرات، تقليل <code>print</code>، استبدال APIs المهملة</td>
+                <td>لا</td>
+                <td>منخفض قصير المدى؛ يرتفع مع ترقية Flutter/SDK</td>
+              </tr>
+              <tr>
+                <td>اعتماديات قديمة / حزمة متوقفة</td>
+                <td>مخرجات <code>flutter analyze</code>: «1 package is discontinued» و«121 packages have newer versions…»</td>
+                <td><code>flutter pub outdated</code> ثم ترقية مدروسة مع اختبار</td>
+                <td>لا</td>
+                <td>متوسط على المدى الطويل — ثغرات عدم دعم</td>
+              </tr>
+              <tr>
+                <td>نواقص ميزات موثّقة بـ TODO</td>
+                <td>حوالي <strong>51</strong> ظهور لـ <code>TODO</code> أو <code>FIXME</code> في <strong>30</strong> ملفًا تحت <span class="code-ref">lib/</span> (بحث نصي في المستودع) — أمثلة: <span class="code-ref">forgot_password_screen.dart:29</span>، <span class="code-ref">contact_us_screen.dart:42</span>، <span class="code-ref">complaints_screen.dart:219</span>، <span class="code-ref">business_analytics_screen.dart</span> (عدة TODOs)</td>
+                <td>أولوية المنتج: إغلاق TODOs المرتبطة بالقانون/الدفع/الخصوصية أولًا</td>
+                <td>لا بالضرورة</td>
+                <td>يختلف حسب الميزة — نماذج «وهمية» تُفسَر كميزة جاهزة</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>13.4 ملخص <code>TODO</code> حسب المجال (للتخطيط)</h3>
+          <p>الأرقام من آخر مسح لـ <code>lib/**/*.dart</code>: <strong>~51</strong> تعليمة <code>TODO</code>/<code>FIXME</code> في <strong>30</strong> ملفًا. توزيع ممثّل:</p>
+          <ul style="margin:0.4rem 0;padding-right:1.2rem;color:#334155">
+            <li><strong>CRM / معرض سيارات:</strong> تفاصيل عميل، تفاصيل بيع، حوارات إعدادات/إشعارات — ملفات تحت <span class="code-ref">car_showroom/</span>.</li>
+            <li><strong>تحليلات أعمال:</strong> مصروفات، مشاهدات، فلاتر ومشاركة — <span class="code-ref">business_analytics_screen.dart</span> و<span class="code-ref">business_analytics_provider.dart</span>.</li>
+            <li><strong>مدفوعات / Spotlight:</strong> تحويل بنكي، تأكيد اشتراك — <span class="code-ref">spotlight_bank_transfer_screen.dart</span>، <span class="code-ref">subscription_service.dart</span>.</li>
+            <li><strong>دعم وقانون:</strong> إرسال نماذج — <span class="code-ref">contact_us_screen.dart</span>، <span class="code-ref">complaints_screen.dart</span>.</li>
+            <li><strong>ويب تخطيط:</strong> عناصر قائمة معلّقة — <span class="code-ref">car_web_layout.dart</span>، <span class="code-ref">web_layout.dart</span> (TODO إشعارات/إعدادات).</li>
+          </ul>
+          <div class="callout info">
+            <strong>أمر إعادة التحقق:</strong> <code class="code-ref">rg "TODO|FIXME" lib --glob "*.dart"</code> من جذر المشروع (أو استخدام بحث IDE) بعد كل إصدار لتحديث الأعداد في هذا المستند.
+          </div>
+        </section>
+
+        <section id="s14" class="card">
+          <h2><span class="idx">14</span> خطة إصلاح دقيقة — الأولوية، التوقيت، السبب، والإثبات من الملفات</h2>
+          <p>هذه الخطة مرتبطة بالأقسام <strong>06، 10، 11، 12، 13</strong>. «الإثبات» يشير إلى مسارات نسبية من جذر <span class="code-ref">mastermax/mastermax</span>.</p>
+
+          <h3>14.1 مفتاح الأولويات والتوقيت</h3>
+          <table>
+            <thead><tr><th>رمز</th><th>المعنى</th><th>متى التنفيذ</th></tr></thead>
+            <tbody>
+              <tr><td><strong>P0</strong></td><td>أمن أو بيانات مالية/خصوصية</td><td>فورًا قبل أي إطلاق عام، أو فورًا إن كان المستودع عامًا أو مُشارَكًا مع مقاولين</td></tr>
+              <tr><td><strong>P1</strong></td><td>سلوك خاطئ أو تجربة إنتاج خطرة</td><td>قبل نشر ويب الأدمن/المدفوعات الفعلية أو أول دفعة مستخدمين تجريبية خارج الفريق</td></tr>
+              <tr><td><strong>P2</strong></td><td>صيانة، تكلفة دخول مطورين، تقليل الأخطاء</td><td>خلال <strong>2–6 أسابيع</strong> ضمن سبرنت صيانة</td></tr>
+              <tr><td><strong>P3</strong></td><td>ديون تقنية طويلة الأمد</td><td>ربع سنوي أو عند تخصيص وقت إعادة هيكلة</td></tr>
+            </tbody>
+          </table>
+
+          <h3>14.2 جدول الإصلاحات — الأهمية، التوقيت، الإثبات، وخطوات التنفيذ</h3>
+          <table class="remediation-table" style="font-size:0.76rem">
+            <thead><tr><th>#</th><th>تم؟</th><th>الموضوع</th><th>أولوية</th><th>لماذا مهم؟</th><th>متى؟</th><th>إثبات / حالة الكود</th><th>خطوات إصلاح دقيقة</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><strong>نعم</strong> (مستودع)</td>
+                <td>قواعد Firestore</td>
+                <td>P0</td>
+                <td>أي مستخدم مصادق يستطيع نظريًا قراءة/كتابة <strong>كل</strong> المستندات — خرق خصوصية وسلامة بيانات عند الإطلاق.</td>
+                <td>قبل أول إطلاق يضم مستخدمين غير موثوقين</td>
+                <td><span class="code-ref">firestore.rules</span> — أُعيدت كتابة الملف (~198 سطر). <strong>متبقٍّ:</strong> <code>firebase deploy --only firestore:rules,firestore:indexes</code></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>توثيق نموذج البيانات (مجموعات: <code>users</code>، <code>cars</code>، …) في جدول صلاحيات.</li>
+                    <li>كتابة <code>match</code> لكل مجموعة: قراءة/كتابة حسب <code>request.auth.uid</code> أو حقول المالك.</li>
+                    <li>نقل الحذف الجماعي/الأدمن إلى Cloud Functions + Admin SDK.</li>
+                    <li>اختبار في محاكي القواعد + نشر تدريجي.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><strong>نعم</strong> (مستودع)</td>
+                <td>أسرار داخل أداة الهجرة</td>
+                <td>P0</td>
+                <td>تسريب مفاتيح/اعتمادات إن وُجدت في Git أو نسخ المشروع.</td>
+                <td>فورًا إن كان المستودع غير خاص؛ خلال أسبوع كحد أقصى في جميع الأحوال</td>
+                <td><span class="code-ref">data_migrator.dart</span> + <span class="code-ref">firebase_data_transfer.dart</span> — <code>String.fromEnvironment</code> (<code>MIGRATE_*</code>). <strong>متبقٍّ:</strong> تدوير مفاتيح ظهرت في تاريخ Git</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>إزالة القيم الحساسة من الملف؛ عدم الالتزام بأسرار في Git.</li>
+                    <li>نقل الهجرة إلى سكربت خارجي + <code>--dart-define</code> أو Secret Manager.</li>
+                    <li>تدوير مفاتيح Firebase وكلمات المرور إن ظهرت في تاريخ الفروع.</li>
+                    <li>إضافة <span class="code-ref">data_migrator.dart</span> إلى <code>.gitignore</code> أو حذفه من المستودع إن لم يعد مطلوبًا.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><strong>نعم</strong></td>
+                <td><code>userId</code> وهمي في الدفع</td>
+                <td>P0</td>
+                <td>ربط المدفوعات أو السجلات بمستخدم غير حقيقي — أخطاء فوترة وتقارير.</td>
+                <td>قبل أي اختبار دفع حقيقي أو تكامل بوابة دفع</td>
+                <td><span class="code-ref">payment_processor.dart</span> — <code>processPayment(SpotlightPlan plan, String userId)</code>؛ الاستدعاء من <span class="code-ref">spotlight_subscription_service.dart</span></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>تمرير <code>userId</code> من طبقة تستدعي المعالج (مثلاً من <span class="code-ref">AuthState</span> / <code>FirebaseAuth.instance.currentUser?.uid</code>).</li>
+                    <li>تعديل توقيع <code>processPayment</code> أو غلاف يحقن المعرّف.</li>
+                    <li>اختبار وحدة + مسار يدوي على بيئة تجريبية.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><strong>نعم</strong></td>
+                <td><code>userId</code> ثابت في خدمة العملاء</td>
+                <td>P1</td>
+                <td>طلبات الدردشة/التذاكر قد تُسجَّل لكل المستخدمين تحت نفس المعرف.</td>
+                <td>قبل إطلاق «تواصل معنا» أو الدردشة للمستخدمين الحقيقيين</td>
+                <td><span class="code-ref">customer_service_provider.dart</span> — <code>FirebaseAuth.instance.currentUser?.uid</code> + استعلام <code>where('userId', …)</code>؛ فهرس في <span class="code-ref">firestore.indexes.json</span></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>حقن <code>Provider</code> أو معامل من الشاشة الأم يقرأ <code>uid</code> من المصادقة.</li>
+                    <li>إزالة السلسلة الثابتة بعد التحقق.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><strong>نعم</strong></td>
+                <td>تعبئة تجريبية لتسجيل دخول الأدمن</td>
+                <td>P1</td>
+                <td>تسهيل الوصول غير المصرح به لبنيات تحتوي نفس الكود.</td>
+                <td>قبل نشر <span class="code-ref">admin_web</span> على نطاق عام</td>
+                <td><span class="code-ref">admin_login_screen.dart</span> — <code>kDebugMode</code> + <code>ADMIN_LOGIN_DEBUG_EMAIL</code> فقط؛ لا كلمة مرور في الكود</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>حذف التعبئة في <code>initState</code> لبنيات <code>release</code> (استخدم <code>kDebugMode</code> أو ملف بيئة محلي غير مُلتزم).</li>
+                    <li>فرض MFA أو قائمة IP في طبقة الاستضافة إن أمكن.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><strong>نعم</strong></td>
+                <td>توحيد/توثيق الراوترين</td>
+                <td>P2</td>
+                <td>خطأ شائع: تعديل الملف «الخاطئ» أو استيراد مسار قديم.</td>
+                <td>خلال أول سبرنت بعد إدماج مطور جديد</td>
+                <td>حُذف <span class="code-ref">lib/src/core/router/app_router.dart</span>؛ الجولات مدمجة في <span class="code-ref">navigation/app_router.dart</span></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li><strong>مُنجَز:</strong> دمج المسارات في <span class="code-ref">navigation/app_router.dart</span> وحذف الملف المكرّر.</li>
+                    <li>اختياري: سطر في <span class="code-ref">README.md</span> يصف أن الجولات/360 ضمن نفس الراوتر.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><strong>جزئي</strong></td>
+                <td>انحراف <code>route_constants</code></td>
+                <td>P2</td>
+                <td><code>pushNamed</code> بمسار غير معرّف في الراوتر → شاشة سوداء أو 404.</td>
+                <td>عند إضافة ميزات تعتمد على مسارات جديدة</td>
+                <td>تعليق توجيهي في <span class="code-ref">route_constants.dart</span>؛ <code>Routes.home</code> في الراوتر؛ بقية <code>case</code> ما زالت نصوصًا</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>توليد قائمة مسارات من مصدر واحد أو سكربت تحقق يقارن <code>case</code> بالثوابت.</li>
+                    <li>استبدال السلاسل المباشرة في الكود بثوابت مُ verified فقط.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>—</td>
+                <td>خدمتا تحقق مزدوجتان (موبايل / ويب أدمن)</td>
+                <td>P2</td>
+                <td>ازدواج منطق وسجلات؛ إصلاح خلل في واحدة دون الأخرى.</td>
+                <td>عند توسيع فريق المراجعة أو تغيير حقول <code>verification_requests</code></td>
+                <td><span class="code-ref">lib/src/features/auth/screens/admin_verification_screen.dart</span> + <span class="code-ref">document_verification_service.dart</span> مقابل <span class="code-ref">lib/admin_web/services/admin_verification_service.dart</span></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>استخراج طبقة خدمة واحدة في <span class="code-ref">lib/src/...</span> يستوردها الموبايل والويب.</li>
+                    <li>أو توثيق رسمي: «المراجعون يستخدمون الويب فقط» وإهمال مسار الموبايل تدريجيًا.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>—</td>
+                <td>لوحة أدمن: RBAC + عمليات حساسة</td>
+                <td>P1–P2</td>
+                <td>الاعتماد على بريد ثابت و<code>extraData.isAdmin</code> فقط (<span class="code-ref">auth_state.dart</span> 29–49) دون Claims قد لا يكفي عند فريق كبير.</td>
+                <td>P1 مع تعدد الأدمن؛ P2 لتحسين التدقيق</td>
+                <td><span class="code-ref">lib/src/features/auth/providers/auth_state.dart</span> 29–49؛ <span class="code-ref">lib/admin_web/screens/settings/admin_accounts_screen.dart</span> 28–37</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>Firebase Custom Claims لأدوار <code>admin</code> / <code>reviewer</code>.</li>
+                    <li>تطبيق نفس المنطق في Firestore Rules للمجموعات الحساسة.</li>
+                    <li>سجل تدقيق (انظر بند 12.5 في القسم 12).</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>—</td>
+                <td>صفحة فيديوهات يتيمة على الويب</td>
+                <td>P2</td>
+                <td>عنصر قائمة بدون تنفيذ — توقع فريق الدعم خاطئ.</td>
+                <td>عند توحيد عمليات المحتوى على الويب</td>
+                <td><span class="code-ref">lib/admin_web/screens/content/orphaned_videos_screen.dart</span> — الأسطر 29–31 (نص يذكر الموبايل أو Cloud Function)</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>استدعاء نفس منطق <span class="code-ref">find_orphaned_videos</span> عبر Function أو خدمة مشتركة.</li>
+                    <li>أو إخفاء عنصر القائمة حتى الجاهزية.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>—</td>
+                <td><code>app_config</code> وإعدادات التطبيق</td>
+                <td>P2</td>
+                <td>صيانة ورسائل توقف بدون نشر تطبيق جديد.</td>
+                <td>قبل أول صيانة مجدولة أو حملة إعلامية</td>
+                <td><span class="code-ref">lib/admin_web/screens/settings/app_settings_screen.dart</span> — الأسطر 38–40 (إشارة لـ Firestore لاحقًا)</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>مجموعة <code>app_config</code> وواجهة قراءة في التطبيق الرئيسي.</li>
+                    <li>ربط الشاشة بالتحرير للأدمن فقط (مع Rules).</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>—</td>
+                <td>تحذيرات المحلل (<code>dart analyze lib/</code>)</td>
+                <td>P2</td>
+                <td>كود ميت واستيرادات زائدة تخفي أخطاء حقيقية لاحقًا.</td>
+                <td>سبرنت «تنظيف»؛ هدف عدم زيادة العدد</td>
+                <td>آخر مسجَّل: <strong>45</strong> <code>warning</code>، <strong>0</strong> <code>error</code> — مثال: <span class="code-ref">app_animations.dart</span> <code>dead_code</code>؛ استيرادات غير مستخدمة في شاشات المصادقة</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>إصلاح ملفًا ملفًا حسب المخرجات؛ البدء بـ <code>warning</code> فقط.</li>
+                    <li>تفعيل في CI فشل عند زيادة التحذيرات فوق عتبة.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td>—</td>
+                <td>معلومات مهملة و<code>print</code> (<code>info</code>)</td>
+                <td>P3</td>
+                <td>كسر محتمل مع ترقية Flutter؛ ضوضاء في الإنتاج.</td>
+                <td>تدريجيًا مع تعديل الملفات</td>
+                <td>آخر مسجَّل: <strong>736</strong> <code>info</code> — أغلبها <code>deprecated_member_use</code>؛ <span class="code-ref">auth_service.dart</span> ما زال فيه <code>avoid_print</code> / APIs مهملة</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>استبدال <code>print</code> بـ <code>log</code> مشروط أو إزالته.</li>
+                    <li>استبدال ألوان الثيم المهملة حسب رسائل المحلل.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>—</td>
+                <td>اعتماديات قديمة / حزمة متوقفة</td>
+                <td>P2–P3</td>
+                <td>ثغرات أمنية محتملة وعدم توافق مع إصدارات Flutter القادمة.</td>
+                <td>P2: مراجعة <code>discontinued</code>؛ P3: بقية الحزم</td>
+                <td>مخرجات <code>flutter analyze</code>: «1 package is discontinued» و«121 packages…»</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li><code>flutter pub outdated</code> — استبدال الحزمة المتوقفة.</li>
+                    <li>ترقية دُفعات مع <code>flutter test</code> وبناء يدوي.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>—</td>
+                <td>سجل <code>TODO</code> (51 في 30 ملفًا)</td>
+                <td>P1–P3</td>
+                <td>ميزات ظاهرة للمستخدم لكنها فارغة (قانون، دفع، نماذج).</td>
+                <td>P1: <span class="code-ref">forgot_password_screen.dart:29</span>، <span class="code-ref">contact_us_screen.dart:42</span>، <span class="code-ref">complaints_screen.dart:219</span>، مسارات الدفع في Spotlight؛ P2–P3: CRM والتحليلات</td>
+                <td>أمر التحقق: <code>grep -r "TODO\\|FIXME" lib --include="*.dart" | wc -l</code> (آخر مسح: 51)</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>تصنيف TODO حسب المنتج وإغلاق P1 في أول ريليز «جاهز للمتجر».</li>
+                    <li>تحويل TODO طويلة إلى بطاقات في أداة تتبع.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>—</td>
+                <td>ملفات ضخمة (القسم 10)</td>
+                <td>P3</td>
+                <td>صعوبة مراجعة PR وزيادة تعارض الدمج.</td>
+                <td>عند تكرار التعارض على نفس الملف</td>
+                <td>مثال: <span class="code-ref">lib/src/features/profile/screens/profile_screen.dart</span> (~42837 بايت)؛ <span class="code-ref">add_rental_screen.dart</span>، <span class="code-ref">add_property_screen.dart</span>، <span class="code-ref">main_map_screen.dart</span></td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>استخراج ويدجتات إلى <code>widgets/</code> ضمن نفس الميزة.</li>
+                    <li>فصل ViewModel/Provider عن UI.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>—</td>
+                <td>README ونقاط تشغيل التطبيقات</td>
+                <td>P2</td>
+                <td>بطء إدماج المطورين — لا يوجد دليل تشغيل في المستودع.</td>
+                <td>خلال أسبوع من بدء فريق جديد</td>
+                <td><span class="code-ref">README.md</span> — نص Flutter الافتراضي (1–16)</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>إضافة: متطلبات SDK، <code>flutter run</code> للرئيسي، <code>-t lib/admin_web/admin_main.dart</code>، <code>-t lib/car_web/car_web_main.dart</code>، <code>-t lib/web/web_main.dart</code>.</li>
+                    <li>رابط لهذا المستند HTML.</li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td>—</td>
+                <td>شاشات placeholder في الراوتر الرئيسي</td>
+                <td>P3 (منتج)</td>
+                <td>تجربة مستخدم ناقصة إن وُجدت في القوائم العامة.</td>
+                <td>حسب خارطة طريق المنتج</td>
+                <td><span class="code-ref">lib/src/navigation/app_router.dart</span> — <code>/inventory-management</code> و<code>/appointments</code> (Scaffold نصّي «قيد التطوير»)</td>
+                <td>
+                  <ol style="margin:0;padding-right:1rem;text-align:right">
+                    <li>إما تنفيذ الشاشات أو إخفاء الروابط من UI حتى الجاهزية.</li>
+                  </ol>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>14.3 ترتيب تنفيذ مقترح (جدول زمني مختصر)</h3>
+          <table>
+            <thead><tr><th>المرحلة</th><th>المدة المقترحة</th><th>البنود</th></tr></thead>
+            <tbody>
+              <tr><td>الأسبوع 0–1</td><td>فوري</td><td><strong>1، 2، 3</strong> (أمن + دفع)؛ ثم <strong>4، 5</strong> إن كان هناك مستخدمون/أدمن على الويب</td></tr>
+              <tr><td>الأسابيع 2–4</td><td>صيانة</td><td><strong>6، 7، 8، 12، 17</strong>؛ بداية <strong>9، 10، 11</strong></td></tr>
+              <tr><td>الشهر 2+</td><td>مستمر</td><td><strong>13، 14، 15، 16، 18</strong> حسب الأولوية المنتجية</td></tr>
+            </tbody>
+          </table>
+          <div class="callout danger">
+            <strong>تذكير:</strong> لا تُلصق أسرار أو كلمات مرور داخل هذا الملف HTML أو في README العام — الإثبات يقتصر على <strong>مسارات الملفات وأرقام الأسطر</strong>.
+          </div>
+          <div class="callout info" id="s14-migration-box" style="margin-top:1.25rem">
+            <strong>تحويل الباكند:</strong> تحليل مقارن بين البقاء على Firebase والانتقال إلى خادم REST موثّق بـ OpenAPI/Swagger — الأسباب، المدة، والخطوات مع إثبات من المستودع — في <a href="#s15" style="color:inherit;font-weight:700;text-decoration:underline">القسم 15</a>.
+          </div>
+        </section>
+
+        <section id="s15" class="card">
+          <h2><span class="idx">15</span> تحويل الباكند: من Firebase إلى REST + Swagger (OpenAPI)</h2>
+          <p><strong>تصحيح مفاهيمي:</strong> <em>Swagger / OpenAPI</em> ليست قاعدة بيانات ولا بديل Firebase جاهز — هي <strong>وثيقة وواجهة توثيق</strong> لواجهة REST (مسارات HTTP + نماذج JSON + تفويض). التحويل الحقيقي هو: <strong>Firebase (Auth + Firestore + Storage + …) ← خادم تملكه + قاعدة بيانات + تخزين ملفات</strong>، ويُعرَّف العقد عبر OpenAPI ويُختبر من Swagger UI.</p>
+          <div class="callout info">
+            وثيقة Swagger التي تعرضها (مثلاً «My Order API» لخدمات طعام/تموين) <strong>مجال منتج مختلف</strong> عن MasterMax (عقارات، سيارات، Spotlight). أي خادم جديد يحتاج <strong>عقد API خاصًا</strong> بكيانات المشروع (<code>cars</code>، <code>properties</code>، <code>users</code>، …) وليس نسخ مسارات مشروع آخر.
+          </div>
+
+          <h3>15.1 لماذا يُذكر Firebase في هذا المشروع؟ (إثبات من الكود)</h3>
+          <table>
+            <thead><tr><th>الطبقة</th><th>الدليل في المستودع</th></tr></thead>
+            <tbody>
+              <tr><td>اعتماديات SDK</td><td><span class="code-ref">pubspec.yaml</span> — حزم مثل <code>firebase_core</code>، <code>firebase_auth</code>، <code>cloud_firestore</code>، <code>firebase_storage</code>، <code>firebase_messaging</code>، <code>firebase_analytics</code>، <code>firebase_crashlytics</code>، <code>firebase_remote_config</code> (أسطر تقريبًا 36–57)</td></tr>
+              <tr><td>تهيئة التطبيق</td><td>ملفات <code>main</code> متعددة تستدعي <code>Firebase.initializeApp</code> — مثل <span class="code-ref">lib/main.dart</span>، <span class="code-ref">lib/car_web/car_web_main.dart</span>، <span class="code-ref">lib/web/web_main.dart</span>، <span class="code-ref">lib/admin_web/admin_main.dart</span></td></tr>
+              <tr><td>Firestore مباشر</td><td>آخر مسح: <strong>72</strong> ملفًا تحت <span class="code-ref">lib/</span> يستورد أو يستخدم <code>cloud_firestore</code> / <code>FirebaseFirestore</code> (بحث نصي في المستودع). أمثلة: <span class="code-ref">lib/src/features/cars/services/car_service.dart</span>، <span class="code-ref">lib/src/features/properties/services/property_service.dart</span>، <span class="code-ref">lib/src/features/chat/services/chat_service.dart</span>، <span class="code-ref">lib/admin_web/services/admin_verification_service.dart</span></td></tr>
+              <tr><td>قواعد وأمان</td><td><span class="code-ref">firestore.rules</span> — القسم 06 في هذا المستند؛ <span class="code-ref">storage.rules</span> لمسارات الملفات</td></tr>
+              <tr><td>استضافة ويب</td><td><span class="code-ref">firebase.json</span> — <code>hosting.public: build/web</code></td></tr>
+            </tbody>
+          </table>
+
+          <h3>15.2 لماذا قد تُفكّر بالتحويل؟ ولماذا قد تبقى على Firebase؟</h3>
+          <table>
+            <thead><tr><th>السياق</th><th>الانتقال لـ REST + خادم خاص</th><th>البقاء على Firebase</th></tr></thead>
+            <tbody>
+              <tr><td>التحكم والامتثال</td><td>بيانات داخل بنية تتحكم بها (سجلات، سياسات احتفاظ، تدقيق)</td><td>اعتماد على مزود سحابي وبنود استخدام Google</td></tr>
+              <tr><td>منطق الأعمال المعقّد</td><td>معاملات، جداول علاقية، تقارير SQL، Webhooks</td><td>منطق كثير في العميل + Cloud Functions (تكلفة وتعقيد)</td></tr>
+              <tr><td>التكامل مع أنظمة خارجية</td><td>REST موحّد + OpenAPI يسهل على شركاء الطرف الثالث</td><td>ممكن عبر Functions لكن أقل شفافية من عقد REST عام</td></tr>
+              <tr><td>السرعة الحالية</td><td>مشروع ضخم: إعادة كتابة طبقة البيانات (~72+ ملفًا متأثرًا + Auth + Storage)</td><td>البنية موجودة؛ التركيز على المنتج والقواعد (القسم 14)</td></tr>
+            </tbody>
+          </table>
+
+          <h3>15.3 ماذا هو الأنسب لهذا المشروع؟ (رأي تقني مُبرَّر)</h3>
+          <p><strong>قصير المدى (إطلاق/نمو):</strong> البقاء على Firebase مع <strong>إصلاح القواعد</strong> (بند 1 في القسم 14) وإزالة الأسرار من المستودع — لأن حجم الالتزام بـ Firestore في الكود كبير جدًا والتحويل الكامل يعادل إعادة بناء المنتج الخلفي.</p>
+          <p><strong>متوسط/طويل المدى:</strong> إن كان المنتج يحتاج <strong>عزل بيانات صارم</strong>، <strong>تقارير SQL</strong>، أو <strong>عقد API ثابت</strong> لشركاء/جهات تنظيمية — التخطيط لـ <strong>خادم REST + قاعدة بيانات (مثل PostgreSQL)</strong> مع OpenAPI، ثم <strong>هجرة تدريجية</strong> (طبقة خدمة في Flutter تدعم المصدرين أو استبدال مجالًا مجالًا).</p>
+
+          <h3>15.4 الإيجابيات والسلبيات (Firebase مقابل REST + Swagger)</h3>
+          <table>
+            <thead><tr><th></th><th>Firebase (الوضع الحالي)</th><th>REST + خادم + OpenAPI/Swagger</th></tr></thead>
+            <tbody>
+              <tr><td>إيجابيات</td><td>Real-time جاهز؛ Auth متكامل؛ نشر سريع؛ تكامل Flutter رسمي</td><td>تحكم كامل؛ قواعد علاقية؛ اختبار العقد؛ أقل ارتباطًا بمزود واحد</td></tr>
+              <tr><td>سلبيات</td><td>قواعد <span class="code-ref">firestore.rules</span> الحالية واسعة جدًا (خطر)؛ تكلفة عند الحجم؛ استعلامات معقدة أصعب</td><td>تشغيل وصيانة ومراقبة؛ بناء Auth (JWT/Refresh)؛ استبدال الاستماع اللحظي بـ WebSocket أو polling</td></tr>
+            </tbody>
+          </table>
+
+          <h3>15.5 تقدير الزمن (إرشادي — يعتمد على حجم الفريق)</h3>
+          <table>
+            <thead><tr><th>المرحلة</th><th>المدة التقريبية (فريق 2–3 مطورين خلفية + 1 عميل)</th></tr></thead>
+            <tbody>
+              <tr><td>تصميم العقد OpenAPI + نموذج البيانات + Auth</td><td>3–6 أسابيع</td></tr>
+              <tr><td>تنفيذ الخادم + قاعدة البيانات لمجموعة كيانات أساسية (مستخدمون، سيارات أو عقارات)</td><td>2–4 أشهر</td></tr>
+              <tr><td>استبدال طبقة الخدمات في Flutter (72+ ملفًا متأثرًا بـ Firestore + Auth + Storage + FCM)</td><td>4–9 أشهر على التوازي مع الخادم</td></tr>
+              <tr><td>هجرة البيانات + اختبار قبول + تشغيل مزدوج</td><td>1–3 أشهر</td></tr>
+              <tr><td><strong>المجموع غالبًا</strong></td><td><strong>9–18 شهرًا</strong> لتحويل كامل بدون توقف المنتج؛ أقصر بكثير إن كان <strong>نطاقًا جزئيًا</strong> (ميزة واحدة أولًا)</td></tr>
+            </tbody>
+          </table>
+
+          <h3>15.6 خطوات العمل بالتفصيل (مع ربط بالمستودع)</h3>
+          <ol style="margin:0.5rem 0;padding-right:1.2rem;color:#334155;line-height:1.8">
+            <li><strong>جرد API ضمني:</strong> استخراج أسماء مجموعات Firestore والعمليات من الخدمات — مجلدات مثل <span class="code-ref">lib/src/features/*/services/</span> و<span class="code-ref">lib/admin_web/services/</span>.</li>
+            <li><strong>نمذجة OpenAPI:</strong> تعريف مسارات REST (مثل <code>GET/POST /api/cars</code>، <code>/api/properties</code>، <code>/api/auth/login</code>) متوافقة مع نماذج Flutter الحالية (<span class="code-ref">car_model.dart</span>، <span class="code-ref">property_model.dart</span>، …).</li>
+            <li><strong>خادم وقاعدة بيانات:</strong> اختيار إطار (Node/Nest، .NET، Go، …) + PostgreSQL أو ما يناسب؛ تنفيذ Auth (Access + Refresh) يعادل سلوك <span class="code-ref">auth_service.dart</span>.</li>
+            <li><strong>التخزين:</strong> استبدال روابط <code>firebase_storage</code> بتوقيعات URL من الخادم أو تخزين كائنات (S3-compatible) — مراجعة <span class="code-ref">car_image_service.dart</span>، <span class="code-ref">property_image_service.dart</span>، <span class="code-ref">video_service.dart</span>.</li>
+            <li><strong>اللحظية:</strong> استبدال <code>snapshots()</code> بـ WebSocket/SSE أو اختيار إبقاء Firestore مؤقتًا لقنوات معيّنة فقط (هجرة هجينة).</li>
+            <li><strong>طبقة عميل Flutter:</strong> إدخال <code>ApiClient</code> (مثل <code>dio</code> الموجود في المشروع) واستبدال استدعاءات <code>FirebaseFirestore.instance</code> تدريجيًا داخل كل Service؛ الحفاظ على واجهات Provider قدر الإمكان لتقليل تغيير الشاشات.</li>
+            <li><strong>الأدمن والويب:</strong> تعديل <span class="code-ref">admin_web</span> لنفس الـ API؛ إزالة افتراض أن كل شيء في Firestore مباشرة من المتصفح إن انتقل التفويض للخادم.</li>
+            <li><strong>الإشعارات:</strong> استبدال تكامل FCM بخادم يرسل عبر FCM HTTP v1 أو مزود آخر — مراجعة <span class="code-ref">firebase_messaging</span> في <span class="code-ref">pubspec.yaml</span>.</li>
+            <li><strong>الهجرة:</strong> سكربتات تصدير من Firestore + استيراد مع تحقق؛ تشغيل مزدوج لفترة؛ إيقاف الكتابة على Firebase بعد التحقق.</li>
+            <li><strong>Swagger UI:</strong> نشر وثيقة OpenAPI على بيئة داخلية؛ ربطها ببيئات dev/staging — للاختبار اليدوي وليس كبديل تنفيذ.</li>
+          </ol>
+
+          <h3>15.7 أمر تحقق سريع (لتحديث الأرقام لاحقًا)</h3>
+          <div class="block">
+            <div class="block-header"><span>عدد ملفات Dart التي تلمس Firestore</span><button type="button" data-copy>نسخ</button></div>
+            <pre id="c-fire-count">grep -rl 'cloud_firestore\|FirebaseFirestore' lib --include='*.dart' | wc -l</pre>
+          </div>
+          <p class="code-ref" style="margin-top:0.35rem">آخر توثيق في هذا المستند: <strong>72</strong> ملفًا — أعد تشغيل الأمر بعد التعديلات.</p>
+
+          <h3>15.8 إطلاق خلال شهر — لا تُحوّل الباكند الآن</h3>
+          <div class="callout ok">
+            <strong>الوضع ليس «صعبًا بالضرورة» للإطلاق:</strong> الأشهر الطويلة في القسم 15 كانت لتقدير <em>تحويل كامل</em> من Firebase إلى خادم REST. هذا <strong>غير مطلوب</strong> لإصدار أول خلال هذا الشهر.
+          </div>
+          <p><strong>ما الذي تفعلونه هذا الشهر (واقعي):</strong></p>
+          <ul style="margin:0.4rem 0;padding-right:1.2rem;color:#334155;line-height:1.75">
+            <li><strong>ابقوا على Firebase</strong> — التطبيق مبني عليه؛ الإطلاق السريع يعني تثبيت الجودة والأمن على ما هو موجود.</li>
+            <li><strong>الحد الأدنى من الأمن قبل المستخدمين:</strong> تشديد <span class="code-ref">firestore.rules</span> قدر الإمكان (حتى لو على أهم المجموعات أولًا)؛ إزالة الأسرار من المستودع؛ إصلاح <span class="code-ref">payment_processor.dart</span> (معرّف المستخدم)؛ إزالة تعبئة دخول الأدمن التجريبية في الإنتاج — انظر <a href="#s14" style="color:var(--p-mid);font-weight:600">القسم 14</a> (بنود P0/P1).</li>
+            <li><strong>فهارس Firestore</strong> عند ظهور أخطاء <code>failed-precondition</code> في الأدمن أو الويب — إنشاء الفهرس من رابط الكونسول (دقائق إلى ساعات، لا أشهر).</li>
+            <li><strong>اختبار مسارات حرجة:</strong> تسجيل، إضافة إعلان، دفع/اشتراك إن كان مفعّلًا، ويب السيارات/العقارات حسب النطاق.</li>
+            <li><strong>تأجيل</strong> «التحويل إلى Swagger/REST» إلى <strong>بعد الإطلاق</strong> — كمرحلة منتج منفصلة عندما يكون لديكم وقت وفريق خلفية.</li>
+          </ul>
+          <p style="margin-top:0.75rem;color:#334155"><strong>الخلاصة:</strong> الإطلاق هذا الشهر ممكن مع Firebase؛ الخطر كان في الخلط بين «إطلاق المنتج» و«إعادة بناء الباكند بالكامل». الثانية تُؤجَّل؛ الأولى تُنجَز بقائمة تحقق قصيرة من القسم 14.</p>
+        </section>
+
+      </div>
+      <footer class="doc-ft">
+        MasterMax — مرجع داخلي · الملف: <code class="code-ref">docs/mastermax_handover_reference.html</code>
+        · للطباعة: Ctrl+P · أرقام القسم 02 و11 و13 تُحدَّث بأوامر التحقق · الإصلاح: 14 · التحويل: <a href="#s15" style="color:var(--p-mid)">15</a>
+      </footer>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll(".block-header button[data-copy]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var pre = btn.closest(".block").querySelector("pre");
+        if (!pre) return;
+        var t = pre.textContent;
+        navigator.clipboard.writeText(t).then(function () {
+          var o = btn.textContent;
+          btn.textContent = "تم ✓";
+          setTimeout(function () { btn.textContent = o; }, 1600);
+        });
+      });
+    });
+    var links = document.querySelectorAll(".nav-rail a");
+    var sections = [];
+    links.forEach(function (a) {
+      var id = a.getAttribute("href").slice(1);
+      var el = document.getElementById(id);
+      if (el) sections.push({ id: id, el: el, a: a });
+    });
+    function highlight() {
+      var y = window.scrollY + 140;
+      var cur = sections[0];
+      sections.forEach(function (s) {
+        if (s.el.offsetTop <= y) cur = s;
+      });
+      links.forEach(function (l) { l.classList.remove("active"); });
+      if (cur && cur.a) cur.a.classList.add("active");
+    }
+    window.addEventListener("scroll", highlight, { passive: true });
+    highlight();
+  </script>
+</body>
+</html>

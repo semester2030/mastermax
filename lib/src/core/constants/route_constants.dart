@@ -1,3 +1,4 @@
+/// ثوابت المسارات. التوجيه الفعلي للتطبيق الرئيسي: كلاس AppRouter في lib/src/navigation/app_router.dart.
 class Routes {
   // الصفحة الرئيسية
   static const String home = '/';
@@ -36,6 +37,7 @@ class Routes {
   // أضواء ماكس
   static const String spotlight = '/spotlight';
   static const String spotlightFeed = '/spotlight/feed';
+  static const String spotlightLocationMap = '/spotlight/location';
   static const String videoUpload = '/spotlight/upload';
   static const String videoEditor = '/spotlight/editor';
   static const String videoPreview = '/spotlight/preview';
@@ -101,5 +103,6 @@ class Routes {
   // الملف الشخصي
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String deleteAccount = '/profile/delete-account';
   static const String favorites = '/profile/favorites';
 } 

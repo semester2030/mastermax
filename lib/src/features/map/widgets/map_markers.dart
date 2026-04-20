@@ -27,41 +27,15 @@ class MapMarkers extends StatelessWidget {
   }
 
   Widget _buildMarkerWidget(BuildContext context, MapMarker marker) {
-    return Positioned(
-      left: marker.point.coordinates.lng.toDouble(),
-      top: marker.point.coordinates.lat.toDouble(),
-      child: GestureDetector(
-        onTap: () => onMarkerTap?.call(marker),
-        child: _MarkerIcon(
-          title: marker.title,
-          type: marker.type,
-        ),
-      ),
-    );
+    // Note: Markers are now handled by GoogleMap widget directly
+    // This widget is kept for compatibility but doesn't render anything
+    return const SizedBox.shrink();
   }
 
   Widget _buildClusterWidget(BuildContext context, MapCluster cluster) {
-    return Positioned(
-      left: cluster.point.coordinates.lng.toDouble(),
-      top: cluster.point.coordinates.lat.toDouble(),
-      child: GestureDetector(
-        onTap: () => onClusterTap?.call(cluster),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            cluster.size.toString(),
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
+    // Note: Clusters are now handled by GoogleMap widget directly
+    // This widget is kept for compatibility but doesn't render anything
+    return const SizedBox.shrink();
   }
 }
 

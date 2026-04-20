@@ -1,45 +1,111 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/property_provider.dart';
 import '../models/property_model.dart';
-import '../services/property_service.dart';
+import '../../auth/providers/auth_state.dart';
+import '../../auth/utils/listing_vertical_guard.dart';
+import '../../../core/theme/app_colors.dart';
 import 'add_property_screen.dart';
 
-class PropertyManagementScreen extends StatelessWidget {
+class PropertyManagementScreen extends StatefulWidget {
   const PropertyManagementScreen({super.key});
+
+  @override
+  State<PropertyManagementScreen> createState() => _PropertyManagementScreenState();
+}
+
+class _PropertyManagementScreenState extends State<PropertyManagementScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final auth = context.read<AuthState>();
+      final t = auth.user?.type ?? auth.userType;
+      if (!ListingVerticalGuard.mayPublishProperties(
+        t,
+        isAdmin: auth.isAdmin,
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              ListingVerticalGuard.denialMessageForPropertyListing(t),
+            ),
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     
-    return ChangeNotifierProvider(
-      create: (context) {
-        final propertyService = Provider.of<PropertyService>(context, listen: false);
-        final provider = PropertyProvider(propertyService);
+    // ✅ PropertyProvider موجود في web_main.dart و main.dart
+    return Consumer2<PropertyProvider, AuthState>(
+      builder: (context, provider, authState, _) {
+        final accountType = authState.user?.type ?? authState.userType;
+        final canManageProperties = ListingVerticalGuard.mayPublishProperties(
+          accountType,
+          isAdmin: authState.isAdmin,
+        );
+        // ✅ تحميل البيانات عند أول بناء للشاشة
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          provider.loadProperties();
+          if (provider.properties.isEmpty && !provider.isLoading) {
+            final ownerId = authState.user?.id;
+            provider.loadProperties(ownerId: ownerId);
+          }
         });
-        return provider;
-      },
-      child: Scaffold(
+        
+        return Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.white, // ✅ استخدام الثيم الموحد
+          elevation: 1,
+          shadowColor: colorScheme.primary.withValues(alpha: 0.3),
           title: Text(
             'إدارة العقارات',
             style: textTheme.titleLarge?.copyWith(
-              color: colorScheme.onPrimary,
+              color: AppColors.textPrimary, // ✅ استخدام الثيم الموحد
               fontWeight: FontWeight.bold,
             ),
           ),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.add,
-                color: colorScheme.onPrimary,
+            if (canManageProperties)
+              IconButton(
+                icon: Icon(
+                  Icons.add,
+                  color: AppColors.primary, // ✅ استخدام الثيم الموحد
+                ),
+                onPressed: () => _navigateToAddProperty(context),
               ),
-              onPressed: () => _navigateToAddProperty(context),
-            ),
           ],
+          bottom: TabBar(
+            controller: _tabController,
+            labelColor: AppColors.primary, // ✅ استخدام الثيم الموحد
+            unselectedLabelColor: AppColors.textSecondary, // ✅ استخدام الثيم الموحد
+            indicatorColor: AppColors.primary, // ✅ استخدام الثيم الموحد
+            labelStyle: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            unselectedLabelStyle: textTheme.titleMedium,
+            tabs: const [
+              Tab(text: 'جميع العقارات'),
+              Tab(text: 'عروض البيع'),
+              Tab(text: 'عروض الإيجار'),
+            ],
+          ),
         ),
         body: Consumer<PropertyProvider>(
           builder: (context, provider, child) {
@@ -76,26 +142,115 @@ class PropertyManagementScreen extends StatelessWidget {
               );
             }
 
-            if (provider.properties.isEmpty) {
-              return Center(
-                child: Text(
-                  'لا توجد عقارات',
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+            return TabBarView(
+              controller: _tabController,
+              children: [
+                // ✅ جميع العقارات
+                _buildPropertiesList(
+                  context,
+                  provider.properties,
+                  provider,
+                  colorScheme,
+                  textTheme,
+                  null, // لا فلترة
                 ),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: provider.properties.length,
-              itemBuilder: (context, index) {
-                final property = provider.properties[index];
-                return _buildPropertyCard(context, property, provider);
-              },
+                // ✅ عروض البيع (فقط المتاحة للبيع)
+                _buildPropertiesList(
+                  context,
+                  provider.properties
+                      .where((p) => p.offerType == OfferType.sale && p.status == PropertyStatus.available)
+                      .toList(),
+                  provider,
+                  colorScheme,
+                  textTheme,
+                  OfferType.sale,
+                ),
+                // ✅ عروض الإيجار (فقط المتاحة للإيجار - قبل التأجير)
+                _buildPropertiesList(
+                  context,
+                  provider.properties
+                      .where((p) => p.offerType == OfferType.rent && p.status == PropertyStatus.available)
+                      .toList(),
+                  provider,
+                  colorScheme,
+                  textTheme,
+                  OfferType.rent,
+                ),
+              ],
             );
           },
         ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPropertiesList(
+    BuildContext context,
+    List<PropertyModel> properties,
+    PropertyProvider provider,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+    OfferType? offerType, // نوع العرض المحدد (للرسائل)
+  ) {
+    if (properties.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                offerType == OfferType.rent
+                    ? Icons.home_work_outlined
+                    : offerType == OfferType.sale
+                        ? Icons.sell_outlined
+                        : Icons.home_outlined,
+                size: 64,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                offerType == OfferType.rent
+                    ? 'لا توجد عقارات معروضة للإيجار'
+                    : offerType == OfferType.sale
+                        ? 'لا توجد عقارات معروضة للبيع'
+                        : 'لا توجد عقارات',
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                offerType == OfferType.rent
+                    ? 'سيتم عرض العقارات المعروضة للإيجار هنا\nيمكنك تعديلها قبل تحويلها إلى عقود إيجار'
+                    : offerType == OfferType.sale
+                        ? 'سيتم عرض العقارات المعروضة للبيع هنا'
+                        : 'سيتم عرض العقارات هنا عند إضافة أول عقار',
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        final authState = Provider.of<AuthState>(context, listen: false);
+        final ownerId = authState.user?.id;
+        await provider.loadProperties(ownerId: ownerId);
+      },
+      child: ListView.builder(
+        itemCount: properties.length,
+        itemBuilder: (context, index) {
+          final property = properties[index];
+          return _buildPropertyCard(context, property, provider);
+        },
       ),
     );
   }
@@ -126,18 +281,32 @@ class PropertyManagementScreen extends StatelessWidget {
           child: property.images.isNotEmpty
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    property.images.first,
+                  child: CachedNetworkImage(
+                    imageUrl: property.images.first,
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.home,
-                        size: 40,
-                        color: colorScheme.primary,
-                      );
-                    },
+                    placeholder: (context, url) => Container(
+                      width: 60,
+                      height: 60,
+                      color: colorScheme.surfaceContainerHighest,
+                      child: const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.home,
+                      size: 40,
+                      color: colorScheme.primary,
+                    ),
+                    // تحسين الأداء للصور الصغيرة
+                    // ✅ إزالة memCacheWidth/memCacheHeight للحفاظ على الدقة الكاملة
+                    // memCacheWidth: null,
+                    // memCacheHeight: null,
                   ),
                 )
               : Icon(
@@ -169,19 +338,44 @@ class PropertyManagementScreen extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                property.status.arabicName,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
+            Row(
+              children: [
+                // ✅ نوع العرض (بيع/إيجار)
+                Container(
+                  margin: const EdgeInsets.only(top: 4, left: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: property.offerType == OfferType.rent
+                        ? Colors.blue.withValues(alpha: 0.2)
+                        : Colors.green.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    property.offerType.arabicName,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: property.offerType == OfferType.rent
+                          ? Colors.blue.shade700
+                          : Colors.green.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                // ✅ حالة العقار
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    property.status.arabicName,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -239,13 +433,33 @@ class PropertyManagementScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToAddProperty(BuildContext context) {
-    Navigator.push(
+  void _navigateToAddProperty(BuildContext context) async {
+    final auth = context.read<AuthState>();
+    final t = auth.user?.type ?? auth.userType;
+    if (!ListingVerticalGuard.mayPublishProperties(
+      t,
+      isAdmin: auth.isAdmin,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ListingVerticalGuard.denialMessageForPropertyListing(t),
+          ),
+        ),
+      );
+      return;
+    }
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const AddPropertyScreen(),
       ),
     );
+    
+    // ✅ إعادة تحميل القائمة بعد إضافة عقار جديد
+    if (result != null && context.mounted) {
+      await context.read<PropertyProvider>().loadProperties();
+    }
   }
 
   void _handleMenuAction(
@@ -259,6 +473,21 @@ class PropertyManagementScreen extends StatelessWidget {
     
     switch (action) {
       case 'edit':
+        final auth = context.read<AuthState>();
+        final t = auth.user?.type ?? auth.userType;
+        if (!ListingVerticalGuard.mayPublishProperties(
+          t,
+          isAdmin: auth.isAdmin,
+        )) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                ListingVerticalGuard.denialMessageForPropertyListing(t),
+              ),
+            ),
+          );
+          return;
+        }
         Navigator.push(
           context,
           MaterialPageRoute(

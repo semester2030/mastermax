@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_brand.dart';
 
 class IntellectualPropertyScreen extends StatelessWidget {
   const IntellectualPropertyScreen({super.key});
@@ -10,7 +12,7 @@ class IntellectualPropertyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: Text(
           'الملكية الفكرية',
@@ -33,7 +35,7 @@ class IntellectualPropertyScreen extends StatelessWidget {
             _buildSection(
               icon: Icons.copyright,
               title: 'حقوق النشر',
-              content: 'جميع المحتويات والمواد المنشورة في تطبيق أضواء ماكس محمية بموجب قوانين حقوق النشر.',
+              content: 'جميع المحتويات والمواد المنشورة في تطبيق ${AppBrand.displayName} محمية بموجب قوانين حقوق النشر.',
               colorScheme: colorScheme,
               textTheme: textTheme,
             ),

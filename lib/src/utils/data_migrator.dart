@@ -1,112 +1,132 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
+/// أداة هجرة بين مشروعي Firebase. لا تُضمَّن أسرار في الكود.
+///
+/// شغّل مع `--dart-define` لكل المتغيرات المطلوبة (انظر [_readOptions] و[_readCredentials]).
 class DataMigrator {
+  /// خيارات مشروع المصدر (من `--dart-define=MIGRATE_OLD_FIREBASE_*`).
+  static FirebaseOptions migrationOldFirebaseOptions() =>
+      _firebaseOptionsFromDefines('MIGRATE_OLD_FIREBASE');
+
+  /// خيارات مشروع الوجهة (من `--dart-define=MIGRATE_NEW_FIREBASE_*`).
+  static FirebaseOptions migrationNewFirebaseOptions() =>
+      _firebaseOptionsFromDefines('MIGRATE_NEW_FIREBASE');
+
+  static FirebaseOptions _firebaseOptionsFromDefines(String prefix) {
+    String v(String suffix) => String.fromEnvironment(
+          '${prefix}_$suffix',
+          defaultValue: '',
+        );
+    final apiKey = v('API_KEY');
+    final appId = v('APP_ID');
+    final messagingSenderId = v('MESSAGING_SENDER_ID');
+    final projectId = v('PROJECT_ID');
+    final storageBucket = v('STORAGE_BUCKET');
+    if (apiKey.isEmpty ||
+        appId.isEmpty ||
+        messagingSenderId.isEmpty ||
+        projectId.isEmpty) {
+      throw StateError(
+        'Missing dart-define for $prefix: need API_KEY, APP_ID, '
+        'MESSAGING_SENDER_ID, PROJECT_ID (and optionally STORAGE_BUCKET).',
+      );
+    }
+    return FirebaseOptions(
+      apiKey: apiKey,
+      appId: appId,
+      messagingSenderId: messagingSenderId,
+      projectId: projectId,
+      storageBucket: storageBucket.isEmpty ? '$projectId.appspot.com' : storageBucket,
+    );
+  }
+
+  static ({String email, String password}) _credentials() {
+    const email = String.fromEnvironment('MIGRATE_EMAIL', defaultValue: '');
+    const password =
+        String.fromEnvironment('MIGRATE_PASSWORD', defaultValue: '');
+    if (email.isEmpty || password.isEmpty) {
+      throw StateError(
+        'Set MIGRATE_EMAIL and MIGRATE_PASSWORD via --dart-define (do not commit).',
+      );
+    }
+    return (email: email, password: password);
+  }
+
   static Future<void> migrateData() async {
     try {
-      print('🚀 بدء تهيئة Firebase...');
-      
-      // تهيئة Firebase للمشروع القديم
+      debugPrint('DataMigrator: starting (secrets from dart-define only)…');
+
+      final creds = _credentials();
+      final oldOptions = migrationOldFirebaseOptions();
+      final newOptions = migrationNewFirebaseOptions();
+
       final FirebaseApp oldApp = await Firebase.initializeApp(
         name: 'old_project',
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyC799JbfYLQ5ka6t2rHYCNdTmwSD6TYiBU',
-          appId: '1:960074773700:android:1234567890',
-          messagingSenderId: '960074773700',
-          projectId: 'master-max-ced03',
-          storageBucket: 'master-max-ced03.appspot.com',
-        ),
+        options: oldOptions,
       );
-      print('✅ تم تهيئة المشروع القديم');
-
-      // تسجيل الدخول في المشروع القديم
       final oldAuth = FirebaseAuth.instanceFor(app: oldApp);
       await oldAuth.signInWithEmailAndPassword(
-        email: 'admin@mastermax.com',
-        password: 'admin123456'  // تأكد من استخدام كلمة المرور الصحيحة
+        email: creds.email,
+        password: creds.password,
       );
-      print('✅ تم تسجيل الدخول في المشروع القديم');
 
-      // قراءة البيانات من المشروع القديم
       final oldDb = FirebaseFirestore.instanceFor(app: oldApp);
-      
-      // تهيئة Firebase للمشروع الجديد
+
       final FirebaseApp newApp = await Firebase.initializeApp(
         name: 'new_project',
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyAd1TG_QdlI1EHSd-ZkptE94d3GVLbyBqw',
-          appId: '1:691078404023:android:3cfb1da3e6b5ca5068ba32',
-          messagingSenderId: '691078404023',
-          projectId: 'mastermax-2030-backend',
-          storageBucket: 'mastermax-2030-backend.appspot.com',
-        ),
+        options: newOptions,
       );
-      print('✅ تم تهيئة المشروع الجديد');
-
-      // تسجيل الدخول في المشروع الجديد
       final newAuth = FirebaseAuth.instanceFor(app: newApp);
       await newAuth.signInWithEmailAndPassword(
-        email: 'admin@mastermax.com',
-        password: 'admin123456'  // تأكد من استخدام كلمة المرور الصحيحة
+        email: creds.email,
+        password: creds.password,
       );
-      print('✅ تم تسجيل الدخول في المشروع الجديد');
 
       final newDb = FirebaseFirestore.instanceFor(app: newApp);
-      int totalDocuments = 0;
+      var totalDocuments = 0;
 
-      // قائمة المجموعات المراد نقلها
-      final collections = [
+      const collections = [
         'users',
         'cars',
         'companies',
         'spotlight_videos',
         'video_shares',
         'subscriptions',
-        'bank_transfers'
+        'bank_transfers',
       ];
 
-      // نقل البيانات
       for (final collection in collections) {
-        print('📦 جاري نقل مجموعة: $collection');
-        
+        debugPrint('DataMigrator: collection $collection');
         try {
-          // قراءة البيانات من المشروع القديم
-          final QuerySnapshot snapshot = await oldDb.collection(collection).get();
-          print('📥 تم العثور على ${snapshot.docs.length} مستند في $collection');
-          
+          final QuerySnapshot snapshot =
+              await oldDb.collection(collection).get();
           if (snapshot.docs.isEmpty) {
-            print('⚠️ المجموعة $collection فارغة');
+            debugPrint('DataMigrator: $collection empty, skip');
             continue;
           }
-
-          // نقل كل مستند
           for (final doc in snapshot.docs) {
             try {
               final data = doc.data() as Map<String, dynamic>;
               await newDb.collection(collection).doc(doc.id).set(data);
               totalDocuments++;
-              print('✅ تم نقل المستند ${doc.id} في $collection');
             } catch (e) {
-              print('❌ خطأ في نقل المستند ${doc.id}: $e');
+              debugPrint('DataMigrator: doc ${doc.id} error: $e');
             }
           }
-          
-          print('✅ تم نقل مجموعة $collection بنجاح');
         } catch (e) {
-          print('❌ خطأ في نقل مجموعة $collection: $e');
+          debugPrint('DataMigrator: collection $collection error: $e');
         }
       }
 
-      print('🎉 تم نقل $totalDocuments مستند بنجاح!');
-
-      // تسجيل الخروج من كلا المشروعين
+      debugPrint('DataMigrator: done, $totalDocuments documents');
       await oldAuth.signOut();
       await newAuth.signOut();
-      
-    } catch (e) {
-      print('❌ حدث خطأ أثناء عملية النقل: $e');
+    } catch (e, st) {
+      debugPrint('DataMigrator failed: $e\n$st');
       rethrow;
     }
   }
-} 
+}

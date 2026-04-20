@@ -1,13 +1,13 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart' as geo;
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/utils/logger.dart';
 import '../../../core/errors/exceptions.dart';
 
 /// خدمة إدارة مواقع العقارات
 class PropertyLocationService {
   /// الحصول على الموقع الحالي
-  Future<Point> getCurrentLocation() async {
+  Future<LatLng> getCurrentLocation() async {
     try {
       final permission = await geo.Geolocator.checkPermission();
       if (permission == geo.LocationPermission.denied) {
@@ -22,11 +22,9 @@ class PropertyLocationService {
       }
 
       final position = await geo.Geolocator.getCurrentPosition();
-      return Point(
-        coordinates: Position(
-          position.longitude,
-          position.latitude,
-        ),
+      return LatLng(
+        position.latitude,
+        position.longitude,
       );
     } catch (e) {
       throw LocationException('فشل في الحصول على الموقع الحالي: $e');
@@ -34,16 +32,14 @@ class PropertyLocationService {
   }
 
   /// تحويل العنوان إلى إحداثيات
-  Future<Point> getLocationFromAddress(String address) async {
+  Future<LatLng> getLocationFromAddress(String address) async {
     try {
       final locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         final location = locations.first;
-        return Point(
-          coordinates: Position(
-            location.longitude.toDouble(),
-            location.latitude.toDouble(),
-          ),
+        return LatLng(
+          location.latitude,
+          location.longitude,
         );
       }
       throw const LocationException('لم يتم العثور على الموقع');
@@ -53,11 +49,11 @@ class PropertyLocationService {
   }
 
   /// تحويل الإحداثيات إلى عنوان
-  Future<String> getAddressFromLocation(Point location) async {
+  Future<String> getAddressFromLocation(LatLng location) async {
     try {
       final placemarks = await placemarkFromCoordinates(
-        location.coordinates.lat.toDouble(),
-        location.coordinates.lng.toDouble(),
+        location.latitude,
+        location.longitude,
       );
 
       if (placemarks.isNotEmpty) {
@@ -71,13 +67,13 @@ class PropertyLocationService {
   }
 
   /// حساب المسافة بين موقعين بالأمتار
-  Future<double> calculateDistance(Point start, Point end) async {
+  double calculateDistance(LatLng start, LatLng end) {
     try {
       return geo.Geolocator.distanceBetween(
-        start.coordinates.lat.toDouble(),
-        start.coordinates.lng.toDouble(),
-        end.coordinates.lat.toDouble(),
-        end.coordinates.lng.toDouble(),
+        start.latitude,
+        start.longitude,
+        end.latitude,
+        end.longitude,
       );
     } catch (e) {
       throw LocationException('فشل في حساب المسافة: $e');
@@ -85,16 +81,16 @@ class PropertyLocationService {
   }
 
   /// التحقق من وجود العقار ضمن نطاق محدد
-  Future<bool> isPropertyWithinRange(Point propertyLocation, Point centerPoint, double radiusInMeters) async {
-    final double distance = await calculateDistance(propertyLocation, centerPoint);
+  bool isPropertyWithinRange(LatLng propertyLocation, LatLng centerPoint, double radiusInMeters) {
+    final double distance = calculateDistance(propertyLocation, centerPoint);
     return distance <= radiusInMeters;
   }
 
   /// الحصول على العقارات القريبة
-  Future<List<Point>> getNearbyProperties(List<Point> allProperties, Point centerPoint, double radiusInMeters) async {
-    final List<Point> nearbyProperties = [];
+  List<LatLng> getNearbyProperties(List<LatLng> allProperties, LatLng centerPoint, double radiusInMeters) {
+    final List<LatLng> nearbyProperties = [];
     for (var property in allProperties) {
-      if (await isPropertyWithinRange(property, centerPoint, radiusInMeters)) {
+      if (isPropertyWithinRange(property, centerPoint, radiusInMeters)) {
         nearbyProperties.add(property);
       }
     }
@@ -102,12 +98,12 @@ class PropertyLocationService {
   }
 
   /// التحقق من صحة الإحداثيات
-  bool isValidCoordinate(Point position) {
+  bool isValidCoordinate(LatLng position) {
     try {
-      return position.coordinates.lat >= -90 &&
-          position.coordinates.lat <= 90 &&
-          position.coordinates.lng >= -180 &&
-          position.coordinates.lng <= 180;
+      return position.latitude >= -90 &&
+          position.latitude <= 90 &&
+          position.longitude >= -180 &&
+          position.longitude <= 180;
     } catch (e) {
       logError('Error validating coordinates', e);
       rethrow;
@@ -115,29 +111,26 @@ class PropertyLocationService {
   }
 
   /// الحصول على حدود منطقة معينة من مجموعة نقاط
-  CoordinateBounds getBoundsForPoints(List<Point> points) {
+  LatLngBounds getBoundsForPoints(List<LatLng> points) {
     if (points.isEmpty) {
       throw Exception('لا توجد نقاط لحساب الحدود');
     }
 
-    double minLat = points.first.coordinates.lat.toDouble();
-    double maxLat = points.first.coordinates.lat.toDouble();
-    double minLng = points.first.coordinates.lng.toDouble();
-    double maxLng = points.first.coordinates.lng.toDouble();
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
 
     for (final point in points) {
-      final lat = point.coordinates.lat.toDouble();
-      final lng = point.coordinates.lng.toDouble();
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-      if (lng < minLng) minLng = lng;
-      if (lng > maxLng) maxLng = lng;
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
     }
 
-    return CoordinateBounds(
-      southwest: Point(coordinates: Position(minLng, minLat)),
-      northeast: Point(coordinates: Position(maxLng, maxLat)),
-      infiniteBounds: false
+    return LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
     );
   }
 

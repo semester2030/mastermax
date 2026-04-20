@@ -45,7 +45,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> with SingleTick
       
       final paymentMethod = await showModalBottomSheet<String>(
         context: context,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         builder: (context) => Container(
           decoration: const BoxDecoration(
             color: AppColors.primary,
@@ -137,7 +137,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> with SingleTick
     return Scaffold(
       backgroundColor: AppColors.spotlightBackground,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: const Text(
           'باقات الاشتراك',
@@ -214,7 +214,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> with SingleTick
           ),
         ),
         child: Material(
-          color: Colors.transparent,
+          color: AppColors.transparent,
           child: InkWell(
             onTap: _isLoading ? null : () => _handleSubscription(plan),
             borderRadius: BorderRadius.circular(20),
@@ -243,7 +243,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> with SingleTick
                         child: Text(
                           '${plan.price} ريال',
                           style: const TextStyle(
-                            color: AppColors.accent,
+                            color: AppColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -330,7 +330,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> with SingleTick
   void _showBankDetails(SpotlightPlan plan) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,

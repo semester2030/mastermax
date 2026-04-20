@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class PremiumAdsScreen extends StatefulWidget {
   const PremiumAdsScreen({super.key});
@@ -18,7 +19,7 @@ class _PremiumAdsScreenState extends State<PremiumAdsScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

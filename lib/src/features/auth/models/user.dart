@@ -16,15 +16,31 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      type: UserType.values.firstWhere(
-        (e) => e.toString() == json['type'],
+    // دعم كلا الحقلين: 'type' و 'userType'
+    String? typeString;
+    if (json['type'] != null) {
+      typeString = json['type'].toString();
+    } else if (json['userType'] != null) {
+      typeString = json['userType'].toString();
+    }
+    
+    UserType userType = UserType.individual;
+    if (typeString != null) {
+      // محاولة مطابقة مع 'UserType.xxx' أو 'xxx'
+      final cleanType = typeString.replaceAll('UserType.', '');
+      userType = UserType.values.firstWhere(
+        (e) => e.toString().split('.').last == cleanType || 
+              e.toString() == typeString,
         orElse: () => UserType.individual,
-      ),
-      extraData: json['extraData'],
+      );
+    }
+    
+    return User(
+      id: json['id'] ?? json['uid'] ?? '',
+      name: json['name'] ?? json['displayName'] ?? '',
+      email: json['email'] ?? '',
+      type: userType,
+      extraData: json['extraData'] ?? json,
     );
   }
 
@@ -36,5 +52,21 @@ class User {
       'type': type.toString(),
       'extraData': extraData,
     };
+  }
+
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    UserType? type,
+    Map<String, dynamic>? extraData,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      type: type ?? this.type,
+      extraData: extraData ?? this.extraData,
+    );
   }
 } 

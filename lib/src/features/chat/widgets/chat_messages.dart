@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/chat_message.dart';
@@ -5,14 +6,21 @@ import '../providers/chat_provider.dart';
 import '../../auth/providers/auth_state.dart';
 import '../../../shared/utils/formatters.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class ChatMessages extends StatefulWidget {
   final String chatRoomId;
   final List<ChatMessage> messages;
   final VoidCallback onBack;
+  /// عنوان إضافي عند فتح المحادثة من مقطع سبوتلايت (اسم البائع · عنوان المقطع).
+  final String? conversationTitle;
 
   const ChatMessages({
-    required this.chatRoomId, required this.messages, required this.onBack, super.key,
+    required this.chatRoomId,
+    required this.messages,
+    required this.onBack,
+    this.conversationTitle,
+    super.key,
   });
 
   @override
@@ -30,22 +38,83 @@ class _ChatMessagesState extends State<ChatMessages> {
     super.dispose();
   }
 
+  Future<void> _onChatMenuAction(BuildContext context, String action) async {
+    final uid = context.read<AuthState>().user?.id ??
+        FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return;
+
+    final chat = context.read<ChatProvider>();
+
+    if (action == 'archive') {
+      final next = !chat.isRoomArchived(widget.chatRoomId);
+      await chat.setRoomArchivedForUser(uid, widget.chatRoomId, next);
+      if (!context.mounted) return;
+      final err = chat.chatError;
+      if (err != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+        chat.clearChatError();
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            next
+                ? 'أُخفيت من قائمتك فقط. الطرف الآخر لا يتأثر.'
+                : 'أُعيدت المحادثة إلى القائمة.',
+          ),
+        ),
+      );
+      if (next) widget.onBack();
+      return;
+    }
+
+    if (action == 'mute') {
+      final next = !chat.isRoomMuted(widget.chatRoomId);
+      await chat.setRoomMutedForUser(uid, widget.chatRoomId, next);
+      if (!context.mounted) return;
+      final err = chat.chatError;
+      if (err != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+        chat.clearChatError();
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            next
+                ? 'تم كتم هذه المحادثة (سيُطبَّق على الإشعارات عند تفعيلها).'
+                : 'أُلغي الكتم.',
+          ),
+        ),
+      );
+    }
+  }
+
   void _sendMessage(BuildContext context) async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final currentUserId = context.read<AuthState>().user?.id;
-    if (currentUserId == null) return;
+    final senderId =
+        FirebaseAuth.instance.currentUser?.uid ?? context.read<AuthState>().user?.id;
+    if (senderId == null || senderId.isEmpty) return;
 
-    await context.read<ChatProvider>().sendMessage(
+    final chat = context.read<ChatProvider>();
+    await chat.sendMessage(
       chatRoomId: widget.chatRoomId,
-      senderId: currentUserId,
+      senderId: senderId,
       text: text,
     );
 
+    if (!context.mounted) return;
+    final err = chat.chatError;
+    if (err != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+      chat.clearChatError();
+      return;
+    }
+
     _messageController.clear();
-    
-    // التمرير إلى أحدث رسالة
+
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         0,
@@ -58,13 +127,13 @@ class _ChatMessagesState extends State<ChatMessages> {
   @override
   Widget build(BuildContext context) {
     final currentUserId = context.read<AuthState>().user?.id;
+    final primary = Theme.of(context).primaryColor;
 
     return Column(
       children: [
-        // شريط العنوان
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          color: primary.withValues(alpha: 0.1),
           child: Row(
             children: [
               IconButton(
@@ -72,18 +141,48 @@ class _ChatMessagesState extends State<ChatMessages> {
                 onPressed: widget.onBack,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'المحادثة',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  widget.conversationTitle ?? 'المحادثة',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (v) => _onChatMenuAction(context, v),
+                itemBuilder: (ctx) {
+                  final p = ctx.read<ChatProvider>();
+                  final archived = p.isRoomArchived(widget.chatRoomId);
+                  final muted = p.isRoomMuted(widget.chatRoomId);
+                  return [
+                    PopupMenuItem(
+                      value: 'archive',
+                      child: Text(
+                        archived
+                            ? 'إظهار في قائمة المحادثات'
+                            : 'إخفاء من قائمة المحادثات',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'mute',
+                      child: Text(
+                        muted
+                            ? 'إلغاء كتم الإشعارات'
+                            : 'كتم إشعارات هذه المحادثة',
+                      ),
+                    ),
+                  ];
+                },
               ),
             ],
           ),
         ),
 
-        // قائمة الرسائل
         Expanded(
           child: ListView.builder(
             controller: _scrollController,
@@ -100,9 +199,9 @@ class _ChatMessagesState extends State<ChatMessages> {
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isMe 
+                    color: isMe
                         ? Theme.of(context).primaryColor
-                        : ColorUtils.withOpacity(Colors.grey, 0.3),
+                        : ColorUtils.withOpacity(AppColors.textSecondary, 0.3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -111,7 +210,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                       Text(
                         message.text,
                         style: TextStyle(
-                          color: isMe ? Colors.white : Colors.black,
+                          color: isMe ? AppColors.white : AppColors.textPrimary,
                           fontSize: 16,
                         ),
                       ),
@@ -119,9 +218,9 @@ class _ChatMessagesState extends State<ChatMessages> {
                       Text(
                         formatDateTime(message.timestamp),
                         style: TextStyle(
-                          color: isMe 
-                              ? ColorUtils.withOpacity(Colors.white, 0.7)
-                              : ColorUtils.withOpacity(Colors.black, 0.5),
+                          color: isMe
+                              ? ColorUtils.withOpacity(AppColors.white, 0.7)
+                              : ColorUtils.withOpacity(AppColors.textPrimary, 0.5),
                           fontSize: 12,
                         ),
                       ),
@@ -133,14 +232,13 @@ class _ChatMessagesState extends State<ChatMessages> {
           ),
         ),
 
-        // حقل إدخال الرسالة
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: AppColors.textPrimary.withValues(alpha: 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, -2),
               ),
@@ -151,10 +249,18 @@ class _ChatMessagesState extends State<ChatMessages> {
               Expanded(
                 child: TextField(
                   controller: _messageController,
-                  decoration: const InputDecoration(
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                  ),
+                  decoration: InputDecoration(
                     hintText: 'اكتب رسالتك هنا...',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
+                    hintStyle: TextStyle(
+                      color: ColorUtils.withOpacity(AppColors.textPrimary, 0.5),
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
@@ -176,4 +282,4 @@ class _ChatMessagesState extends State<ChatMessages> {
       ],
     );
   }
-} 
+}

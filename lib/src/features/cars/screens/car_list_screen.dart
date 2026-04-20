@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/car_provider.dart';
 import '../models/car_model.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
 import '../../map/providers/map_state.dart';
+import '../../auth/providers/auth_state.dart';
+import '../../auth/utils/listing_vertical_guard.dart';
 
 class CarListScreen extends StatefulWidget {
   const CarListScreen({super.key});
@@ -27,14 +31,17 @@ class _CarListScreenState extends State<CarListScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    return Consumer2<CarProvider, MapState>(
-      builder: (context, carProvider, mapState, child) {
+    return Consumer3<CarProvider, MapState, AuthState>(
+      builder: (context, carProvider, mapState, authState, child) {
         final cars = mapState.visibleCars;
-        
+        final t = authState.user?.type ?? authState.userType;
+        final canAddCar =
+            ListingVerticalGuard.mayPublishCars(t, isAdmin: authState.isAdmin);
+
         return Scaffold(
           backgroundColor: colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppColors.transparent,
             elevation: 0,
             title: Text(
               'السيارات (${cars.length})',
@@ -60,13 +67,15 @@ class _CarListScreenState extends State<CarListScreen> {
             ],
           ),
           body: _buildBody(cars, carProvider.isLoading, colorScheme, textTheme),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/cars/add');
-            },
-            backgroundColor: colorScheme.primary,
-            child: Icon(Icons.add, color: colorScheme.onPrimary),
-          ),
+          floatingActionButton: canAddCar
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/cars/add');
+                  },
+                  backgroundColor: colorScheme.primary,
+                  child: Icon(Icons.add, color: colorScheme.onPrimary),
+                )
+              : null,
         );
       },
     );
@@ -123,7 +132,7 @@ class _CarListScreenState extends State<CarListScreen> {
     return custom_animations.AnimatedScale(
       duration: const Duration(milliseconds: 200),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: () {
             Navigator.pushNamed(
@@ -153,19 +162,25 @@ class _CarListScreenState extends State<CarListScreen> {
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
                     child: car.images.isNotEmpty
-                        ? Image.network(
-                            car.images.first,
+                        ? CachedNetworkImage(
+                            imageUrl: car.images.first,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: colorScheme.surface,
-                                child: Icon(
-                                  Icons.directions_car_outlined,
-                                  color: colorScheme.primary,
-                                  size: 48,
-                                ),
-                              );
-                            },
+                            placeholder: (context, url) => Container(
+                              color: colorScheme.surface,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: colorScheme.surface,
+                              child: Icon(
+                                Icons.directions_car_outlined,
+                                color: colorScheme.primary,
+                                size: 48,
+                              ),
+                            ),
+                            // تحسين الأداء
+                            // ✅ إزالة memCacheWidth/memCacheHeight للحفاظ على الدقة الكاملة
                           )
                         : Container(
                             color: colorScheme.surface,

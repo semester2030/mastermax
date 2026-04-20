@@ -9,8 +9,8 @@ import 'widgets/recent_transactions_widget.dart';
 import 'widgets/sales_tab_widget.dart';
 import 'widgets/inventory_tab_widget.dart';
 import 'widgets/reports_tab_widget.dart';
-import 'package:mastermax_2030/src/core/theme/app_colors.dart';
-import 'package:mastermax_2030/src/core/utils/color_utils.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/color_utils.dart';
 
 class RealEstateSalesManagementScreen extends StatefulWidget {
   const RealEstateSalesManagementScreen({super.key});
@@ -43,7 +43,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => SalesManagementViewModel()..initializeData(),
+      create: (_) => SalesManagementViewModel()..initializeData(context: context),
       child: Consumer<SalesManagementViewModel>(
         builder: (context, viewModel, child) {
           if (viewModel.isLoading) {
@@ -76,7 +76,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => viewModel.initializeData(),
+                      onPressed: () => viewModel.initializeData(context: context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accent,
                       ),
@@ -89,17 +89,17 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
           }
 
           return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.background,
             appBar: AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               elevation: 0,
               flexibleSpace: Container(
-                color: Colors.white,
+                color: AppColors.white,
               ),
               title: const Text(
                 'إدارة المبيعات العقارية',
                 style: TextStyle(
-                  color: AppColors.accent,
+                  color: AppColors.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -107,26 +107,26 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
               actions: [
                 IconButton(
                   icon: const Icon(Icons.file_download),
-                  color: AppColors.accent,
+                  color: AppColors.primary,
                   onPressed: () => _showExportDialog(context, viewModel),
                 ),
                 IconButton(
                   icon: const Icon(Icons.calendar_today),
-                  color: AppColors.accent,
+                  color: AppColors.primary,
                   onPressed: () => _selectDate(context, viewModel),
                 ),
                 IconButton(
                   icon: const Icon(Icons.notifications),
-                  color: AppColors.accent,
+                  color: AppColors.primary,
                   onPressed: () {},
                 ),
               ],
               bottom: TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                labelColor: AppColors.accent,
-                unselectedLabelColor: AppColors.white70,
-                indicatorColor: AppColors.accent,
+                labelColor: AppColors.primary,
+                unselectedLabelColor: AppColors.textSecondary,
+                indicatorColor: AppColors.primary,
                 tabs: _tabs.map((title) => Tab(text: title)).toList(),
               ),
             ),
@@ -136,10 +136,10 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                 children: [
                   // نظرة عامة
                   Container(
-                    color: Colors.white,
+                    color: AppColors.background,
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        await viewModel.initializeData();
+                        await viewModel.initializeData(context: context);
                       },
                       child: SingleChildScrollView(
                         child: Column(
@@ -161,17 +161,17 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                   ),
                   // المبيعات
                   Container(
-                    color: Colors.white,
+                    color: AppColors.white,
                     child: SalesTabWidget(sales: viewModel.sales),
                   ),
                   // المخزون
                   Container(
-                    color: Colors.white,
+                    color: AppColors.white,
                     child: InventoryTabWidget(inventory: viewModel.inventory),
                   ),
                   // التقارير
                   Container(
-                    color: Colors.white,
+                    color: AppColors.white,
                     child: ReportsTabWidget(sales: viewModel.sales),
                   ),
                 ],
@@ -179,9 +179,9 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
             ),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => _showAddSaleDialog(context, viewModel),
-              backgroundColor: AppColors.accent,
-              icon: const Icon(Icons.add),
-              label: const Text('إضافة عملية بيع'),
+              backgroundColor: AppColors.primary,
+              icon: const Icon(Icons.add, color: AppColors.white),
+              label: const Text('إضافة عملية بيع', style: TextStyle(color: AppColors.white)),
             ),
           );
         },
@@ -197,11 +197,11 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
       lastDate: DateTime(2101),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.accent,
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
               onPrimary: AppColors.white,
-              surface: AppColors.primary,
+              surface: AppColors.white,
             ),
           ),
           child: child!,
@@ -222,15 +222,15 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.white,
         title: const Row(
           children: [
-            Icon(Icons.add_business, color: AppColors.accent),
+            Icon(Icons.add_business, color: AppColors.primary),
             SizedBox(width: 8),
             Text(
               'إضافة عملية بيع جديدة',
               style: TextStyle(
-                color: AppColors.accent,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -241,7 +241,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
             width: MediaQuery.of(context).size.width * 0.8,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: ColorUtils.withOpacity(AppColors.secondary, 0.5),
+              color: AppColors.background,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Form(
@@ -254,10 +254,10 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                       value: selectedProperty,
                       decoration: InputDecoration(
                         labelText: 'اختر العقار',
-                        labelStyle: const TextStyle(color: AppColors.accent),
+                        labelStyle: const TextStyle(color: AppColors.textPrimary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppColors.accent),
+                          borderSide: const BorderSide(color: AppColors.primary),
                         ),
                       ),
                       validator: (value) {
@@ -269,7 +269,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                           value: property,
                           child: Text(
                             property.title,
-                            style: const TextStyle(color: AppColors.white),
+                            style: const TextStyle(color: AppColors.textPrimary),
                           ),
                         );
                       }).toList(),
@@ -278,18 +278,18 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                           selectedProperty = value;
                         });
                       },
-                      dropdownColor: AppColors.primary,
+                      dropdownColor: AppColors.white,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: amountController,
                       decoration: InputDecoration(
                         labelText: 'سعر البيع',
-                        labelStyle: const TextStyle(color: AppColors.accent),
-                        prefixIcon: const Icon(Icons.monetization_on, color: AppColors.accent),
+                        labelStyle: const TextStyle(color: AppColors.textPrimary),
+                        prefixIcon: const Icon(Icons.monetization_on, color: AppColors.primary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppColors.accent),
+                          borderSide: const BorderSide(color: AppColors.primary),
                         ),
                       ),
                       validator: (value) {
@@ -306,17 +306,17 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                         return null;
                       },
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: AppColors.white),
+                      style: const TextStyle(color: AppColors.textPrimary),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<PaymentMethod>(
                       value: selectedPaymentMethod,
                       decoration: InputDecoration(
                         labelText: 'طريقة الدفع',
-                        labelStyle: const TextStyle(color: AppColors.accent),
+                        labelStyle: const TextStyle(color: AppColors.textPrimary),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppColors.accent),
+                          borderSide: const BorderSide(color: AppColors.primary),
                         ),
                       ),
                       validator: (value) {
@@ -328,7 +328,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                           value: method,
                           child: Text(
                             method.arabicName,
-                            style: const TextStyle(color: AppColors.white),
+                            style: const TextStyle(color: AppColors.textPrimary),
                           ),
                         );
                       }).toList(),
@@ -337,7 +337,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                           selectedPaymentMethod = value;
                         });
                       },
-                      dropdownColor: AppColors.primary,
+                      dropdownColor: AppColors.white,
                     ),
                   ],
                 ),
@@ -350,7 +350,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'إلغاء',
-              style: TextStyle(color: AppColors.accent),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -364,13 +364,15 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
                     selectedProperty!,
                     amount,
                     selectedPaymentMethod!,
+                    context: context,
                   );
                   Navigator.pop(context);
                 }
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
             child: const Text('حفظ'),
           ),
@@ -383,11 +385,11 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.white,
         title: const Text(
           'تصدير التقرير',
           style: TextStyle(
-            color: AppColors.accent,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -398,9 +400,35 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
               'تصدير PDF',
               Icons.picture_as_pdf,
               AppColors.error,
-              () {
+              viewModel.isExporting ? null : () async {
                 Navigator.pop(context);
-                viewModel.exportToPDF();
+                try {
+                  await viewModel.exportToPDF(context: context);
+                  if (mounted && viewModel.exportError == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('تم تصدير التقرير بنجاح'),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } else if (mounted && viewModel.exportError != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(viewModel.exportError!),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('حدث خطأ: ${e.toString()}'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                }
               },
             ),
             const SizedBox(height: 16),
@@ -408,9 +436,35 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
               'تصدير Excel',
               Icons.table_chart,
               AppColors.success,
-              () {
+              viewModel.isExporting ? null : () async {
                 Navigator.pop(context);
-                viewModel.exportToExcel();
+                try {
+                  await viewModel.exportToExcel(context: context);
+                  if (mounted && viewModel.exportError == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('تم تصدير التقرير بنجاح'),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } else if (mounted && viewModel.exportError != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(viewModel.exportError!),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('حدث خطأ: ${e.toString()}'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                }
               },
             ),
           ],
@@ -419,7 +473,7 @@ class _RealEstateSalesManagementScreenState extends State<RealEstateSalesManagem
     );
   }
 
-  Widget _buildExportButton(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildExportButton(String title, IconData icon, Color color, VoidCallback? onTap) {
     return InkWell(
       onTap: onTap,
       child: Container(

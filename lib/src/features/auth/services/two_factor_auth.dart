@@ -17,7 +17,7 @@ class TwoFactorAuth {
   final SecurityEncryption _encryption = SecurityEncryption();
   static const int _totpDigits = 6;
   static const int _totpInterval = 30;
-  static const String _issuer = 'MasterMax';
+  static const String _issuer = 'دار كار';
 
   TwoFactorAuth._internal();
 

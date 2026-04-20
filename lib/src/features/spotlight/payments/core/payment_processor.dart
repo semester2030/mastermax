@@ -28,8 +28,12 @@ class PaymentProcessor {
   }
 
   /// معالجة عملية الدفع
-  Future<bool> processPayment(SpotlightPlan plan) async {
+  Future<bool> processPayment(SpotlightPlan plan, String userId) async {
     try {
+      if (userId.isEmpty) {
+        logError('processPayment: userId is empty');
+        return false;
+      }
       // التحقق من صحة خطة الاشتراك
       if (!_validatePlan(plan)) {
         logError('Invalid subscription plan');
@@ -41,7 +45,7 @@ class PaymentProcessor {
         amount: plan.price,
         currency: 'SAR',
         description: plan.description,
-        userId: 'current-user-id', // TODO: Get from auth
+        userId: userId,
       );
 
       if (result.success) {

@@ -40,6 +40,7 @@ enum PaymentMethod {
 
 // تفاصيل العقار
 class PropertyDetails {
+  final String id; // ✅ معرف العقار من Firestore
   final String title;
   final PropertyType type;
   final String location;
@@ -52,6 +53,7 @@ class PropertyDetails {
   final int daysInMarket;
 
   PropertyDetails({
+    required this.id, // ✅ إضافة id
     required this.title,
     required this.type,
     required this.location,

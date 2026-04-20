@@ -19,7 +19,7 @@ class ReportsTabWidget extends StatelessWidget {
           'تقرير المبيعات',
           'تحليل شامل لأداء المبيعات',
           Icons.bar_chart,
-          AppColors.chartBlue,
+          AppColors.primary,
           () {
             // TODO: Generate and show sales report
           },
@@ -29,7 +29,7 @@ class ReportsTabWidget extends StatelessWidget {
           'تقرير الأرباح',
           'تحليل الأرباح والخسائر',
           Icons.trending_up,
-          AppColors.chartGreen,
+          AppColors.success,
           () {
             // TODO: Generate and show profits report
           },
@@ -39,7 +39,7 @@ class ReportsTabWidget extends StatelessWidget {
           'تقرير المخزون',
           'تحليل حالة المخزون العقاري',
           Icons.inventory,
-          AppColors.chartOrange,
+          AppColors.primaryDark,
           () {
             // TODO: Generate and show inventory report
           },
@@ -49,7 +49,7 @@ class ReportsTabWidget extends StatelessWidget {
           'تقرير الأداء',
           'تحليل مؤشرات الأداء الرئيسية',
           Icons.analytics,
-          AppColors.chartPurple,
+          AppColors.primary,
           () {
             // TODO: Generate and show performance report
           },

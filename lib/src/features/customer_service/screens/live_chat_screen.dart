@@ -3,6 +3,8 @@ import '../models/chat_message.dart';
 import '../providers/live_chat_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/color_utils.dart';
 
 class LiveChatScreen extends StatefulWidget {
   final LiveChatProvider provider;
@@ -59,7 +61,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: Text(
           'المحادثة المباشرة',
@@ -305,47 +307,26 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
   Widget _buildMessageInput(ColorScheme colorScheme, TextTheme textTheme) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primary.withAlpha(51),
-            colorScheme.secondary.withAlpha(51),
-          ],
-        ),
-        border: Border(
-          top: BorderSide(
-            color: colorScheme.secondary.withAlpha(77),
-          ),
-        ),
-      ),
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary.withAlpha(26),
-                    colorScheme.secondary.withAlpha(26),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: colorScheme.secondary.withAlpha(77),
-                ),
+            child: TextField(
+              controller: _messageController,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
               ),
-              child: TextField(
-                controller: _messageController,
-                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary),
-                decoration: InputDecoration(
-                  hintText: 'اكتب رسالتك هنا...',
-                  hintStyle: textTheme.bodySmall?.copyWith(color: colorScheme.onPrimary.withAlpha(128)),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  border: InputBorder.none,
+              decoration: InputDecoration(
+                hintText: 'اكتب رسالتك هنا...',
+                hintStyle: TextStyle(
+                  color: ColorUtils.withOpacity(AppColors.textPrimary, 0.5),
                 ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
               ),
             ),
           ),

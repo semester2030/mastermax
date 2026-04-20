@@ -75,8 +75,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
                   onPressed: () => Navigator.of(context).pop(),
+                  tooltip: 'رجوع',
                 ),
                 Text(
                   "${currentIndex + 1}/${widget.galleryItems.length}",
@@ -89,6 +90,64 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               ],
             ),
           ),
+          if (widget.galleryItems.length > 1)
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 56, bottom: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Material(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: IconButton(
+                        tooltip: 'الصورة السابقة',
+                        icon: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: currentIndex > 0
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.35),
+                          size: 22,
+                        ),
+                        onPressed: currentIndex > 0
+                            ? () {
+                                widget.pageController.previousPage(
+                                  duration: const Duration(milliseconds: 280),
+                                  curve: Curves.easeOutCubic,
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
+                    Material(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: IconButton(
+                        tooltip: 'الصورة التالية',
+                        icon: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: currentIndex < widget.galleryItems.length - 1
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.35),
+                          size: 22,
+                        ),
+                        onPressed: currentIndex < widget.galleryItems.length - 1
+                            ? () {
+                                widget.pageController.nextPage(
+                                  duration: const Duration(milliseconds: 280),
+                                  curve: Curves.easeOutCubic,
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

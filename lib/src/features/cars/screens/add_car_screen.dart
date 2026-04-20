@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../auth/providers/auth_state.dart';
+import '../../auth/utils/listing_vertical_guard.dart';
 import '../models/car_model.dart';
 import '../providers/car_provider.dart';
 import '../widgets/car_form.dart';
+import '../../../core/theme/app_colors.dart';
 
 class AddCarScreen extends StatefulWidget {
   const AddCarScreen({super.key});
@@ -14,6 +17,27 @@ class AddCarScreen extends StatefulWidget {
 class _AddCarScreenState extends State<AddCarScreen> {
   bool _isLoading = false;
   CarModel? vehicle;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final auth = context.read<AuthState>();
+      final t = auth.user?.type ?? auth.userType;
+      if (!ListingVerticalGuard.mayPublishCars(
+        t,
+        isAdmin: auth.isAdmin,
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(ListingVerticalGuard.carsDeniedMessage),
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+    });
+  }
 
   Future<void> _submitCar(CarModel car) async {
     if (!mounted) return;
@@ -52,7 +76,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: Text(
           'إضافة سيارة',

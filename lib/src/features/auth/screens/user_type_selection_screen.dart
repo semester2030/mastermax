@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../models/user_type.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
+import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/app_brand_logo_header.dart';
 
 class UserTypeSelectionScreen extends StatefulWidget {
   const UserTypeSelectionScreen({super.key});
@@ -48,44 +49,35 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> with 
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: colorScheme.surface,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: colorScheme.primary,
+          ),
+          onPressed: () {
+            // التحقق من وجود صفحات في الـ stack قبل الرجوع
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              // إذا لم تكن هناك صفحات سابقة، اذهب إلى صفحة تسجيل الدخول
+              Navigator.of(context).pushReplacementNamed('/');
+            }
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 40),
-              Center(
-                child: custom_animations.AnimatedGlow(
-                  glowColor: colorScheme.primary.withOpacity(0.15),
-                  maxRadius: 30,
-                  duration: const Duration(seconds: 2),
-                  child: Container(
-                    height: 180,
-                    width: 180,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colorScheme.surface,
-                      border: Border.all(
-                        color: colorScheme.primary,
-                        width: 2.0,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.outline.withOpacity(0.2),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: SvgPicture.asset(
-                      'assets/images/logos/master_max_logo.svg',
-                    ),
-                  ),
-                ),
+              AppBrandLogoHeader(
+                margin: const EdgeInsets.only(bottom: 16),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
                 'اختر نوع الحساب',
                 style: textTheme.headlineMedium?.copyWith(
@@ -178,7 +170,7 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> with 
             ],
           ),
           child: Material(
-            color: Colors.transparent,
+            color: AppColors.transparent,
             child: InkWell(
               onTap: () => _navigateToRegister(context, userType),
               borderRadius: BorderRadius.circular(15),

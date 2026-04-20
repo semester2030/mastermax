@@ -19,20 +19,33 @@ class CarHotspot {
     required this.longitude,
     required this.latitude,
     this.icon = Icons.info,
-    this.color = Colors.blue,
+    this.color = const Color(0xFF2196F3),
     this.specificationKey,
     this.specificationValue,
     this.isInterior = false,
   });
 
+  /// يعيد أيقونة Material معروفة فقط (ثابتة) لتمرير تحليل أيقونات الويب (tree-shake).
+  static IconData _iconFromCodePoint(int codePoint) {
+    if (codePoint == Icons.info.codePoint) return Icons.info;
+    if (codePoint == Icons.directions_car.codePoint) return Icons.directions_car;
+    if (codePoint == Icons.tire_repair.codePoint) return Icons.tire_repair;
+    if (codePoint == Icons.highlight.codePoint) return Icons.highlight;
+    if (codePoint == Icons.dashboard.codePoint) return Icons.dashboard;
+    if (codePoint == Icons.event_seat.codePoint) return Icons.event_seat;
+    if (codePoint == Icons.wb_sunny.codePoint) return Icons.wb_sunny;
+    return Icons.info;
+  }
+
   factory CarHotspot.fromJson(Map<String, dynamic> json) {
+    final iconCode = json['icon'] as int? ?? Icons.info.codePoint;
     return CarHotspot(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
       longitude: json['longitude'] as double,
       latitude: json['latitude'] as double,
-      icon: IconData(json['icon'] as int, fontFamily: 'MaterialIcons'),
+      icon: _iconFromCodePoint(iconCode),
       color: Color(json['color'] as int),
       specificationKey: json['specificationKey'] as String?,
       specificationValue: json['specificationValue'] as String?,

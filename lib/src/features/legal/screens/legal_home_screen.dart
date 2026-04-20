@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/legal_card_widget.dart';
 import '../services/legal_navigation_service.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
 
 class LegalHomeScreen extends StatelessWidget {
   const LegalHomeScreen({super.key});
@@ -20,8 +21,8 @@ class LegalHomeScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              ColorUtils.withOpacity(Theme.of(context).primaryColor, 0.05),
-              Colors.white,
+              ColorUtils.withOpacity(AppColors.primary, 0.05),
+              AppColors.white,
             ],
           ),
         ),
@@ -46,7 +47,7 @@ class LegalHomeScreen extends StatelessWidget {
                   'يمكنك الاطلاع على جميع السياسات والشروط الخاصة بالمنصة',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),

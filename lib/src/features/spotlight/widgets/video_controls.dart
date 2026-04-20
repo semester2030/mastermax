@@ -56,7 +56,7 @@ class VideoControls extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: ColorUtils.withOpacity(Colors.black, 0.5),
+              color: ColorUtils.withOpacity(AppColors.textPrimary, 0.5),
               shape: BoxShape.circle,
             ),
             child: Icon(

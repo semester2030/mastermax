@@ -87,7 +87,10 @@ class AppTheme {
     primaryColorDark: AppColors.primaryDark,
     primaryColorLight: AppColors.primaryLight,
     scaffoldBackgroundColor: AppColors.background,
-    colorScheme: ColorScheme(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: Brightness.light,
+    ).copyWith(
       primary: AppColors.primary,
       secondary: AppColors.secondary,
       surface: AppColors.surface,
@@ -96,7 +99,9 @@ class AppTheme {
       onSecondary: Colors.white,
       onSurface: AppColors.textPrimary,
       onError: Colors.white,
-      brightness: Brightness.light,
+      primaryContainer: AppColors.primaryLight,
+      onPrimaryContainer: AppColors.primaryDark,
+      onSurfaceVariant: AppColors.onSurfaceMuted,
     ),
     textTheme: TextTheme(
       displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
@@ -110,10 +115,10 @@ class AppTheme {
       titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
       bodyLarge: TextStyle(fontSize: 16, color: AppColors.textPrimary),
       bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
-      bodySmall: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+      bodySmall: TextStyle(fontSize: 12, color: AppColors.textPrimary),
       labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
       labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-      labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+      labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.surface,
@@ -130,7 +135,7 @@ class AppTheme {
       shadowColor: AppColors.shadow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.primaryLight),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -139,11 +144,11 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.primaryLight),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.primaryLight),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -158,7 +163,7 @@ class AppTheme {
         borderSide: BorderSide(color: AppColors.error, width: 2),
       ),
       labelStyle: TextStyle(color: AppColors.textSecondary),
-      hintStyle: TextStyle(color: AppColors.textDisabled),
+      hintStyle: TextStyle(color: ColorUtils.withOpacity(AppColors.primary, 0.6)),
       errorStyle: TextStyle(color: AppColors.error, fontSize: 12),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -209,7 +214,7 @@ class AppTheme {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.primaryLight),
       ),
     ),
     chipTheme: ChipThemeData(
@@ -221,7 +226,7 @@ class AppTheme {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: AppColors.primaryLight),
       ),
     ),
     switchTheme: SwitchThemeData(
@@ -229,13 +234,13 @@ class AppTheme {
         if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
-        return AppColors.disabled;
+        return ColorUtils.withOpacity(AppColors.primary, 0.2);
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return ColorUtils.withOpacity(AppColors.primary, 0.5);
         }
-        return ColorUtils.withOpacity(AppColors.disabled, 0.5);
+        return ColorUtils.withOpacity(AppColors.primary, 0.2);
       }),
     ),
     checkboxTheme: CheckboxThemeData(
@@ -243,7 +248,7 @@ class AppTheme {
         if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
-        return AppColors.border;
+        return ColorUtils.withOpacity(AppColors.primary, 0.2);
       }),
       checkColor: WidgetStateProperty.all(Colors.white),
       shape: RoundedRectangleBorder(
@@ -255,7 +260,7 @@ class AppTheme {
         if (states.contains(WidgetState.selected)) {
           return AppColors.primary;
         }
-        return AppColors.border;
+        return ColorUtils.withOpacity(AppColors.primary, 0.2);
       }),
     ),
     progressIndicatorTheme: ProgressIndicatorThemeData(
@@ -273,7 +278,7 @@ class AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: AppColors.surface,
       selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textSecondary,
+      unselectedItemColor: ColorUtils.withOpacity(AppColors.primary, 0.5),
       type: BottomNavigationBarType.fixed,
       elevation: 0,
       selectedLabelStyle: const TextStyle(
@@ -288,13 +293,13 @@ class AppTheme {
       ),
     ),
     dividerTheme: DividerThemeData(
-      color: AppColors.divider,
+      color: AppColors.primaryLight,
       thickness: 1,
       space: 1,
     ),
     tabBarTheme: TabBarThemeData(
       labelColor: AppColors.primary,
-      unselectedLabelColor: AppColors.textSecondary,
+      unselectedLabelColor: ColorUtils.withOpacity(AppColors.primary, 0.5),
       indicatorColor: AppColors.primary,
       labelStyle: const TextStyle(
         fontSize: 14,
@@ -317,10 +322,10 @@ class AppTheme {
       },
     ),
     splashFactory: InkRipple.splashFactory,
-    splashColor: AppColors.primary.withOpacity(0.08),
-    highlightColor: AppColors.primary.withOpacity(0.04),
-    hoverColor: AppColors.primary.withOpacity(0.08),
-    focusColor: AppColors.primary.withOpacity(0.08),
+    splashColor: ColorUtils.withOpacity(AppColors.primary, 0.08),
+    highlightColor: ColorUtils.withOpacity(AppColors.primary, 0.04),
+    hoverColor: ColorUtils.withOpacity(AppColors.primary, 0.08),
+    focusColor: ColorUtils.withOpacity(AppColors.primary, 0.08),
   );
 
   static ThemeData get darkTheme {
@@ -329,7 +334,10 @@ class AppTheme {
       primaryColorDark: AppColors.primaryDark,
       primaryColorLight: AppColors.primaryLight,
       scaffoldBackgroundColor: ColorUtils.withOpacity(Colors.black, 0.95),
-      colorScheme: ColorScheme(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primary,
+        brightness: Brightness.dark,
+      ).copyWith(
         primary: primary,
         secondary: secondary,
         surface: Colors.white,
@@ -338,7 +346,9 @@ class AppTheme {
         onSecondary: Colors.white,
         onSurface: textPrimary,
         onError: Colors.white,
-        brightness: Brightness.dark,
+        primaryContainer: AppColors.primaryLight,
+        onPrimaryContainer: AppColors.primaryDark,
+        onSurfaceVariant: AppColors.onSurfaceMuted,
       ),
       textTheme: TextTheme(
         displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textPrimary),

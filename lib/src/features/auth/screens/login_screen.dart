@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../providers/auth_state.dart';
 import '../services/auth_service.dart';
+import '../models/user_type.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
-import 'package:flutter_svg/flutter_svg.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/app_brand_logo_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,18 +41,32 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final user = await authService.login(
         _emailController.text.trim(),
-        _passwordController.text,
+        _passwordController.text.trim(),
       );
 
       if (!mounted) return;
       authState.setAuthenticated(user);
-      Navigator.of(context).pushReplacementNamed('/main');
+      // ✅ للويب: انتقل إلى Dashboard، للموبايل: انتقل إلى Main
+      String route;
+      if (kIsWeb) {
+        // ✅ على الويب: business users يذهبون إلى Dashboard
+        route = (user.type == UserType.realEstateCompany ||
+                user.type == UserType.realEstateAgent ||
+                user.type == UserType.carDealer ||
+                user.type == UserType.carTrader)
+            ? '/dashboard'
+            : '/main';
+      } else {
+        // ✅ على الموبايل: جميع المستخدمين يذهبون إلى Main
+        route = '/main';
+      }
+      Navigator.of(context).pushReplacementNamed(route);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: AppColors.error,
         ),
       );
       Provider.of<AuthState>(context, listen: false).setError(e.toString());
@@ -62,89 +79,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: AppColors.white,
       body: Container(
-        color: colorScheme.surface,
-        child: custom_animations.AnimatedGlow(
-          glowColor: colorScheme.primary.withOpacity(0.08),
-          maxRadius: 50,
-          duration: const Duration(seconds: 2),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 48),
-                    Hero(
-                      tag: 'app_logo',
-                      child: custom_animations.AnimatedGlow(
-                        glowColor: colorScheme.primary,
-                        maxRadius: 30,
-                        duration: const Duration(seconds: 2),
-                        child: Container(
-                          height: 180,
-                          width: 180,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorScheme.surface,
-                            border: Border.all(
-                              color: colorScheme.primary,
-                              width: 2.0,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: colorScheme.primary.withOpacity(0.15),
-                                blurRadius: 30,
-                                spreadRadius: 5,
-                              ),
-                              BoxShadow(
-                                color: colorScheme.surface.withOpacity(0.1),
-                                blurRadius: 20,
-                                spreadRadius: -5,
-                                offset: const Offset(-5, -5),
-                              ),
-                            ],
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/images/logos/master_max_logo.svg',
-                          ),
-                        ),
-                      ),
-                    ),
+        color: AppColors.white,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                     const SizedBox(height: 24),
-                    custom_animations.ShimmerLoading(
-                      baseColor: colorScheme.primary,
-                      highlightColor: colorScheme.primary.withOpacity(0.8),
-                      child: Text(
-                        'MASTER MAX',
-                        style: textTheme.displaySmall?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                    AppBrandLogoHeader(
+                      margin: const EdgeInsets.only(bottom: 16),
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: colorScheme.primary.withOpacity(0.3),
+                          color: AppColors.primary.withOpacity(0.3),
                           width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.shadow.withOpacity(0.05),
+                            color: AppColors.textPrimary.withOpacity(0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -165,8 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                                 return null;
                               },
-                              colorScheme: colorScheme,
-                              textTheme: textTheme,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -184,8 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                                 return null;
                               },
-                              colorScheme: colorScheme,
-                              textTheme: textTheme,
                             ),
                           ),
                           const SizedBox(height: 30),
@@ -195,11 +154,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: double.infinity,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: colorScheme.primary,
+                                color: AppColors.primary,
                                 borderRadius: BorderRadius.circular(15),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: colorScheme.primary.withOpacity(0.15),
+                                    color: AppColors.primary.withOpacity(0.15),
                                     blurRadius: 20,
                                   ),
                                 ],
@@ -211,19 +170,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  backgroundColor: Colors.transparent,
-                                  foregroundColor: colorScheme.onPrimary,
-                                  shadowColor: Colors.transparent,
+                                  backgroundColor: AppColors.transparent,
+                                  foregroundColor: AppColors.white,
+                                  shadowColor: AppColors.transparent,
                                 ),
                                 child: _isLoading
-                                    ? CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
+                                    ? const CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                       )
-                                    : Text(
+                                    : const Text(
                                         'تسجيل الدخول',
-                                        style: textTheme.labelLarge?.copyWith(
+                                        style: TextStyle(
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: colorScheme.onPrimary,
+                                          color: AppColors.white,
                                         ),
                                       ),
                               ),
@@ -239,12 +199,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
-                          color: colorScheme.surface,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
                             color: _isForgotPasswordHovered 
-                              ? colorScheme.primary 
-                              : colorScheme.primary.withOpacity(0.3),
+                              ? AppColors.primary 
+                              : AppColors.primary.withOpacity(0.3),
                             width: _isForgotPasswordHovered ? 3 : 2,
                           ),
                         ),
@@ -253,17 +213,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.pushNamed(context, '/forgot-password');
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: colorScheme.primary,
+                            foregroundColor: AppColors.primary,
                             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'نسيت كلمة المرور؟',
-                            style: textTheme.labelLarge?.copyWith(
+                            style: TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
+                              color: AppColors.primary,
                             ),
                           ),
                         ),
@@ -276,12 +237,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
-                          color: colorScheme.surface,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
                             color: _isCreateAccountHovered 
-                              ? colorScheme.primary 
-                              : colorScheme.primary.withOpacity(0.3),
+                              ? AppColors.primary 
+                              : AppColors.primary.withOpacity(0.3),
                             width: _isCreateAccountHovered ? 3 : 2,
                           ),
                         ),
@@ -290,71 +251,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.of(context).pushNamed('/user-type-selection');
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: colorScheme.primary,
+                            foregroundColor: AppColors.primary,
                             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'إنشاء حساب',
-                            style: textTheme.labelLarge?.copyWith(
+                            style: TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.w800,
-                              color: colorScheme.primary,
+                              color: AppColors.primary,
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    MouseRegion(
-                      onEnter: (_) => setState(() => _isCreateAccountHovered = true),
-                      onExit: (_) => setState(() => _isCreateAccountHovered = false),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: _isCreateAccountHovered 
-                              ? colorScheme.primary 
-                              : colorScheme.primary.withOpacity(0.3),
-                            width: _isCreateAccountHovered ? 3 : 2,
-                          ),
-                        ),
-                        child: Consumer<AuthState>(
-                          builder: (context, authState,_) {
-                            return TextButton(
-                              onPressed: () async {
-                                  try {
-                                      await authState.loginAsGuest();
-                                      if (context.mounted) {
-                                        Navigator.pushReplacementNamed(context, '/main');
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(e.toString())),
-                                        );
-                                      }
-                                    }
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: colorScheme.primary,
-                                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                              child: Text(
-                                'جرب التطبيق',
-                                style: textTheme.labelLarge?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: colorScheme.primary,
-                                ),
-                              ),
-                            );
-                          }
                         ),
                       ),
                     ),
@@ -363,7 +273,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-        ),
       ),
     );
   }
@@ -374,21 +283,19 @@ class _LoginScreenState extends State<LoginScreen> {
     required IconData icon,
     required String? Function(String?) validator,
     bool isPassword = false,
-    required ColorScheme colorScheme,
-    required TextTheme textTheme,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: isPassword ? _obscurePassword : false,
-      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+      style: TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: colorScheme.primary),
+        prefixIcon: Icon(icon, color: AppColors.primary),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  color: colorScheme.primary,
+                  color: AppColors.primary,
                 ),
                 onPressed: () {
                   setState(() {
@@ -400,31 +307,31 @@ class _LoginScreenState extends State<LoginScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(
-            color: colorScheme.primary.withOpacity(0.3),
+            color: AppColors.primary.withOpacity(0.3),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(
-            color: colorScheme.primary.withOpacity(0.3),
+            color: AppColors.primary.withOpacity(0.3),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.primary),
+          borderSide: const BorderSide(color: AppColors.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.error),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.error),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
-        labelStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.primary),
-        errorStyle: textTheme.bodySmall?.copyWith(color: colorScheme.error),
+        labelStyle: const TextStyle(color: AppColors.primary),
+        errorStyle: const TextStyle(color: AppColors.error),
         filled: true,
-        fillColor: colorScheme.surface,
+        fillColor: AppColors.white,
       ),
       validator: validator,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),

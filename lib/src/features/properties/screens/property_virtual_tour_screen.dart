@@ -32,7 +32,7 @@ class _PropertyVirtualTourScreenState extends State<PropertyVirtualTourScreen> {
   void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.black)
+      ..setBackgroundColor(AppColors.textPrimary)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -68,15 +68,15 @@ class _PropertyVirtualTourScreenState extends State<PropertyVirtualTourScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 179),
+              color: AppColors.textPrimary.withValues(alpha: 179),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -92,7 +92,7 @@ class _PropertyVirtualTourScreenState extends State<PropertyVirtualTourScreen> {
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 179),
+                color: AppColors.textPrimary.withValues(alpha: 179),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -144,7 +144,7 @@ class _PropertyVirtualTourScreenState extends State<PropertyVirtualTourScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black,
+                      foregroundColor: AppColors.textPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,

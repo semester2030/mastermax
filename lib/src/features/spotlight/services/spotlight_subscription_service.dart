@@ -13,7 +13,7 @@ class SpotlightSubscriptionService {
   /// بدء اشتراك جديد
   Future<bool> startSubscription(SpotlightPlan plan, String userId) async {
     try {
-      final success = await _paymentProcessor.processPayment(plan);
+      final success = await _paymentProcessor.processPayment(plan, userId);
       if (success) {
         // تحديث حالة الاشتراك في قاعدة البيانات
         await _updateSubscriptionStatus(

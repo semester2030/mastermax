@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../features/map/screens/location_picker_screen.dart';
+import '../../../features/properties/services/property_location_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/color_utils.dart';
@@ -21,24 +22,64 @@ class LocationPickerField extends StatefulWidget {
 }
 
 class LocationPickerFieldState extends State<LocationPickerField> {
-  late Point _selectedLocation;
+  late LatLng _selectedLocation;
   String _address = '';
+  final _propertyLocationService = PropertyLocationService();
 
   @override
   void initState() {
     super.initState();
-    _selectedLocation = Point(
-      coordinates: Position(
-        widget.initialLocation.longitude,
+    // إذا كان الموقع (0, 0)، الحصول على الموقع الحالي تلقائياً
+    if (widget.initialLocation.latitude == 0 && widget.initialLocation.longitude == 0) {
+      _getCurrentLocation();
+    } else {
+      _selectedLocation = LatLng(
         widget.initialLocation.latitude,
-      ),
-    );
-    _address = widget.initialAddress;
+        widget.initialLocation.longitude,
+      );
+      _address = widget.initialAddress;
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final location = await _propertyLocationService.getCurrentLocation();
+      final address = await _propertyLocationService.getAddressFromLocation(location);
+      
+      if (mounted) {
+        setState(() {
+          _selectedLocation = location;
+          _address = address;
+        });
+        
+        widget.onLocationSelected(
+          GeoPoint(
+            location.latitude,
+            location.longitude,
+          ),
+          address,
+        );
+      }
+    } catch (e) {
+      debugPrint('فشل في الحصول على الموقع الحالي: $e');
+      // استخدام الموقع الافتراضي (الرياض)
+      if (mounted) {
+        setState(() {
+          _selectedLocation = const LatLng(24.7136, 46.6753);
+          _address = 'الرياض، المملكة العربية السعودية';
+        });
+        
+        widget.onLocationSelected(
+          const GeoPoint(24.7136, 46.6753),
+          'الرياض، المملكة العربية السعودية',
+        );
+      }
+    }
   }
 
   Future<void> _openLocationPicker() async {
     try {
-      final result = await Navigator.push<Point>(
+      final result = await Navigator.push<LatLng>(
         context,
         MaterialPageRoute(
           builder: (context) => LocationPickerScreen(
@@ -50,16 +91,40 @@ class LocationPickerFieldState extends State<LocationPickerField> {
       if (result != null) {
         setState(() {
           _selectedLocation = result;
-          _address = 'الموقع المحدد';
+          _address = 'جاري الحصول على العنوان...';
         });
 
-        widget.onLocationSelected(
-          GeoPoint(
-            result.coordinates.lat.toDouble(),
-            result.coordinates.lng.toDouble(),
-          ),
-          _address,
-        );
+        // الحصول على العنوان الفعلي من الإحداثيات
+        try {
+          final address = await _propertyLocationService.getAddressFromLocation(result);
+          if (mounted) {
+            setState(() {
+              _address = address;
+            });
+            
+            widget.onLocationSelected(
+              GeoPoint(
+                result.latitude,
+                result.longitude,
+              ),
+              address,
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _address = 'الموقع المحدد';
+            });
+            
+            widget.onLocationSelected(
+              GeoPoint(
+                result.latitude,
+                result.longitude,
+              ),
+              'الموقع المحدد',
+            );
+          }
+        }
       }
     } catch (e) {
       debugPrint('Error in location picker: $e');

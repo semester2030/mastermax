@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../screens/camera_screen.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class CameraOverlay extends StatelessWidget {
   final CameraMode mode;
@@ -50,13 +51,13 @@ class CameraOverlay extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black54,
+              color: AppColors.textPrimary.withOpacity(0.54),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               _getGuidanceText(),
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -72,8 +73,8 @@ class CameraOverlay extends StatelessWidget {
               value: mode == CameraMode.panorama
                   ? panoramaProgress
                   : threeDProgress,
-              backgroundColor: Colors.white30,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              backgroundColor: AppColors.white.withOpacity(0.3),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.white),
               minHeight: 8,
             ),
           ),
@@ -108,7 +109,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white54
+      ..color = AppColors.white.withOpacity(0.54)
       ..strokeWidth = 1;
 
     switch (mode) {

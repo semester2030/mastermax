@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../core/geo/saudi_region_parser.dart';
 import '../models/car_model.dart';
 import 'package:flutter/foundation.dart';
 
@@ -9,54 +11,29 @@ class CarService {
   Future<List<CarModel>> getCars() async {
     try {
       debugPrint('Starting to fetch cars from Firestore');
-      
-      if (kIsWeb) {
-        // تعديل الاستعلام للويب
-        final snapshot = await _db.collection(_collection)
-            .where('isActive', isEqualTo: true)
-            .get(const GetOptions(source: Source.server));
-        
-        debugPrint('Web: Fetched ${snapshot.docs.length} cars from Firestore');
-        
-        if (snapshot.docs.isEmpty) {
-          debugPrint('No cars found in Firestore');
-          return [];
-        }
+      // بدون Source.server على الويب حتى يُسمح للـ cache بالعمل وتقليل زمن الظهور.
+      final snapshot = await _db.collection(_collection)
+          .where('isActive', isEqualTo: true)
+          .get();
 
-        final cars = snapshot.docs.map((doc) {
-          final data = doc.data();
-          data['id'] = doc.id;
-          return CarModel.fromMap(data, doc.id);
-        }).toList();
+      debugPrint(
+        '${kIsWeb ? 'Web' : 'Mobile'}: Fetched ${snapshot.docs.length} cars',
+      );
 
-        cars.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        
-        debugPrint('Successfully processed ${cars.length} cars');
-        return cars;
-      } else {
-        // للتطبيقات المحلية
-        final snapshot = await _db.collection(_collection)
-            .where('isActive', isEqualTo: true)
-            .get();
-        
-        debugPrint('Mobile: Fetched ${snapshot.docs.length} cars from Firestore');
-        
-        if (snapshot.docs.isEmpty) {
-          debugPrint('No cars found in Firestore');
-          return [];
-        }
-
-        final cars = snapshot.docs.map((doc) {
-          final data = doc.data();
-          data['id'] = doc.id;
-          return CarModel.fromMap(data, doc.id);
-        }).toList();
-
-        cars.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        
-        debugPrint('Successfully processed ${cars.length} cars');
-        return cars;
+      if (snapshot.docs.isEmpty) {
+        debugPrint('No cars found in Firestore');
+        return [];
       }
+
+      final cars = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return CarModel.fromMap(data, doc.id);
+      }).toList();
+
+      cars.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      debugPrint('Successfully processed ${cars.length} cars');
+      return cars;
     } catch (e) {
       debugPrint('Error getting cars: $e');
       _logError('Error getting cars', e);
@@ -66,15 +43,9 @@ class CarService {
 
   Future<CarModel?> getCar(String id) async {
     try {
-      if (kIsWeb) {
-        final doc = await _db.collection(_collection).doc(id).get(const GetOptions(source: Source.server));
-        if (!doc.exists) return null;
-        return CarModel.fromMap(doc.data()!, doc.id);
-      } else {
-        final doc = await _db.collection(_collection).doc(id).get();
-        if (!doc.exists) return null;
-        return CarModel.fromMap(doc.data()!, doc.id);
-      }
+      final doc = await _db.collection(_collection).doc(id).get();
+      if (!doc.exists) return null;
+      return CarModel.fromMap(doc.data()!, doc.id);
     } catch (e) {
       rethrow;
     }
@@ -90,14 +61,10 @@ class CarService {
         'updatedAt': FieldValue.serverTimestamp(),
         'isActive': true,
       };
+      SaudiRegionParser.applyToFirestoreMap(carData, (carData['address'] ?? '').toString());
 
-      if (kIsWeb) {
-        final docRef = await _db.collection(_collection).add(carData);
-        return docRef.id;
-      } else {
-        final docRef = await _db.collection(_collection).add(carData);
-        return docRef.id;
-      }
+      final docRef = await _db.collection(_collection).add(carData);
+      return docRef.id;
     } catch (e) {
       _logError('Error adding car', e);
       throw 'فشل في إضافة السيارة. الرجاء المحاولة مرة أخرى';
@@ -116,7 +83,9 @@ class CarService {
 
   Future<void> updateCar(CarModel car) async {
     try {
-      await _db.collection(_collection).doc(car.id).update(car.toMap());
+      final carData = car.toMap();
+      SaudiRegionParser.applyToFirestoreMap(carData, (carData['address'] ?? '').toString());
+      await _db.collection(_collection).doc(car.id).update(carData);
     } catch (e) {
       rethrow;
     }

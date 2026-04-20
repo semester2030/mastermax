@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../providers/map_state.dart';
 import '../widgets/map_view.dart';
 import '../../../core/theme/app_colors.dart';
@@ -74,19 +75,40 @@ class MapScreen extends StatelessWidget {
               _buildCityButton(
                 context,
                 'الرياض',
-                () => context.read<MapState>().mapController?.setCamera(MapState.riyadh),
+                () {
+                  final controller = context.read<MapState>().mapController;
+                  if (controller != null) {
+                    controller.animateCamera(
+                      CameraUpdate.newCameraPosition(MapState.riyadh),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 8),
               _buildCityButton(
                 context,
                 'جدة',
-                () => context.read<MapState>().mapController?.setCamera(MapState.jeddah),
+                () {
+                  final controller = context.read<MapState>().mapController;
+                  if (controller != null) {
+                    controller.animateCamera(
+                      CameraUpdate.newCameraPosition(MapState.jeddah),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 8),
               _buildCityButton(
                 context,
                 'مكة',
-                () => context.read<MapState>().mapController?.setCamera(MapState.makkah),
+                () {
+                  final controller = context.read<MapState>().mapController;
+                  if (controller != null) {
+                    controller.animateCamera(
+                      CameraUpdate.newCameraPosition(MapState.makkah),
+                    );
+                  }
+                },
               ),
             ],
           ),

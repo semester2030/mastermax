@@ -54,10 +54,10 @@ class RecentTransactionsWidget extends StatelessWidget {
                   final sale = recentSales[index];
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: ColorUtils.withOpacity(AppColors.chartBlue, 0.1),
+                      backgroundColor: ColorUtils.withOpacity(AppColors.primary, 0.1),
                       child: Icon(
                         _getIconForPropertyType(sale.propertyDetails.type),
-                        color: AppColors.chartBlue,
+                        color: AppColors.primary,
                       ),
                     ),
                     title: Text(sale.propertyDetails.title),
@@ -68,7 +68,7 @@ class RecentTransactionsWidget extends StatelessWidget {
                       '${sale.amount} ر.س',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.chartGreen,
+                        color: AppColors.success,
                       ),
                     ),
                   );

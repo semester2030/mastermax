@@ -1,16 +1,26 @@
+import '../constants/app_brand.dart';
+
 class AppConfig {
-  static const String appName = 'MASTER MAX';
+  static String get appName => AppBrand.displayName;
   static const String appVersion = '1.0.0';
 
   // Firebase Configuration
-  static const String firebaseProjectId = 'master-max';
+  static const String firebaseProjectId = 'reca';
   
   // API Configuration
-  static const String apiBaseUrl = 'https://api.mastermax.com';
+  static const String apiBaseUrl = 'https://api.reca.com';
   static const int apiTimeout = 30000; // 30 seconds
   
-  // Map Configuration
-  static const String mapApiKey = 'YOUR_MAP_API_KEY';
+  /// Google Maps / Places / Geocoding (REST). Prefer `--dart-define=GOOGLE_MAPS_API_KEY=...` in CI;
+  /// restrict the key in Google Cloud Console (iOS bundle ID, Android package + SHA-1, API allowlist).
+  static String get mapApiKey {
+    const fromEnv = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    return _mapApiKeyDefault;
+  }
+
+  static const String _mapApiKeyDefault =
+      'AIzaSyDqTUgEpUZmwM602S6TVc57d5erB_c-dr4';
   static const double defaultLatitude = 24.7136;  // Default Saudi Arabia latitude
   static const double defaultLongitude = 46.6753; // Default Saudi Arabia longitude
   static const double defaultZoom = 11.0;
@@ -37,17 +47,17 @@ class AppConfig {
   static const bool enableNotifications = true;
   
   // Support
-  static const String supportEmail = 'support@mastermax.com';
+  static const String supportEmail = 'support@reca.com';
   static const String supportPhone = '+966XXXXXXXXX';
   
   // Social Media
-  static const String facebookUrl = 'https://facebook.com/mastermax';
-  static const String twitterUrl = 'https://twitter.com/mastermax';
-  static const String instagramUrl = 'https://instagram.com/mastermax';
+  static const String facebookUrl = 'https://facebook.com/reca';
+  static const String twitterUrl = 'https://twitter.com/reca';
+  static const String instagramUrl = 'https://instagram.com/reca';
   
   // Terms and Privacy
-  static const String termsUrl = 'https://mastermax.com/terms';
-  static const String privacyUrl = 'https://mastermax.com/privacy';
+  static const String termsUrl = 'https://reca.com/terms';
+  static const String privacyUrl = 'https://reca.com/privacy';
   
   // Development mode flag - set to false in production
   static bool isDevelopmentMode = true;

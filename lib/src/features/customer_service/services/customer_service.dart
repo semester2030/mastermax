@@ -4,10 +4,11 @@ import '../models/support_ticket.dart';
 class CustomerService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<SupportTicket>> getTickets() async {
+  Future<List<SupportTicket>> getTickets(String userId) async {
     try {
       final snapshot = await _firestore
           .collection('support_tickets')
+          .where('userId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
 

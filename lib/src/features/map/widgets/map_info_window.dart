@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MapInfoWindow extends StatelessWidget {
   final String title;
@@ -27,11 +28,27 @@ class MapInfoWindow extends StatelessWidget {
                 if (imageUrl != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      imageUrl!,
+                    child: SizedBox(
                       width: 80,
                       height: 80,
-                      fit: BoxFit.cover,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Theme.of(context).colorScheme.surface,
+                          child: const Center(
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: Theme.of(context).colorScheme.surface,
+                          child: const Icon(Icons.error, size: 20),
+                        ),
+                      ),
                     ),
                   ),
                 if (imageUrl != null)

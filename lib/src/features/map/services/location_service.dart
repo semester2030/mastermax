@@ -1,5 +1,5 @@
 import 'package:location/location.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/errors/exceptions.dart';
 import 'package:flutter/foundation.dart';
 
@@ -26,7 +26,7 @@ class LocationService {
     return true;
   }
 
-  Future<Point?> getCurrentLocation() async {
+  Future<LatLng?> getCurrentLocation() async {
     try {
       if (!await checkPermissions()) {
         return null;
@@ -34,11 +34,9 @@ class LocationService {
 
       final locationData = await _location.getLocation();
       if (locationData.latitude != null && locationData.longitude != null) {
-        return Point(
-          coordinates: Position(
-            locationData.longitude!,
-            locationData.latitude!,
-          ),
+        return LatLng(
+          locationData.latitude!,
+          locationData.longitude!,
         );
       }
       return null;
@@ -48,14 +46,12 @@ class LocationService {
     }
   }
 
-  Stream<Point?> getLocationStream() {
+  Stream<LatLng?> getLocationStream() {
     return _location.onLocationChanged.map((locationData) {
       if (locationData.latitude != null && locationData.longitude != null) {
-        return Point(
-          coordinates: Position(
-            locationData.longitude!,
-            locationData.latitude!,
-          ),
+        return LatLng(
+          locationData.latitude!,
+          locationData.longitude!,
         );
       }
       return null;

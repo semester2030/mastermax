@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/user_features.dart';
 import '../services/user_features_service.dart';
@@ -83,9 +84,15 @@ class UserFeaturesProvider extends ChangeNotifier {
     }
   }
 
+  // ✅ StreamSubscription للتأكد من إغلاقها
+  StreamSubscription? _featuresSubscription;
+
   // مراقبة تغييرات مميزات المستخدم
   void startWatchingFeatures(String userId) {
-    _service.watchUserFeatures(userId).listen(
+    // ✅ إغلاق الاشتراك السابق إذا كان موجوداً
+    _featuresSubscription?.cancel();
+    
+    _featuresSubscription = _service.watchUserFeatures(userId).listen(
       (features) {
         _userFeatures = features;
         notifyListeners();
@@ -109,7 +116,9 @@ class UserFeaturesProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // تنظيف الموارد إذا لزم الأمر
+    // ✅ إغلاق StreamSubscription
+    _featuresSubscription?.cancel();
+    _featuresSubscription = null;
     super.dispose();
   }
 } 

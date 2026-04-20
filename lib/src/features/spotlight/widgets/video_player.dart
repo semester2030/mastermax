@@ -26,9 +26,16 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   Future<void> _initializeVideo() async {
-    _controller = vp.VideoPlayerController.asset(
-      widget.url,
-    );
+    // استخدام networkUrl للفيديوهات من Firebase Storage
+    if (widget.url.startsWith('http://') || widget.url.startsWith('https://')) {
+      _controller = vp.VideoPlayerController.networkUrl(
+        Uri.parse(widget.url),
+      );
+    } else {
+      // استخدام asset للفيديوهات المحلية
+      _controller = vp.VideoPlayerController.asset(widget.url);
+    }
+    
     try {
       await _controller.initialize();
       if (widget.autoPlay) {
@@ -38,6 +45,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
       setState(() => _isInitialized = true);
     } catch (e) {
       debugPrint('Error initializing video: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('فشل في تحميل الفيديو. يرجى المحاولة مرة أخرى.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 

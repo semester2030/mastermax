@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/utils/color_utils.dart';
+import '../../../core/theme/app_colors.dart';
+import 'map_styles_service.dart';
 
 class MapService {
-  static const String mapboxAccessToken = 'pk.eyJ1IjoiZmF6MjAiLCJhIjoiY202czI0cWk5MDNxeTJqcHo1MnhpOWw4MSJ9.sxsMCAyMMqqLUf8xoVbLBg';
-  MapboxMap? _mapController;
+  GoogleMapController? _mapController;
   bool _isInitialized = false;
-  bool _isSatelliteView = false;
+  MapType _currentMapType = MapType.normal;
+  String _currentStyleType = 'light';
   
   // Singleton instance
   static final MapService _instance = MapService._internal();
@@ -24,15 +27,31 @@ class MapService {
     try {
       debugPrint('بدء تهيئة خدمة الخرائط...');
       
-      if (mapboxAccessToken.isEmpty) {
-        throw Exception('Mapbox access token is empty');
+      // تحذير فقط إذا لم يكن API Key موجوداً، لكن لا نوقف التطبيق
+      if (AppConfig.mapApiKey.isEmpty || AppConfig.mapApiKey == 'YOUR_MAP_API_KEY') {
+        debugPrint('⚠️ تحذير: Google Maps API Key غير مضبوط. بعض ميزات الخرائط قد لا تعمل.');
       }
       
       _isInitialized = true;
       debugPrint('تم تهيئة خدمة الخرائط بنجاح');
     } catch (e) {
       debugPrint('فشل في تهيئة خدمة الخرائط: $e');
-      rethrow;
+      // لا نعيد throw الخطأ، نسمح للتطبيق بالعمل بدون خرائط
+      _isInitialized = true; // نعتبره مهيأ حتى لو فشل
+    }
+  }
+
+  /// تطبيق نمط الخريطة حسب النوع
+  Future<void> applyStyleByType(String type) async {
+    if (_mapController == null) return;
+    
+    try {
+      final style = MapStylesService.getStyleByType(type);
+      await _mapController!.setMapStyle(style);
+      _currentStyleType = type;
+      debugPrint('تم تطبيق نمط الخريطة: $type');
+    } catch (e) {
+      debugPrint('فشل في تطبيق نمط الخريطة: $e');
     }
   }
 
@@ -40,25 +59,53 @@ class MapService {
   Future<void> toggleMapStyle() async {
     if (_mapController == null) return;
 
-    _isSatelliteView = !_isSatelliteView;
-    final styleUri = _isSatelliteView
-        ? "mapbox://styles/mapbox/satellite-v9" // نمط القمر الصناعي فقط
-        : "mapbox://styles/mapbox/streets-v12"; // النمط العادي مع الشوارع
+    _currentMapType = _currentMapType == MapType.normal 
+        ? MapType.satellite 
+        : MapType.normal;
 
+    debugPrint('تم تغيير نمط الخريطة إلى: ${_currentMapType == MapType.satellite ? "القمر الصناعي" : "العادي"}');
+  }
+
+  /// تبديل 3D View
+  Future<void> toggle3DView({double? tilt}) async {
+    if (_mapController == null) return;
+    
     try {
-      await _mapController!.style.setStyleURI(styleUri);
-      debugPrint('تم تغيير نمط الخريطة إلى: ${_isSatelliteView ? "القمر الصناعي" : "العادي"}');
+      final currentPosition = await _mapController!.getVisibleRegion();
+      final center = LatLng(
+        (currentPosition.northeast.latitude + currentPosition.southwest.latitude) / 2,
+        (currentPosition.northeast.longitude + currentPosition.southwest.longitude) / 2,
+      );
+      
+      await _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: center,
+            tilt: tilt ?? 45.0,
+            bearing: 0,
+            zoom: await _mapController!.getZoomLevel(),
+          ),
+        ),
+      );
     } catch (e) {
-      debugPrint('فشل في تغيير نمط الخريطة: $e');
-      _isSatelliteView = !_isSatelliteView; // إعادة القيمة لحالتها السابقة في حالة الفشل
+      debugPrint('فشل في تبديل 3D View: $e');
     }
   }
 
   /// إنشاء widget الخريطة
   Widget createMap({
     required BuildContext context,
-    CameraOptions? initialCameraPosition,
-    void Function(MapboxMap)? onMapCreated,
+    CameraPosition? initialCameraPosition,
+    void Function(GoogleMapController)? onMapCreated,
+    Set<Marker>? markers,
+    Set<Polyline>? polylines,
+    Set<Polygon>? polygons,
+    MapType? mapType,
+    bool myLocationEnabled = true,
+    bool myLocationButtonEnabled = false,
+    bool zoomControlsEnabled = true,
+    bool mapToolbarEnabled = false,
+    String? styleType,
   }) {
     if (!_isInitialized) {
       debugPrint('محاولة تهيئة الخرائط...');
@@ -67,10 +114,12 @@ class MapService {
       });
     }
 
-    final defaultPosition = Position(46.6753, 24.7136); // الرياض
-    final defaultCameraOptions = CameraOptions(
-      center: Point(coordinates: defaultPosition),
-      zoom: 12.0,
+    final defaultPosition = CameraPosition(
+      target: LatLng(
+        AppConfig.defaultLatitude,
+        AppConfig.defaultLongitude,
+      ),
+      zoom: AppConfig.defaultZoom,
     );
 
     debugPrint('إنشاء عنصر الخريطة...');
@@ -79,42 +128,32 @@ class MapService {
         Container(
           height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
+            border: Border.all(color: AppColors.textSecondary),
             borderRadius: BorderRadius.circular(8),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Stack(
-              children: [
-                MapWidget(
-                  key: ValueKey('mapBox_${DateTime.now().millisecondsSinceEpoch}'),
-                  onMapCreated: (MapboxMap controller) {
-                    debugPrint('تم استدعاء onMapCreated...');
-                    _mapController = controller;
-                    
-                    debugPrint('محاولة تعيين نمط الخريطة...');
-                    controller.style.setStyleURI(_isSatelliteView
-                        ? "mapbox://styles/mapbox/satellite-v9"
-                        : "mapbox://styles/mapbox/streets-v12").then((_) {
-                      debugPrint('تم تعيين نمط الخريطة بنجاح');
-                      onMapCreated?.call(controller);
-                    }).catchError((e) {
-                      debugPrint('خطأ في تعيين نمط الخريطة: $e');
-                    });
-                  },
-                  styleUri: _isSatelliteView
-                      ? "mapbox://styles/mapbox/satellite-v9"
-                      : "mapbox://styles/mapbox/streets-v12",
-                  cameraOptions: initialCameraPosition ?? defaultCameraOptions,
-                ),
-                if (!_isInitialized)
-                  Container(
-                    color: ColorUtils.withOpacity(Colors.grey, 0.5),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-              ],
+            child: GoogleMap(
+              onMapCreated: (GoogleMapController controller) async {
+                debugPrint('تم استدعاء onMapCreated...');
+                _mapController = controller;
+                
+                // تطبيق النمط المخصص
+                if (styleType != null) {
+                  await applyStyleByType(styleType);
+                }
+                
+                onMapCreated?.call(controller);
+              },
+              initialCameraPosition: initialCameraPosition ?? defaultPosition,
+              markers: markers ?? {},
+              polylines: polylines ?? {},
+              polygons: polygons ?? {},
+              mapType: mapType ?? _currentMapType,
+              myLocationEnabled: myLocationEnabled,
+              myLocationButtonEnabled: myLocationButtonEnabled,
+              zoomControlsEnabled: zoomControlsEnabled,
+              mapToolbarEnabled: mapToolbarEnabled,
             ),
           ),
         ),
@@ -124,26 +163,26 @@ class MapService {
           right: 16,
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1A237E),
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: ColorUtils.withOpacity(Colors.black, 0.2),
+                  color: ColorUtils.withOpacity(AppColors.textPrimary, 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Material(
-              color: Colors.transparent,
+              color: AppColors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: toggleMapStyle,
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   child: Icon(
-                    _isSatelliteView ? Icons.map : Icons.satellite_alt,
-                    color: Colors.white,
+                    _currentMapType == MapType.satellite ? Icons.map : Icons.satellite_alt,
+                    color: AppColors.white,
                     size: 28,
                   ),
                 ),
@@ -158,15 +197,20 @@ class MapService {
   /// التخلص من موارد الخريطة
   void dispose() {
     debugPrint('تنظيف موارد الخريطة...');
-    if (_mapController != null) {
-      _mapController = null;
-    }
+    _mapController?.dispose();
+    _mapController = null;
     _isInitialized = false;
   }
 
   /// الحصول على كائن التحكم بالخريطة
-  MapboxMap? get controller => _mapController;
+  GoogleMapController? get controller => _mapController;
 
   /// التحقق من حالة التهيئة
   bool get isInitialized => _isInitialized;
+  
+  /// الحصول على نوع الخريطة الحالي
+  MapType get currentMapType => _currentMapType;
+  
+  /// الحصول على نوع النمط الحالي
+  String get currentStyleType => _currentStyleType;
 }

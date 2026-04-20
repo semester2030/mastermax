@@ -4,6 +4,20 @@ import '../models/chat_room.dart';
 import '../../auth/providers/auth_state.dart';
 import '../../../shared/utils/formatters.dart';
 
+/// عنوان صف المحادثة (قائمة رئيسية أو أرشيف المستخدم).
+String chatRoomRowTitle(ChatRoom chatRoom, String? currentUserId) {
+  final isUser1 = chatRoom.user1Id == currentUserId;
+  final otherUserId = isUser1 ? chatRoom.user2Id : chatRoom.user1Id;
+  final spotlightTitle = chatRoom.spotlightVideoTitle?.trim();
+  final typeLabel = chatRoom.propertyType == 'car'
+      ? 'محادثة سيارة'
+      : 'محادثة عقار';
+  if (spotlightTitle != null && spotlightTitle.isNotEmpty) {
+    return '$spotlightTitle · $otherUserId';
+  }
+  return '$typeLabel · $otherUserId';
+}
+
 class ChatRoomList extends StatelessWidget {
   final List<ChatRoom> chatRooms;
   final Function(ChatRoom) onChatRoomSelected;
@@ -29,9 +43,8 @@ class ChatRoomList extends StatelessWidget {
       itemCount: chatRooms.length,
       itemBuilder: (context, index) {
         final chatRoom = chatRooms[index];
-        final isUser1 = chatRoom.user1Id == currentUserId;
-        final otherUserId = isUser1 ? chatRoom.user2Id : chatRoom.user1Id;
-        
+        final titleText = chatRoomRowTitle(chatRoom, currentUserId);
+
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: ListTile(
@@ -39,7 +52,7 @@ class ChatRoomList extends StatelessWidget {
               child: Icon(Icons.person),
             ),
             title: Text(
-              '${chatRoom.propertyType == 'car' ? 'محادثة سيارة' : 'محادثة عقار'} - $otherUserId',
+              titleText,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(

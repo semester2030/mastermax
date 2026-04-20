@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import '../services/auth_service.dart';
+import '../services/account_deletion_service.dart';
 import '../models/user.dart';
 import '../models/user_type.dart';
 
@@ -8,11 +10,8 @@ class AuthState extends ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   String? _error;
-  bool _isTrialMode = false;
-  UserType? _trialUserType;
   bool _isInitialized = false;
   UserType _userType = UserType.individual;
-  final bool _isLoggedIn = false;
 
   AuthState() : _authService = AuthService();
 
@@ -22,13 +21,30 @@ class AuthState extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
   bool get isInitialized => _isInitialized;
   UserType get userType => _userType;
-  bool get isTrialMode => _isTrialMode;
-  UserType? get trialUserType => _trialUserType;
-  
+  /// لا يوجد وضع تجريبي في الإنتاج؛ يُبقى للتوافق مع واجهة الملف الشخصي.
+  bool get isTrialMode => false;
+
+  static const String _adminLoginEmail = 'admin@mastermax.com';
+
+  /// بريد الأدمن أو علم isAdmin في وثيقة المستخدم (Firestore / API).
   bool get isAdmin {
     if (_user == null) return false;
-    return _user?.email == 'admin@mastermax.com' || 
-           _user?.extraData?['isAdmin'] == true;
+
+    bool flagTrue(dynamic v) =>
+        v == true || v == 'true' || v == 1;
+
+    final userEmail = _user!.email.trim().toLowerCase();
+    if (userEmail == _adminLoginEmail) return true;
+
+    final extra = _user!.extraData;
+    if (extra != null && flagTrue(extra['isAdmin'])) return true;
+
+    // جلسة Firebase (مهم عندما يكون email في Firestore فارغاً أو مسار API فقط)
+    final authEmail =
+        FirebaseAuth.instance.currentUser?.email?.trim().toLowerCase();
+    if (authEmail == _adminLoginEmail) return true;
+
+    return false;
   }
 
   Future<void> initialize() async {
@@ -37,6 +53,10 @@ class AuthState extends ChangeNotifier {
       notifyListeners();
       
       _user = await _authService.getCurrentUser();
+      // تحديث نوع المستخدم من بيانات المستخدم الفعلية
+      if (_user != null) {
+        _userType = _user!.type;
+      }
       
       _isLoading = false;
       _isInitialized = true;
@@ -50,6 +70,8 @@ class AuthState extends ChangeNotifier {
 
   void setAuthenticated(User user) {
     _user = user;
+    // تحديث نوع المستخدم من بيانات المستخدم الفعلية
+    _userType = user.type;
     _error = null;
     _isInitialized = true;
     notifyListeners();
@@ -67,7 +89,12 @@ class AuthState extends ChangeNotifier {
       notifyListeners();
 
       _user = await _authService.login(email, password);
-      
+      // تحديث نوع المستخدم من بيانات المستخدم الفعلية
+      if (_user != null) {
+        _userType = _user!.type;
+      }
+      _isInitialized = true;
+
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -116,46 +143,36 @@ class AuthState extends ChangeNotifier {
     }
   }
 
-  Future<void> checkAuthStatus() async {
+  /// حذف الحساب نهائياً (Firebase Auth + بيانات مملوكة في Firestore). يتطلب كلمة المرور.
+  Future<void> deleteAccount(String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
     try {
-      _isLoading = true;
-      notifyListeners();
-
-      _user = await _authService.getCurrentUser();
-      
+      final service = AccountDeletionService();
+      await service.deleteAccountWithPassword(password);
+      _authService.clearLocalAuthState();
+      _user = null;
       _isLoading = false;
       notifyListeners();
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
+      rethrow;
     }
   }
 
-  Future<void> loginAsGuest() async {
+  Future<void> checkAuthStatus() async {
     try {
       _isLoading = true;
-      _error = null;
       notifyListeners();
 
-      _isTrialMode = true;
-      _trialUserType = UserType.realEstateCompany;
-      _userType = UserType.realEstateCompany;
-      _user = User(
-        id: 'trial_user',
-        name: 'مستخدم تجريبي',
-        email: 'admin@mastermax.com',
-        type: UserType.realEstateCompany,
-        extraData: {
-          'isTrial': true,
-          'hasFullAccess': true,
-          'isAdmin': true,
-          'phoneNumber': '+966500000000',
-          'isVerified': true,
-          'createdAt': DateTime.now().toIso8601String(),
-          'updatedAt': DateTime.now().toIso8601String(),
-        },
-      );
+      _user = await _authService.getCurrentUser();
+      // تحديث نوع المستخدم من بيانات المستخدم الفعلية
+      if (_user != null) {
+        _userType = _user!.type;
+      }
       
       _isLoading = false;
       notifyListeners();
@@ -225,33 +242,6 @@ class AuthState extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
-
-  void setTrialMode() {
-    _isTrialMode = true;
-    _isLoading = false;
-    _user = User(
-      id: 'trial_user',
-      name: 'مستخدم تجريبي',
-      email: 'trial@example.com',
-      type: UserType.realEstateCompany,
-      extraData: {
-        'isTrial': true,
-        'hasFullAccess': true,
-        'phoneNumber': '+966500000000',
-        'isVerified': true,
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      },
-    );
-    notifyListeners();
-  }
-
-  void exitTrialMode() {
-    _isTrialMode = false;
-    _trialUserType = null;
-    _user = null;
-    notifyListeners();
   }
 
   void setUserType(UserType type) {

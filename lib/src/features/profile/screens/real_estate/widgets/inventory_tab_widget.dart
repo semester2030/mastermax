@@ -12,8 +12,38 @@ class InventoryTabWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (inventory.isEmpty) {
-      return const Center(
-        child: Text('لا يوجد عقارات في المخزون'),
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.inventory_2_outlined,
+                size: 64,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'لا توجد عقارات في المخزون',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'سيتم عرض العقارات هنا عند إضافة أول عقار',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -28,7 +58,7 @@ class InventoryTabWidget extends StatelessWidget {
               const Text(
                 'المخزون',
                 style: TextStyle(
-                  color: AppColors.accent,
+                  color: AppColors.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -36,7 +66,7 @@ class InventoryTabWidget extends StatelessWidget {
               Text(
                 'إجمالي العقارات: ${inventory.length}',
                 style: const TextStyle(
-                  color: AppColors.white70,
+                  color: AppColors.textSecondary,
                   fontSize: 16,
                 ),
               ),
@@ -51,11 +81,11 @@ class InventoryTabWidget extends StatelessWidget {
               final property = inventory[index];
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
-                color: AppColors.secondary,
+                color: AppColors.white,
                 child: ExpansionTile(
                   title: Text(
                     property.title,
-                    style: const TextStyle(color: AppColors.white),
+                    style: const TextStyle(color: AppColors.textPrimary),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,13 +106,13 @@ class InventoryTabWidget extends StatelessWidget {
                         '${property.targetPrice} ر.س',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.chartGreen,
+                          color: AppColors.success,
                         ),
                       ),
                       Text(
                         '${property.daysInMarket} يوم',
                         style: const TextStyle(
-                          color: Colors.grey,
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -122,14 +152,14 @@ class InventoryTabWidget extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: AppColors.white70,
+              color: AppColors.textSecondary,
               fontSize: 14,
             ),
           ),
           Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: AppColors.textPrimary,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),

@@ -200,7 +200,7 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddInspectionDialog,
-        backgroundColor: const Color(0xFFFFD700),
+        backgroundColor: AppColors.accent,
         child: const Icon(Icons.add),
       ),
     );
@@ -225,13 +225,13 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
             'المعاينات المكتملة',
             completedInspections.toString(),
             Icons.check_circle,
-            color: Colors.green,
+            color: AppColors.success,
           ),
           _buildSummaryCard(
             'المعاينات الملغاة',
             cancelledInspections.toString(),
             Icons.cancel,
-            color: Colors.red,
+            color: AppColors.error,
           ),
         ],
       ),
@@ -247,13 +247,13 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
             Icon(
               Icons.calendar_today,
               size: 48,
-              color: ColorUtils.withOpacity(Colors.grey, 0.5),
+              color: ColorUtils.withOpacity(AppColors.textSecondary, 0.5),
             ),
             const SizedBox(height: 16),
             Text(
               'لا توجد معاينات في هذا اليوم',
               style: TextStyle(
-                color: ColorUtils.withOpacity(Colors.grey, 0.7),
+                color: ColorUtils.withOpacity(AppColors.textSecondary, 0.7),
                 fontSize: 16,
               ),
             ),
@@ -323,7 +323,7 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: ColorUtils.withOpacity(inspection.status.color, 0.3),
@@ -380,11 +380,11 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
   }
 
   Widget _buildSummaryCard(String title, String value, IconData icon, {Color? color}) {
-    final cardColor = color ?? Colors.blue;
+    final cardColor = color ?? AppColors.primary;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: ColorUtils.withOpacity(cardColor, 0.3),
@@ -600,7 +600,7 @@ class _InspectionSchedulingScreenState extends State<InspectionSchedulingScreen>
                     'تمت إضافة المعاينة بنجاح',
                     style: TextStyle(color: AppColors.text),
                   ),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.success,
                 ),
               );
             },

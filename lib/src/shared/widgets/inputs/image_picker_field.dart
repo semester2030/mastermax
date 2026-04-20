@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import 'package:image_picker/image_picker.dart';
@@ -55,12 +56,41 @@ class ImagePickerField extends StatelessWidget {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  image,
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: image.startsWith('http')
+                                    ? Image.network(
+                                        image,
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            width: 80,
+                                            height: 80,
+                                            color: AppColors.surface,
+                                            child: const Icon(
+                                              Icons.broken_image,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Image.file(
+                                        File(image),
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            width: 80,
+                                            height: 80,
+                                            color: AppColors.surface,
+                                            child: const Icon(
+                                              Icons.broken_image,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          );
+                                        },
+                                      ),
                               ),
                               if (enabled)
                                 Positioned(
@@ -98,9 +128,21 @@ class ImagePickerField extends StatelessWidget {
                 InkWell(
                   onTap: () async {
                     final ImagePicker picker = ImagePicker();
-                    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                    if (image != null) {
-                      onImageSelected(image.path);
+                    final int remaining = maxImages - images.length;
+                    if (remaining <= 0) {
+                      return;
+                    }
+
+                    // ✅ السماح باختيار عدة صور مرة واحدة
+                    final List<XFile> pickedImages = await picker.pickMultiImage(
+                      imageQuality: 95, // ✅ جودة عالية
+                    );
+
+                    if (pickedImages.isNotEmpty) {
+                      // نضيف فقط حتى نصل إلى الحد الأقصى
+                      for (final image in pickedImages.take(remaining)) {
+                        onImageSelected(image.path);
+                      }
                     }
                   },
                   child: Container(

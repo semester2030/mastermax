@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import 'package:like_button/like_button.dart';
 import '../models/property_model.dart';
+import '../../favorites/providers/favorites_provider.dart' as global_favorites;
+import '../../auth/providers/auth_state.dart';
 
 class PropertyListItem extends StatelessWidget {
   final PropertyModel property;
@@ -31,24 +36,61 @@ class PropertyListItem extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.network(
-                    property.images.first,
+                  child: CachedNetworkImage(
+                    imageUrl: property.images.first,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 200,
-                        color: colorScheme.surfaceContainerHighest,
-                        child: Icon(Icons.error_outline, color: colorScheme.error),
-                      );
-                    },
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      color: colorScheme.surfaceContainerHighest,
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200,
+                      color: colorScheme.surfaceContainerHighest,
+                      child: Icon(Icons.error_outline, color: colorScheme.error),
+                    ),
+                    // تحسين الأداء
+                    // ✅ إزالة memCacheWidth/memCacheHeight للحفاظ على الدقة الكاملة
                   ),
                 ),
+                // ✅ شارة عدد صور العقار
+                if (property.images.isNotEmpty)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: colorScheme.onSurface.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.camera_alt_outlined,
+                            size: 14,
+                            color: colorScheme.surface,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${property.images.length}',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.surface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (property.has360View || property.virtualTourUrl != null)
                   Positioned(
                     top: 8,
-                    right: 8,
+                    right: 48, // ترك مساحة لأيقونة المفضلة
                     child: Row(
                       children: [
                         if (property.has360View)
@@ -69,9 +111,9 @@ class PropertyListItem extends StatelessWidget {
                                 Text(
                                   '360°',
                                   style: textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                        color: colorScheme.onSurface,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ],
                             ),
@@ -94,6 +136,46 @@ class PropertyListItem extends StatelessWidget {
                       ],
                     ),
                   ),
+                // ✅ زر المفضلة (قلب) للعقار - يستخدم FavoritesProvider الموحد
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Consumer2<global_favorites.FavoritesProvider, AuthState>(
+                    builder: (context, favoritesProvider, authState, _) {
+                      final userId = authState.user?.id;
+                      final isFavorite = userId != null && favoritesProvider.isFavorite(property.id);
+                      return LikeButton(
+                        isLiked: isFavorite,
+                        size: 26,
+                        circleColor: CircleColor(
+                          start: Theme.of(context).colorScheme.error,
+                          end: Theme.of(context).colorScheme.primary,
+                        ),
+                        bubblesColor: BubblesColor(
+                          dotPrimaryColor: Theme.of(context).colorScheme.error,
+                          dotSecondaryColor: Theme.of(context).colorScheme.primary,
+                        ),
+                        onTap: (liked) async {
+                          if (userId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('يجب تسجيل الدخول أولاً لحفظ العقار في المفضلة'),
+                                backgroundColor: Color(0xFFD32F2F),
+                              ),
+                            );
+                            return false;
+                          }
+                          if (liked) {
+                            await favoritesProvider.removeFromFavorites(property.id, userId);
+                          } else {
+                            await favoritesProvider.addToFavorites(property, userId);
+                          }
+                          return !liked;
+                        },
+                      );
+                    },
+                  ),
+                ),
                 Positioned(
                   top: 8,
                   left: 8,

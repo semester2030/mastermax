@@ -107,11 +107,11 @@ class _MadaPaymentScreenState extends State<MadaPaymentScreen> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: ColorUtils.withOpacity(Colors.red, 0.5)),
+        borderSide: BorderSide(color: ColorUtils.withOpacity(AppColors.error, 0.5)),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(color: Colors.red),
+        borderSide: const BorderSide(color: AppColors.error),
       ),
       filled: true,
       fillColor: ColorUtils.withOpacity(AppTheme.royalPurple, 0.1),
@@ -122,7 +122,7 @@ class _MadaPaymentScreenState extends State<MadaPaymentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: Text(
           'الدفع بمدى',
@@ -287,7 +287,7 @@ class _MadaPaymentScreenState extends State<MadaPaymentScreen> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Material(
-                                color: Colors.transparent,
+                                color: AppColors.transparent,
                                 child: InkWell(
                                   onTap: _processPayment,
                                   borderRadius: BorderRadius.circular(30),

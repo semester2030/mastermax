@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "mastermax-2030-backend"
+  },
+  "targets": {
+    "mastermax-2030-backend": {
+      "hosting": {
+        "admin": ["mastermax-2030-backend"],
+        "realestate": ["mastermax-re-web"],
+        "car": ["mastermax-car-web"]
+      }
+    }
+  }
+}

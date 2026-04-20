@@ -1,9 +1,10 @@
 import '../models/property_model.dart';
 import '../models/property_type.dart';
+import '../../../core/geo/saudi_region_parser.dart';
 import '../../../core/utils/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// خدمة إدارة العقارات
 class PropertyService {
@@ -16,159 +17,36 @@ class PropertyService {
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
         _storage = storage ?? FirebaseStorage.instance;
 
-  // قائمة تجريبية للعقارات
-  final List<PropertyModel> _properties = [
-    PropertyModel(
-      id: '1',
-      ownerId: 'owner1',
-      title: 'فيلا مودرن مع مسبح',
-      description: 'فيلا حديثة مع مسبح خاص وحديقة واسعة، تصميم عصري مع إطلالات بانورامية. تشطيب فاخر مع أنظمة ذكية متكاملة.',
-      price: 2500000,
-      images: [
-        'assets/images/real_estate/listings/property1_main.jpg',
-        'assets/images/real_estate/listings/property1_1.jpg',
-        'assets/images/real_estate/listings/property1_2.jpg',
-        'assets/images/real_estate/listings/property1_3.jpg',
-        'assets/images/real_estate/listings/property1_4.jpg',
-      ],
-      address: 'حي النرجس، الرياض',
-      location: Point(
-        coordinates: Position(46.6753, 24.7136),
-      ),
-      type: PropertyType.villa,
-      status: PropertyStatus.available,
-      offerType: OfferType.sale,
-      rooms: 6,
-      bathrooms: 7,
-      area: 750,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      contactPhone: '+966500000001',
-    ),
-    PropertyModel(
-      id: '2',
-      ownerId: 'owner1',
-      title: 'فيلا فاخرة بإطلالة بحرية',
-      description: 'فيلا مطلة على البحر مباشرة، تصميم معماري فريد مع حديقة منسقة ومسبح لا نهائي. فخامة في كل التفاصيل.',
-      price: 4200000,
-      images: [
-        'assets/images/real_estate/listings/property2_main.jpg',
-        'assets/images/real_estate/listings/property2_1.jpg',
-        'assets/images/real_estate/listings/property2_2.jpg',
-        'assets/images/real_estate/listings/property2_3.jpg',
-        'assets/images/real_estate/listings/property2_4.jpg',
-        'assets/images/real_estate/listings/property2_5.jpg',
-        'assets/images/real_estate/listings/property2_6.jpg',
-      ],
-      address: 'حي الشاطئ، جدة',
-      location: Point(
-        coordinates: Position(39.1728, 21.5433),
-      ),
-      type: PropertyType.villa,
-      status: PropertyStatus.available,
-      offerType: OfferType.sale,
-      rooms: 8,
-      bathrooms: 9,
-      area: 1200,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      contactPhone: '+966500000002',
-    ),
-    PropertyModel(
-      id: '3',
-      ownerId: 'owner2',
-      title: 'فيلا كلاسيك مع حدائق',
-      description: 'فيلا بتصميم كلاسيكي فخم، حدائق واسعة مع نوافير ومسبح كبير. تشطيبات راقية وديكورات داخلية فاخرة.',
-      price: 3800000,
-      images: [
-        'assets/images/real_estate/listings/property3_main.jpg',
-        'assets/images/real_estate/listings/property3_1.jpg',
-        'assets/images/real_estate/listings/property3_2.jpg',
-        'assets/images/real_estate/listings/property3_3.jpg',
-        'assets/images/real_estate/listings/property3_4.jpg',
-        'assets/images/real_estate/listings/property3_5.jpg',
-      ],
-      address: 'حي الياسمين، الرياض',
-      location: Point(
-        coordinates: Position(46.6853, 24.8136),
-      ),
-      type: PropertyType.villa,
-      status: PropertyStatus.available,
-      offerType: OfferType.sale,
-      rooms: 7,
-      bathrooms: 8,
-      area: 900,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      contactPhone: '+966500000003',
-    ),
-    PropertyModel(
-      id: '4',
-      ownerId: 'owner2',
-      title: 'فيلا مع مسبح داخلي',
-      description: 'فيلا عصرية مع مسبح داخلي مدفأ، صالة رياضية متكاملة، سينما منزلية، وتقنيات ذكية متطورة.',
-      price: 5500000,
-      images: [
-        'assets/images/real_estate/listings/property4_main.jpg',
-        'assets/images/real_estate/listings/property4_1.jpg',
-        'assets/images/real_estate/listings/property4_2.jpg',
-        'assets/images/real_estate/listings/property4_3.jpg',
-        'assets/images/real_estate/listings/property4_4.jpg',
-      ],
-      address: 'حي الملقا، الرياض',
-      location: Point(
-        coordinates: Position(46.6353, 24.7936),
-      ),
-      type: PropertyType.villa,
-      status: PropertyStatus.available,
-      offerType: OfferType.sale,
-      rooms: 9,
-      bathrooms: 10,
-      area: 1500,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      contactPhone: '+966500000004',
-    ),
-    PropertyModel(
-      id: '5',
-      ownerId: 'owner3',
-      title: 'فيلا دوبلكس حديثة',
-      description: 'فيلا دوبلكس بتصميم معاصر، مصعد خاص، حديقة على السطح مع جلسات خارجية، ومطبخ مفتوح حديث.',
-      price: 3200000,
-      images: [
-        'assets/images/real_estate/listings/property5_1.jpg',
-        'assets/images/real_estate/listings/property5_2.jpg',
-        'assets/images/real_estate/listings/property5_3.jpg',
-        'assets/images/real_estate/listings/property5_4.jpg',
-        'assets/images/real_estate/listings/property5_5.jpg',
-      ],
-      address: 'حي الورود، الرياض',
-      location: Point(
-        coordinates: Position(46.7453, 24.7736),
-      ),
-      type: PropertyType.villa,
-      status: PropertyStatus.available,
-      offerType: OfferType.sale,
-      rooms: 7,
-      bathrooms: 8,
-      area: 800,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      contactPhone: '+966500000005',
-    ),
-  ];
+  // تم إزالة البيانات الافتراضية - البيانات تُجلب من Firestore فقط
 
   /// إضافة عقار جديد
   Future<PropertyModel> addProperty(PropertyModel property) async {
     try {
-      // إضافة معرف فريد للعقار الجديد
-      final newProperty = property.copyWith(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+      // ✅ إزالة ID من البيانات قبل الحفظ (Firestore سينشئ ID تلقائياً)
+      final propertyData = property.toJson();
+      propertyData.remove('id'); // ✅ إزالة ID الفارغ
+      SaudiRegionParser.applyToFirestoreMap(
+        propertyData,
+        (propertyData['address'] ?? '').toString(),
       );
-      _properties.add(newProperty);
-      return newProperty;
+
+      // إضافة العقار إلى Firestore
+      final docRef = await _firestore.collection('properties').add(propertyData);
+      
+      // ✅ جلب العقار المضافة مع المعرف الجديد
+      final doc = await docRef.get();
+      if (!doc.exists) {
+        throw Exception('فشل في إنشاء العقار');
+      }
+      
+      final docData = doc.data() as Map<String, dynamic>;
+      // ✅ إزالة 'id' من docData إذا كان موجوداً (لضمان استخدام doc.id فقط)
+      docData.remove('id');
+      
+      return PropertyModel.fromJson({
+        'id': doc.id, // ✅ استخدام doc.id من Firestore (مضمون وغير فارغ)
+        ...docData,
+      });
     } catch (e) {
       logError('Error adding property', e);
       rethrow;
@@ -178,12 +56,36 @@ class PropertyService {
   /// تحديث بيانات عقار
   Future<PropertyModel> updateProperty(PropertyModel property) async {
     try {
-      final index = _properties.indexWhere((p) => p.id == property.id);
-      if (index != -1) {
-        _properties[index] = property.copyWith(updatedAt: DateTime.now());
-        return _properties[index];
+      // ✅ التحقق من أن ID غير فارغ
+      if (property.id.isEmpty) {
+        throw Exception('معرف العقار غير صحيح');
       }
-      throw Exception('العقار غير موجود');
+      
+      // ✅ إزالة ID من البيانات قبل التحديث
+      final propertyData = property.copyWith(updatedAt: DateTime.now()).toJson();
+      propertyData.remove('id'); // ✅ إزالة ID (Firestore يستخدم doc.id)
+      SaudiRegionParser.applyToFirestoreMap(
+        propertyData,
+        (propertyData['address'] ?? '').toString(),
+      );
+
+      // تحديث العقار في Firestore
+      await _firestore.collection('properties').doc(property.id).update(propertyData);
+      
+      // ✅ جلب العقار المحدث
+      final doc = await _firestore.collection('properties').doc(property.id).get();
+      if (!doc.exists) {
+        throw Exception('العقار غير موجود');
+      }
+      
+      final docData = doc.data() as Map<String, dynamic>;
+      // ✅ إزالة 'id' من docData إذا كان موجوداً (لضمان استخدام doc.id فقط)
+      docData.remove('id');
+      
+      return PropertyModel.fromJson({
+        'id': doc.id, // ✅ استخدام doc.id من Firestore (مضمون وغير فارغ)
+        ...docData,
+      });
     } catch (e) {
       logError('Error updating property', e);
       rethrow;
@@ -193,9 +95,9 @@ class PropertyService {
   /// حذف عقار
   Future<bool> deleteProperty(String propertyId) async {
     try {
-      final initialLength = _properties.length;
-      _properties.removeWhere((p) => p.id == propertyId);
-      return _properties.length < initialLength;
+      // حذف العقار من Firestore
+      await _firestore.collection('properties').doc(propertyId).delete();
+      return true;
     } catch (e) {
       logError('Error deleting property', e);
       return false;
@@ -205,9 +107,41 @@ class PropertyService {
   /// جلب عقار بواسطة المعرف
   Future<PropertyModel?> getPropertyById(String propertyId) async {
     try {
-      return _properties.firstWhere((p) => p.id == propertyId);
-    } catch (e) {
-      logError('Error getting property', e);
+      // ✅ التحقق من أن propertyId غير فارغ
+      if (propertyId.isEmpty) {
+        logError('getPropertyById: Property ID is empty', Exception('Empty property ID'));
+        return null;
+      }
+      
+      logInfo('🔍 getPropertyById: Fetching property from Firestore: $propertyId');
+      
+      final doc = await _firestore.collection('properties').doc(propertyId).get();
+      
+      if (!doc.exists) {
+        logError('getPropertyById: Property not found in Firestore', Exception('Document does not exist'));
+        logInfo('❌ Property ID: $propertyId does not exist in Firestore');
+        return null;
+      }
+      
+      final data = doc.data();
+      if (data == null) {
+        logError('getPropertyById: Property data is null', Exception('Document data is null'));
+        return null;
+      }
+      
+      final property = PropertyModel.fromJson({
+        'id': doc.id,
+        ...data,
+      });
+      
+      logInfo('✅ getPropertyById: Property loaded successfully');
+      logInfo('✅ Property ID: ${property.id}');
+      logInfo('✅ Property title: ${property.title}');
+      logInfo('✅ Property images count: ${property.images.length}');
+      
+      return property;
+    } catch (e, stackTrace) {
+      logError('Error getting property', e, stackTrace);
       return null;
     }
   }
@@ -220,12 +154,56 @@ class PropertyService {
     int? minRooms,
     String? location,
     bool? isAvailable,
+    String? ownerId, // إضافة ownerId لفلترة العقارات حسب المالك
   }) async {
     try {
-      // محاكاة جلب البيانات من الخادم
-      await Future.delayed(const Duration(seconds: 1));
+      // جلب البيانات من Firestore
+      Query query = _firestore.collection('properties');
       
-      var properties = _properties;
+      // فلترة حسب المالك إذا تم توفيره (للحسابات التجارية)
+      if (ownerId != null && ownerId.isNotEmpty) {
+        query = query.where('ownerId', isEqualTo: ownerId);
+      }
+      
+      final snapshot = await query.get();
+      
+      if (snapshot.docs.isEmpty) {
+        // لا توجد عقارات في Firestore - إرجاع قائمة فارغة
+        return [];
+      }
+      
+      var properties = snapshot.docs.map((doc) {
+        try {
+          final data = doc.data() as Map<String, dynamic>;
+          // ✅ التأكد من أن doc.id غير فارغ
+          if (doc.id.isEmpty) {
+            logError('getProperties: Document ID is empty', Exception('Empty document ID'));
+            return null;
+          }
+          
+          final property = PropertyModel.fromJson({
+            'id': doc.id,
+            ...data,
+          });
+          
+          // ✅ التحقق النهائي من أن ID غير فارغ بعد parsing
+          if (property.id.isEmpty) {
+            logError('getProperties: Property ID is empty after parsing (doc.id: ${doc.id})', Exception('Empty property ID after parsing'));
+            return null;
+          }
+          
+          return property;
+        } catch (e) {
+          logError('getProperties: Error parsing property ${doc.id}', e);
+          return null;
+        }
+      }).where((p) => p != null).cast<PropertyModel>().toList();
+      
+      // ✅ تسجيل عدد العقارات الصالحة
+      if (properties.length != snapshot.docs.length) {
+        logInfo('⚠️ Filtered out ${snapshot.docs.length - properties.length} properties with invalid IDs');
+      }
+      logInfo('✅ Loaded ${properties.length} valid properties from Firestore');
 
       // تطبيق الفلترة
       if (type != null) {
@@ -264,16 +242,41 @@ class PropertyService {
   }
 
   /// البحث عن عقارات
-  Future<List<PropertyModel>> searchProperties(String query) async {
+  Future<List<PropertyModel>> searchProperties(String query, {String? ownerId}) async {
     try {
-      if (query.isEmpty) return _properties;
+      if (query.isEmpty) {
+        // إذا كان البحث فارغاً، إرجاع جميع العقارات (أو عقارات المالك)
+        return getProperties(ownerId: ownerId);
+      }
 
-      return _properties.where((property) {
-        final searchQuery = query.toLowerCase();
-        return property.title.toLowerCase().contains(searchQuery) ||
-            property.description.toLowerCase().contains(searchQuery) ||
-            property.address.toLowerCase().contains(searchQuery);
-      }).toList();
+      // البحث في Firestore
+      Query firestoreQuery = _firestore.collection('properties');
+      
+      if (ownerId != null && ownerId.isNotEmpty) {
+        firestoreQuery = firestoreQuery.where('ownerId', isEqualTo: ownerId);
+      }
+      
+      final snapshot = await firestoreQuery.get();
+      
+      if (snapshot.docs.isEmpty) {
+        return [];
+      }
+      
+      final searchQuery = query.toLowerCase();
+      return snapshot.docs
+          .map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return PropertyModel.fromJson({
+              'id': doc.id,
+              ...data,
+            });
+          })
+          .where((property) {
+            return property.title.toLowerCase().contains(searchQuery) ||
+                property.description.toLowerCase().contains(searchQuery) ||
+                property.address.toLowerCase().contains(searchQuery);
+          })
+          .toList();
     } catch (e) {
       logError('Error searching properties', e);
       return [];
@@ -319,130 +322,5 @@ class PropertyService {
     return total / reviews.length;
   }
 
-  Future<List<PropertyModel>> getDummyProperties() async {
-    await Future.delayed(const Duration(seconds: 1)); // محاكاة تأخير الشبكة
-
-    return [
-      PropertyModel(
-        id: '1',
-        ownerId: 'owner1',
-        title: 'شقة فاخرة في الرياض',
-        description: 'شقة حديثة مع إطلالة رائعة على المدينة',
-        price: 1200000,
-        images: [
-          'assets/images/properties/apartment1.jpg',
-          'assets/images/properties/apartment2.jpg',
-        ],
-        address: 'حي النرجس، الرياض',
-        location: Point(
-          coordinates: Position(46.6753, 24.7136),
-        ),
-        type: PropertyType.apartment,
-        status: PropertyStatus.available,
-        offerType: OfferType.sale,
-        rooms: 3,
-        bathrooms: 2,
-        area: 150,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        contactPhone: '+966500000000',
-      ),
-      PropertyModel(
-        id: '2',
-        ownerId: 'owner2',
-        title: 'فيلا مع مسبح في جدة',
-        description: 'فيلا فاخرة مع حديقة ومسبح خاص',
-        price: 3500000,
-        images: [
-          'assets/images/properties/villa1.jpg',
-          'assets/images/properties/villa2.jpg',
-        ],
-        address: 'حي الشاطئ، جدة',
-        location: Point(
-          coordinates: Position(39.1219, 21.5433),
-        ),
-        type: PropertyType.villa,
-        status: PropertyStatus.available,
-        offerType: OfferType.sale,
-        rooms: 5,
-        bathrooms: 4,
-        area: 400,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        contactPhone: '+966500000001',
-      ),
-      PropertyModel(
-        id: '3',
-        ownerId: 'owner3',
-        title: 'شقة للإيجار في الخبر',
-        description: 'شقة مؤثثة بالكامل مع إطلالة على البحر',
-        price: 80000,
-        images: [
-          'assets/images/properties/apartment3.jpg',
-          'assets/images/properties/apartment4.jpg',
-        ],
-        address: 'حي الكورنيش، الخبر',
-        location: Point(
-          coordinates: Position(50.2148, 26.2172),
-        ),
-        type: PropertyType.apartment,
-        status: PropertyStatus.available,
-        offerType: OfferType.rent,
-        rooms: 2,
-        bathrooms: 2,
-        area: 120,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        contactPhone: '+966500000002',
-      ),
-      PropertyModel(
-        id: '4',
-        ownerId: 'owner4',
-        title: 'أرض تجارية في الدمام',
-        description: 'أرض تجارية على شارع رئيسي',
-        price: 2000000,
-        images: [
-          'assets/images/properties/land1.jpg',
-          'assets/images/properties/land2.jpg',
-        ],
-        address: 'شارع الملك فهد، الدمام',
-        location: Point(
-          coordinates: Position(49.9777, 26.4207),
-        ),
-        type: PropertyType.land,
-        status: PropertyStatus.available,
-        offerType: OfferType.sale,
-        rooms: 0,
-        bathrooms: 0,
-        area: 1000,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        contactPhone: '+966500000003',
-      ),
-      PropertyModel(
-        id: '5',
-        ownerId: 'owner5',
-        title: 'مكتب تجاري في الرياض',
-        description: 'مكتب حديث في برج تجاري',
-        price: 120000,
-        images: [
-          'assets/images/properties/office1.jpg',
-          'assets/images/properties/office2.jpg',
-        ],
-        address: 'طريق الملك فهد، الرياض',
-        location: Point(
-          coordinates: Position(46.6753, 24.7136),
-        ),
-        type: PropertyType.commercial,
-        status: PropertyStatus.available,
-        offerType: OfferType.rent,
-        rooms: 4,
-        bathrooms: 2,
-        area: 200,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        contactPhone: '+966500000004',
-      ),
-    ];
-  }
+  // تم حذف getDummyProperties() - البيانات تُجلب من Firestore فقط
 } 

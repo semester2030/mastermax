@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/car_model.dart';
 import '../models/car_hotspot.dart';
 import '../providers/car_provider.dart';
 import '../widgets/car_specs_section.dart';
+import '../../auth/providers/auth_state.dart';
 import '../../../core/animations/widget_animations.dart' as custom_animations;
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/gallery_photo_view_wrapper.dart';
 
 class CarDetailsScreen extends StatefulWidget {
@@ -21,6 +26,7 @@ class CarDetailsScreen extends StatefulWidget {
 
 class _CarDetailsScreenState extends State<CarDetailsScreen> {
   late PageController _pageController;
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
@@ -32,25 +38,30 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'تفاصيل السيارة',
-          style: textTheme.titleLarge?.copyWith(
-            color: colorScheme.primary,
+          style: TextStyle(
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         leading: custom_animations.AnimatedScale(
           duration: const Duration(milliseconds: 120),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: colorScheme.primary),
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.primary),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -59,8 +70,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         builder: (context, provider, child) {
           if (provider.isLoading) {
             return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+              child: const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
             );
           }
@@ -74,13 +85,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   Icon(
                     Icons.directions_car_outlined,
                     size: 64,
-                    color: colorScheme.primary.withOpacity(0.5),
+                    color: AppColors.primary.withOpacity(0.5),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'لم يتم العثور على السيارة',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.primary,
+                    style: TextStyle(
+                      color: AppColors.primary,
                       fontSize: 18,
                     ),
                   ),
@@ -89,63 +100,82 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
             );
           }
 
-          return _buildCarDetails(car, colorScheme, textTheme);
+          return _buildCarDetails(car);
         },
       ),
     );
   }
 
-  Widget _buildCarDetails(CarModel car, ColorScheme colorScheme, TextTheme textTheme) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildImageGallery(car.images, colorScheme),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+  Widget _buildCarDetails(CarModel car) {
+    // المعرض خارج SingleChildScrollView حتى يعمل السحب الأفقي و PageView على الويب
+    // دون أن يسرقه التمرير العمودي للصفحة.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildImageGallery(car.images),
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Text(
                   car.title,
-                  style: textTheme.headlineSmall?.copyWith(
-                    color: colorScheme.primary,
+                  style: const TextStyle(
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
+                    fontSize: 24,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary,
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${car.price} ريال',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onPrimary,
+                    style: const TextStyle(
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  car.description,
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.primary.withOpacity(0.1),
-                    height: 1.5,
+                // ✅ وصف السيارة - بطاقة واضحة وسهلة القراءة
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 40),
+                    ),
+                  ),
+                  child: Text(
+                    car.description,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      height: 1.6,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 CarSpecsSection(vehicle: car),
                 const SizedBox(height: 24),
                 if (car.features.isNotEmpty) ...[
-                  Text(
+                  const Text(
                     'المميزات',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.primary,
+                    style: TextStyle(
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -156,16 +186,16 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.8),
+                          color: AppColors.primary.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: colorScheme.primary.withOpacity(0.3),
+                            color: AppColors.primary.withOpacity(0.3),
                           ),
                         ),
                         child: Text(
                           feature,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onPrimary,
+                          style: const TextStyle(
+                            color: AppColors.white,
                             fontSize: 14,
                           ),
                         ),
@@ -175,11 +205,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 ],
                 const SizedBox(height: 24),
                 if (car.panoramaUrl != null || car.interiorPanoramaUrl != null || car.virtualTourUrl != null) ...[
-                  Text(
+                  const Text(
                     'عرض السيارة',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.primary,
+                    style: TextStyle(
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -192,24 +223,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           icon: Icons.rotate_right,
                           label: 'عرض 360°',
                           onPressed: () => _show360View(car),
-                          colorScheme: colorScheme,
-                          textTheme: textTheme,
                         ),
                       if (car.interiorPanoramaUrl != null)
                         _buildViewButton(
                           icon: Icons.view_in_ar,
                           label: 'عرض داخلي',
                           onPressed: () => _showInteriorView(car),
-                          colorScheme: colorScheme,
-                          textTheme: textTheme,
                         ),
                       if (car.virtualTourUrl != null)
                         _buildViewButton(
                           icon: Icons.video_camera_front,
                           label: 'جولة افتراضية',
                           onPressed: () => _showVirtualTour(car),
-                          colorScheme: colorScheme,
-                          textTheme: textTheme,
                         ),
                     ],
                   ),
@@ -218,23 +243,23 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.8),
+                    color: AppColors.primary.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: colorScheme.primary.withOpacity(0.3),
+                      color: AppColors.primary.withOpacity(0.3),
                     ),
                   ),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.person_outline,
-                          color: colorScheme.onPrimary,
+                          color: AppColors.white,
                           size: 28,
                         ),
                       ),
@@ -245,16 +270,17 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           children: [
                             Text(
                               car.sellerName,
-                              style: textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onPrimary,
+                              style: const TextStyle(
+                                color: AppColors.white,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               car.sellerPhone,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onPrimary.withOpacity(0.7),
+                              style: TextStyle(
+                                color: AppColors.white.withOpacity(0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -264,27 +290,196 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.8),
+                          color: AppColors.primary.withOpacity(0.8),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.phone_outlined,
-                          color: colorScheme.onPrimary,
+                          color: AppColors.white,
                           size: 24,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
+                const SizedBox(height: 24),
+                // ✅ قسم الموقع مع زر فتح في Google Maps
+                _buildCarLocation(car),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildImageGallery(List<String> images, ColorScheme colorScheme) {
+  /// ✅ بناء قسم موقع السيارة
+  Widget _buildCarLocation(CarModel car) {
+    // ✅ التحقق من وجود موقع
+    if (car.location == null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.divider),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.location_off, color: AppColors.textSecondary),
+            SizedBox(width: 8),
+            Text(
+              'الموقع غير متوفر',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final lat = car.location!.latitude;
+    final lng = car.location!.longitude;
+    final location = LatLng(lat, lng);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'الموقع',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            // ✅ زر فتح في Google Maps
+            ElevatedButton.icon(
+              onPressed: () => _openInGoogleMaps(location, car.address),
+              icon: const Icon(Icons.directions, size: 20),
+              label: const Text('فتح في Google Maps'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 200,
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: location,
+              zoom: 15.0,
+            ),
+            onMapCreated: (GoogleMapController controller) async {
+              debugPrint('تم إنشاء خريطة السيارة بنجاح');
+            },
+            markers: {
+              Marker(
+                markerId: MarkerId(car.id),
+                position: location,
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue,
+                ),
+              ),
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        // ✅ بطاقة العنوان
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.location_on, color: AppColors.primary, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  car.address,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// ✅ فتح الموقع في Google Maps
+  Future<void> _openInGoogleMaps(LatLng location, String address) async {
+    try {
+      final lat = location.latitude;
+      final lng = location.longitude;
+      
+      // ✅ رابط Google Maps للتنقل (directions)
+      final googleMapsUrl = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=${Uri.encodeComponent(address)}',
+      );
+      
+      // ✅ محاولة فتح في تطبيق Google Maps
+      if (await canLaunchUrl(googleMapsUrl)) {
+        await launchUrl(
+          googleMapsUrl,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        // ✅ إذا فشل، جرب رابط بديل
+        final alternativeUrl = Uri.parse(
+          'https://maps.google.com/?q=$lat,$lng',
+        );
+        if (await canLaunchUrl(alternativeUrl)) {
+          await launchUrl(
+            alternativeUrl,
+            mode: LaunchMode.externalApplication,
+          );
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('لا يمكن فتح Google Maps. يرجى التأكد من تثبيت التطبيق'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('خطأ في فتح Google Maps: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('خطأ في فتح Google Maps: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildImageGallery(List<String> images) {
     return Consumer<CarProvider>(
       builder: (context, provider, child) {
         final car = provider.selectedCar;
@@ -292,15 +487,25 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           return const SizedBox.shrink();
         }
 
-        final PageController pageController = PageController();
+        final auth = context.watch<AuthState>();
+        final uid = (auth.user?.id ?? '').trim();
+        final sellerId = car.sellerId.trim();
+        final canDeleteCarImages =
+            auth.isAdmin || (uid.isNotEmpty && uid == sellerId);
 
         return SizedBox(
           height: 300,
           child: Stack(
             children: [
               PageView.builder(
-                controller: pageController,
+                controller: _pageController,
+                physics: const PageScrollPhysics(),
                 itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentImageIndex = index;
+                  });
+                },
                 itemBuilder: (context, index) {
                   return Hero(
                     tag: 'car_image_${widget.carId}_$index',
@@ -317,60 +522,246 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           ),
                         );
                       },
-                      child: Image.network(
-                        images[index],
+                      child: CachedNetworkImage(
+                        imageUrl: images[index],
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
+                        placeholder: (context, url) => Container(
+                          color: AppColors.primaryLight,
+                          child: const Center(
                             child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  colorScheme.primary),
+                                  AppColors.primary),
                             ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.error_outline,
-                              color: Colors.red,
-                              size: 50,
-                            ),
-                          );
-                        },
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.primaryLight,
+                          child: const Icon(
+                            Icons.error_outline,
+                            color: AppColors.error,
+                            size: 50,
+                          ),
+                        ),
+                        // تحسين الأداء
+                        // ✅ إزالة memCacheWidth/memCacheHeight للحفاظ على الدقة الكاملة
+                        // memCacheWidth: null,
+                        // memCacheHeight: null,
                       ),
                     ),
                   );
                 },
               ),
-              // مؤشر الصور
-              Positioned(
-                bottom: 16,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: images.asMap().entries.map((entry) {
-                    return Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: pageController.hasClients &&
-                                pageController.page?.round() == entry.key
-                            ? colorScheme.primary
-                            : colorScheme.surface,
-                      ),
-                    );
-                  }).toList(),
+              if (images.length > 1)
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Material(
+                          color: AppColors.black.withOpacity(0.38),
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            tooltip: 'الصورة السابقة',
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: _currentImageIndex > 0
+                                  ? AppColors.white
+                                  : AppColors.white.withOpacity(0.35),
+                              size: 20,
+                            ),
+                            onPressed: _currentImageIndex > 0
+                                ? () {
+                                    _pageController.previousPage(
+                                      duration: const Duration(milliseconds: 280),
+                                      curve: Curves.easeOutCubic,
+                                    );
+                                  }
+                                : null,
+                          ),
+                        ),
+                        Material(
+                          color: AppColors.black.withOpacity(0.38),
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            tooltip: 'الصورة التالية',
+                            icon: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: _currentImageIndex < images.length - 1
+                                  ? AppColors.white
+                                  : AppColors.white.withOpacity(0.35),
+                              size: 20,
+                            ),
+                            onPressed: _currentImageIndex < images.length - 1
+                                ? () {
+                                    _pageController.nextPage(
+                                      duration: const Duration(milliseconds: 280),
+                                      curve: Curves.easeOutCubic,
+                                    );
+                                  }
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              // ✅ عدّاد الصور الحاليّة / الإجمالي
+              if (images.isNotEmpty)
+                Positioned.directional(
+                  textDirection: Directionality.of(context),
+                  bottom: 16,
+                  start: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.black.withOpacity(0.45),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.camera_alt_outlined,
+                          size: 16,
+                          color: AppColors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${_currentImageIndex + 1} / ${images.length}',
+                          style: const TextStyle(
+                            color: AppColors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              // حذف الصور: صاحب الإعلان أو الأدمن فقط (لا يظهر لزائر أو لمشاهد آخر)
+              if (canDeleteCarImages && images.isNotEmpty)
+                Positioned.directional(
+                  textDirection: Directionality.of(context),
+                  top: 16,
+                  end: 16,
+                  child: Material(
+                    color: AppColors.black.withOpacity(0.4),
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: AppColors.white,
+                        size: 22,
+                      ),
+                      tooltip: 'حذف هذه الصورة',
+                      onPressed: () async {
+                        if (images.length <= 1) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('لا يمكن حذف آخر صورة، يجب أن تبقى صورة واحدة على الأقل'),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                          return;
+                        }
+
+                        final currentIndex = _currentImageIndex.clamp(0, images.length - 1);
+                        final imageUrl = images[currentIndex];
+
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('حذف الصورة'),
+                              content: const Text('هل أنت متأكد من حذف هذه الصورة من صور السيارة؟'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: const Text('إلغاء'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('حذف'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (confirm != true || !mounted) return;
+
+                        try {
+                          await context.read<CarProvider>().removeCarImage(
+                                car: car,
+                                imageUrl: imageUrl,
+                              );
+
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('تم حذف الصورة بنجاح'),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('فشل في حذف الصورة: $e'),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              // مؤشر الصور (قابل للنقر — مهم على الويب حيث السحب أقل شيوعاً)
+              if (images.length > 1)
+                Positioned(
+                  bottom: 14,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: images.asMap().entries.map((entry) {
+                      final active = _currentImageIndex == entry.key;
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (entry.key == _currentImageIndex) return;
+                          _pageController.animateToPage(
+                            entry.key,
+                            duration: const Duration(milliseconds: 280),
+                            curve: Curves.easeOutCubic,
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 10,
+                          ),
+                          child: Container(
+                            width: active ? 10 : 8,
+                            height: active ? 10 : 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: active
+                                  ? AppColors.primary
+                                  : AppColors.white.withOpacity(0.85),
+                              border: Border.all(
+                                color: AppColors.black.withOpacity(0.2),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
             ],
           ),
         );
@@ -382,11 +773,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     required IconData icon,
     required String label,
     required VoidCallback onPressed,
-    required ColorScheme colorScheme,
-    required TextTheme textTheme,
   }) {
     return Material(
-      color: colorScheme.primary.withAlpha(230),
+      color: AppColors.primary.withAlpha(230),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,
@@ -396,12 +785,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: colorScheme.onPrimary),
+              Icon(icon, color: AppColors.white),
               const SizedBox(width: 4),
               Text(
                 label,
-                style: textTheme.labelLarge?.copyWith(
-                  color: colorScheme.onPrimary,
+                style: const TextStyle(
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -415,7 +804,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
 
   void _show360View(CarModel car) {
     if (car.panoramaUrl != null) {
-      final colorScheme = Theme.of(context).colorScheme;
       final hotspots = [
         CarHotspot(
           id: '1',
@@ -424,7 +812,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: 0,
           latitude: 0,
           icon: Icons.directions_car,
-          color: colorScheme.primary,
+          color: AppColors.primary,
           specificationKey: 'المحرك',
           specificationValue: '2.5 لتر، 4 سلندر',
         ),
@@ -435,7 +823,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: 90,
           latitude: -10,
           icon: Icons.tire_repair,
-          color: Colors.blue,
+          color: AppColors.primary,
           specificationKey: 'العجلات',
           specificationValue: '19 إنش، رياضية',
         ),
@@ -446,7 +834,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: -90,
           latitude: -5,
           icon: Icons.highlight,
-          color: Colors.amber,
+          color: AppColors.accent,
           specificationKey: 'المصابيح',
           specificationValue: 'LED متكيفة',
         ),
@@ -467,7 +855,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
 
   void _showInteriorView(CarModel car) {
     if (car.interiorPanoramaUrl != null) {
-      final colorScheme = Theme.of(context).colorScheme;
       final hotspots = [
         CarHotspot(
           id: '1',
@@ -476,7 +863,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: 0,
           latitude: 0,
           icon: Icons.dashboard,
-          color: colorScheme.primary,
+          color: AppColors.primary,
           specificationKey: 'الشاشة',
           specificationValue: '12.3 إنش تعمل باللمس',
           isInterior: true,
@@ -488,7 +875,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: 90,
           latitude: -10,
           icon: Icons.event_seat,
-          color: Colors.brown,
+          color: AppColors.primaryDark,
           specificationKey: 'المقاعد',
           specificationValue: 'جلد فاخر مع تدفئة وتبريد',
           isInterior: true,
@@ -500,7 +887,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           longitude: -90,
           latitude: 45,
           icon: Icons.wb_sunny,
-          color: Colors.orange,
+          color: AppColors.accent,
           specificationKey: 'السقف',
           specificationValue: 'بانورامي مع ستارة كهربائية',
           isInterior: true,

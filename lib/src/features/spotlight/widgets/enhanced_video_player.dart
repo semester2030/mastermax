@@ -53,7 +53,7 @@ class _EnhancedVideoPlayerState extends State<EnhancedVideoPlayer> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Column(

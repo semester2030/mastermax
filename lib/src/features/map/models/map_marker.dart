@@ -1,38 +1,40 @@
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:typed_data';
 
 class MapMarker {
   final String id;
-  final Point point;
+  final LatLng position;
   final String title;
   final String? subtitle;
   final MarkerType type;
   final String? imageUrl;
   final Uint8List? imageData;
+  final BitmapDescriptor? icon;
 
   MapMarker({
     required this.id,
-    required this.point,
+    required this.position,
     required this.title,
-    required this.type, this.subtitle,
+    required this.type,
+    this.subtitle,
     this.imageUrl,
     this.imageData,
+    this.icon,
   });
 
-  double get latitude => point.coordinates.lat.toDouble();
-  double get longitude => point.coordinates.lng.toDouble();
+  double get latitude => position.latitude;
+  double get longitude => position.longitude;
 
-  PointAnnotationOptions toAnnotationOptions() {
-    return PointAnnotationOptions(
-      geometry: point,
-      textField: title,
-      textSize: 12,
-      textOffset: [0, 2],
-      textColor: 0xFF000000,
-      textHaloColor: 0xFFFFFFFF,
-      textHaloWidth: 1.0,
-      iconSize: 1.2,
-      image: imageData,
+  Marker toGoogleMarker({Function(MarkerId)? onTap}) {
+    return Marker(
+      markerId: MarkerId(id),
+      position: position,
+      infoWindow: InfoWindow(
+        title: title,
+        snippet: subtitle,
+      ),
+      icon: icon ?? BitmapDescriptor.defaultMarker,
+      onTap: onTap != null ? () => onTap(MarkerId(id)) : null,
     );
   }
 }
