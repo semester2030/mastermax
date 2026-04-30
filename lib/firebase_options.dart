@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDjAnZhLH1DZznK1z5siYvFwGgtL84FvZw',
-    appId: '1:691078404023:android:3cfb1da3e6b5ca5068ba32',
+    appId: '1:691078404023:android:703ebac0c789e33568ba32',
     messagingSenderId: '691078404023',
     projectId: 'mastermax-2030-backend',
     storageBucket: 'mastermax-2030-backend.firebasestorage.app',
@@ -60,19 +60,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA2OWNdjbeROIR9Fa_z6rVzHhDFHn_Q4Mg',
-    appId: '1:691078404023:ios:8e4240191109032868ba32',
+    appId: '1:691078404023:ios:64aa69dcf86067a068ba32',
     messagingSenderId: '691078404023',
     projectId: 'mastermax-2030-backend',
     storageBucket: 'mastermax-2030-backend.firebasestorage.app',
-    iosBundleId: 'com.example.mastermax2030',
+    iosBundleId: 'com.darcar.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyA2OWNdjbeROIR9Fa_z6rVzHhDFHn_Q4Mg',
-    appId: '1:691078404023:ios:8e4240191109032868ba32',
+    appId: '1:691078404023:ios:ea9da81cf15f490668ba32',
     messagingSenderId: '691078404023',
     projectId: 'mastermax-2030-backend',
     storageBucket: 'mastermax-2030-backend.firebasestorage.app',
-    iosBundleId: 'com.example.mastermax2030',
+    iosBundleId: 'com.example.mastermax2030New',
   );
+
 }

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "960074773700",
-    "project_id": "master-max-ced03",
-    "storage_bucket": "master-max-ced03.appspot.com"
+    "project_number": "691078404023",
+    "project_id": "mastermax-2030-backend",
+    "storage_bucket": "mastermax-2030-backend.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:960074773700:android:1234567890",
+        "mobilesdk_app_id": "1:691078404023:android:3cfb1da3e6b5ca5068ba32",
         "android_client_info": {
           "package_name": "com.example.mastermax_2030"
         }
@@ -15,7 +15,45 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC799JbfYLQ5ka6t2rHYCNdTmwSD6TYiBU"
+          "current_key": "AIzaSyDjAnZhLH1DZznK1z5siYvFwGgtL84FvZw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691078404023:android:703ebac0c789e33568ba32",
+        "android_client_info": {
+          "package_name": "com.example.mastermax_2030_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjAnZhLH1DZznK1z5siYvFwGgtL84FvZw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691078404023:android:bf2b37e3bbca460a68ba32",
+        "android_client_info": {
+          "package_name": "com.mastermax2030.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjAnZhLH1DZznK1z5siYvFwGgtL84FvZw"
         }
       ],
       "services": {
