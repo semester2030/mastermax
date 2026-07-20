@@ -115,7 +115,12 @@ service cloud.firestore {
         && request.resource.data.sellerId == request.auth.uid
         && callerUserExists()
         && (isAdmin() || mayCreateCarListingForAccount());
-      allow update, delete: if authed()
+      allow update: if authed()
+        && (
+          isAdmin()
+          || resource.data.sellerId == request.auth.uid
+        );
+      allow delete: if authed()
         && resource.data.sellerId == request.auth.uid;
     }
 
