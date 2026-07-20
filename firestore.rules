@@ -27,6 +27,30 @@ service cloud.firestore {
       );
     }
 
+
+    /// PR-009 / RK-036: طرف مالك في مستندات CRM (sales) — حقول مستخدمة في مسارات الكتابة/القراءة الحالية.
+    function isCrmSalesParty(data) {
+      return data.get('companyId', '') == request.auth.uid
+        || data.get('sellerId', '') == request.auth.uid
+        || data.get('ownerId', '') == request.auth.uid
+        || data.get('userId', '') == request.auth.uid;
+    }
+
+    /// PR-009: مالك عقد إيجار (rentals.ownerId — RentalModel / RentalService).
+    function isRentalOwner(data) {
+      return data.get('ownerId', '') == request.auth.uid;
+    }
+
+    /// PR-009: ملكية property_sales عبر العقار المرتبط (الكتابة الحالية لا تخزّن ownerId على المستند).
+    function ownsLinkedProperty(data) {
+      return data.keys().hasAny(['propertyId'])
+        && data.propertyId is string
+        && data.propertyId.size() > 0
+        && exists(/databases/$(database)/documents/properties/$(data.propertyId))
+        && get(/databases/$(database)/documents/properties/$(data.propertyId)).data.get('ownerId', '')
+          == request.auth.uid;
+    }
+
     /// نوع الحساب من وثيقة users (يُخزَّن غالباً في userType من التسجيل).
     function callerAccountType() {
       let p = /databases/$(database)/documents/users/$(request.auth.uid);
@@ -253,10 +277,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
     match /sales/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && isCrmSalesParty(resource.data));
+      allow create: if authed() && isCrmSalesParty(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && isCrmSalesParty(resource.data)
+          && isCrmSalesParty(request.resource.data)
+          && request.resource.data.get('companyId', resource.data.get('companyId', ''))
+            == resource.data.get('companyId', '')
+          && request.resource.data.get('sellerId', resource.data.get('sellerId', ''))
+            == resource.data.get('sellerId', '')
+          && request.resource.data.get('ownerId', resource.data.get('ownerId', ''))
+            == resource.data.get('ownerId', '')
+          && request.resource.data.get('userId', resource.data.get('userId', ''))
+            == resource.data.get('userId', ''));
+      allow delete: if isAdmin() || (authed() && isCrmSalesParty(resource.data));
     }
     match /rentals/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && isRentalOwner(resource.data));
+      allow create: if authed() && isRentalOwner(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && isRentalOwner(resource.data)
+          && request.resource.data.get('ownerId', '') == resource.data.get('ownerId', ''));
+      allow delete: if isAdmin() || (authed() && isRentalOwner(resource.data));
     }
     match /videos/{id} {
       allow read, write: if authed();
@@ -268,7 +312,14 @@ service cloud.firestore {
       allow read, write: if authed();
     }
     match /property_sales/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
+      allow create: if authed() && ownsLinkedProperty(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && ownsLinkedProperty(resource.data)
+          && request.resource.data.get('propertyId', '')
+            == resource.data.get('propertyId', ''));
+      allow delete: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
     }
     match /rental_contracts/{id} {
       allow read, write: if authed();
