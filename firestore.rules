@@ -342,7 +342,14 @@ service cloud.firestore {
       allow delete: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
     }
     match /property_contracts/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
+      allow create: if authed() && ownsLinkedProperty(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && ownsLinkedProperty(resource.data)
+          && request.resource.data.get('propertyId', '')
+            == resource.data.get('propertyId', ''));
+      allow delete: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
     }
     match /special_offers/{id} {
       allow read, write: if authed();
