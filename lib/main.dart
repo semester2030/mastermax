@@ -90,9 +90,9 @@ void main() async {
     await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     logInfo('Firebase Performance Monitoring enabled');
 
-    // تهيئة Remote Config
+    // PR-014: initialize applies defaults/cache locally; network fetch is background-only.
     await RemoteConfigService().initialize();
-    logInfo('Remote Config initialized successfully');
+    logInfo('Remote Config ready (background fetch started)');
 
     // Cloudflare Stream / Images: الأسرار على Cloud Functions فقط — انظر `functions/index.js`.
     try {
