@@ -51,6 +51,16 @@ service cloud.firestore {
           == request.auth.uid;
     }
 
+    /// PR-010: مالك فرع عبر companyId (BranchModel / BranchesService).
+    function isBranchCompanyOwner(data) {
+      return data.get('companyId', '') == request.auth.uid;
+    }
+
+    /// PR-010: مالك نشاط عبر ownerId (Business.toMap / BusinessService).
+    function isBusinessOwner(data) {
+      return data.get('ownerId', '') == request.auth.uid;
+    }
+
     /// نوع الحساب من وثيقة users (يُخزَّن غالباً في userType من التسجيل).
     function callerAccountType() {
       let p = /databases/$(database)/documents/users/$(request.auth.uid);
@@ -322,7 +332,14 @@ service cloud.firestore {
       allow delete: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
     }
     match /rental_contracts/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
+      allow create: if authed() && ownsLinkedProperty(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && ownsLinkedProperty(resource.data)
+          && request.resource.data.get('propertyId', '')
+            == resource.data.get('propertyId', ''));
+      allow delete: if isAdmin() || (authed() && ownsLinkedProperty(resource.data));
     }
     match /property_contracts/{id} {
       allow read, write: if authed();
@@ -343,7 +360,14 @@ service cloud.firestore {
       allow read, write: if authed();
     }
     match /branches/{id} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && isBranchCompanyOwner(resource.data));
+      allow create: if authed() && isBranchCompanyOwner(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && isBranchCompanyOwner(resource.data)
+          && request.resource.data.get('companyId', '')
+            == resource.data.get('companyId', ''));
+      allow delete: if isAdmin() || (authed() && isBranchCompanyOwner(resource.data));
     }
     match /real_estate_customers/{id} {
       allow read, write: if authed();
@@ -353,7 +377,14 @@ service cloud.firestore {
     }
 
     match /businesses/{businessId} {
-      allow read, write: if authed();
+      allow read: if isAdmin() || (authed() && isBusinessOwner(resource.data));
+      allow create: if authed() && isBusinessOwner(request.resource.data);
+      allow update: if isAdmin()
+        || (authed()
+          && isBusinessOwner(resource.data)
+          && request.resource.data.get('ownerId', '')
+            == resource.data.get('ownerId', ''));
+      allow delete: if isAdmin() || (authed() && isBusinessOwner(resource.data));
       match /analytics/{docId} {
         allow read, write: if authed();
       }
