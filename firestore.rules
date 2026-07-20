@@ -61,6 +61,19 @@ service cloud.firestore {
       return data.get('ownerId', '') == request.auth.uid;
     }
 
+    /// PR-012 / RK-020: طرف مالك في spotlight_videos (video_service يكتب userId+sellerId؛ القديم قد يستخدم أحدهما).
+    function isSpotlightVideoOwner(data) {
+      return data.get('userId', '') == request.auth.uid
+        || data.get('sellerId', '') == request.auth.uid;
+    }
+
+    /// تحديثات عدّاد عامة من أي مستخدم مصادَق (viewsCount / likesCount فقط — video_service).
+    function spotlightPublicCounterUpdate() {
+      return authed()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['viewsCount', 'likesCount']);
+    }
+
     /// نوع الحساب من وثيقة users (يُخزَّن غالباً في userType من التسجيل).
     function callerAccountType() {
       let p = /databases/$(database)/documents/users/$(request.auth.uid);
@@ -277,7 +290,17 @@ service cloud.firestore {
     // عند انتهاء الجلسة أو مشاكل التوكن؛ الكتابة تبقى للمستخدمين المسجلين فقط.
     match /spotlight_videos/{id} {
       allow read: if true;
-      allow write: if authed();
+      allow create: if authed() && isSpotlightVideoOwner(request.resource.data);
+      allow update: if isAdmin()
+        || spotlightPublicCounterUpdate()
+        || (authed()
+          && isSpotlightVideoOwner(resource.data)
+          && isSpotlightVideoOwner(request.resource.data)
+          && request.resource.data.get('userId', resource.data.get('userId', ''))
+            == resource.data.get('userId', '')
+          && request.resource.data.get('sellerId', resource.data.get('sellerId', ''))
+            == resource.data.get('sellerId', ''));
+      allow delete: if isAdmin() || (authed() && isSpotlightVideoOwner(resource.data));
     }
 
     /// تجميع مشاهدات سبوتلايت يوميًا (مفتاح المستند yyyy-MM-dd بتوقيت السعودية من التطبيق).
