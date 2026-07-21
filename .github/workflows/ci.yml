@@ -1,0 +1,73 @@
+# PR-008 — CI (required-gate ready)
+# PR-028 — Firestore Rules Emulator Tests job
+# Governance: MEP v1.0 Epic B/F · RK-060/003/063 · EV-140/138
+# Soft CI introduced in PR-001. This workflow is the check admins must require via GitHub branch protection
+# (branch protection is an organization/repo Settings action — not configurable from this YAML alone).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    # Exact job display name for branch protection "Require status checks":
+    #   Analyze critical + Flutter tests
+    name: Analyze critical + Flutter tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # Repository does not pin via FVM; matched to local project stable evidence (flutter --version).
+          flutter-version: "3.38.9"
+          channel: stable
+          cache: true
+
+      - name: Flutter environment
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze critical
+        run: bash tool/analyze_critical.sh
+
+      - name: Flutter tests
+        run: flutter test
+
+  firestore-rules:
+    # PR-028 — quality gate only (no deploy, no Flutter, no product features)
+    name: Firestore Rules Emulator Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Java (Firestore Emulator)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Run Firestore rules tests
+        run: bash tool/run_firestore_rules_tests.sh
