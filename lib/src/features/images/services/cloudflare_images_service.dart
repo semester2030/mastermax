@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,6 +32,9 @@ class CloudflareImagesService {
   CloudflareImagesService();
 
   final Logger _logger = Logger();
+
+  /// مهلة صريحة لطلب الرفع الفعلي إلى Cloudflare (يمنع التعليق بلا نهاية).
+  static const Duration uploadTimeout = Duration(seconds: 120);
 
   static Future<CloudflareImagesService?> fromConfig() async {
     try {
@@ -93,8 +97,18 @@ class CloudflareImagesService {
         onProgress(0.05);
       }
 
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
+      // PR-020: bound the actual Cloudflare multipart upload (send + body read).
+      final response = await () async {
+        final streamedResponse = await request.send();
+        return http.Response.fromStream(streamedResponse);
+      }().timeout(
+        uploadTimeout,
+        onTimeout: () {
+          throw TimeoutException(
+            'Image upload timed out after ${uploadTimeout.inSeconds}s',
+          );
+        },
+      );
 
       if (onProgress != null) {
         onProgress(1.0);
@@ -150,6 +164,19 @@ class CloudflareImagesService {
       return CloudflareImageResult(
         success: false,
         error: errorMessage,
+      );
+    } on TimeoutException catch (e, stackTrace) {
+      _logger.e('Cloudflare Images upload timed out', error: e, stackTrace: stackTrace);
+      await MediaFailureLogService.log(
+        mediaKind: 'image',
+        context: 'cloudflare_images_timeout',
+        errorMessage: e.message ?? 'upload timeout',
+        detail: imageFile.path,
+      );
+      return CloudflareImageResult(
+        success: false,
+        error:
+            'انتهت مهلة رفع الصورة (${uploadTimeout.inSeconds} ثانية). تحقق من الاتصال وحاول مرة أخرى.',
       );
     } catch (e, stackTrace) {
       _logger.e('Error uploading image to Cloudflare Images', error: e, stackTrace: stackTrace);
