@@ -49,3 +49,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android release signing material (PR-006) — never commit
+android/key.properties
+*.jks
+*.keystore
+!android/key.properties.example

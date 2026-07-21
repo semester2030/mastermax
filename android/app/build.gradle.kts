@@ -13,6 +13,14 @@ plugins {
 import java.io.FileInputStream
 import java.util.Properties
 
+// PR-006 / RK-062 / EV-144: load release signing material from non-committed android/key.properties
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+val hasReleaseKeystore = keystorePropertiesFile.exists()
+if (hasReleaseKeystore) {
+    FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "com.example.mastermax_2030_new"
     compileSdk = 36
@@ -58,13 +66,55 @@ android {
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = mapsKey
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                    ?: error("keyAlias missing in android/key.properties (PR-006)")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                    ?: error("keyPassword missing in android/key.properties (PR-006)")
+                storePassword = keystoreProperties.getProperty("storePassword")
+                    ?: error("storePassword missing in android/key.properties (PR-006)")
+                val storeFilePath = keystoreProperties.getProperty("storeFile")
+                    ?: error("storeFile missing in android/key.properties (PR-006)")
+                storeFile = rootProject.file(storeFilePath)
+                require(storeFile!!.isFile) {
+                    "Release keystore file not found: $storeFilePath — see docs/android_release_signing.md"
+                }
+            }
         }
     }
+
+    buildTypes {
+        release {
+            // Debug buildType keeps AGP default debug signing. Release must not use debug keys.
+            if (hasReleaseKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
+}
+
+// Fail release packaging if key.properties is missing (debug builds still configure/run).
+afterEvaluate {
+    val releaseGate = {
+        if (!keystorePropertiesFile.exists()) {
+            error(
+                "PR-006: android/key.properties is required for release builds. " +
+                    "Copy android/key.properties.example → android/key.properties and point storeFile at your keystore. " +
+                    "See docs/android_release_signing.md. Do not commit key.properties or *.jks / *.keystore."
+            )
+        }
+    }
+    listOf(
+        "assembleRelease",
+        "bundleRelease",
+        "assembleReleaseUnitTest",
+    ).forEach { name ->
+        tasks.findByName(name)?.doFirst { releaseGate() }
+    }
+    tasks.matching { it.name.startsWith("sign") && it.name.contains("Release", ignoreCase = true) }
+        .configureEach { doFirst { releaseGate() } }
 }
 
 dependencies {
