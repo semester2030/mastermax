@@ -37,16 +37,24 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
+        // PR-005 / RK-062 / EV-144: no Maps API key fallback in source.
+        // Resolve order: -P / gradle.properties → env → android/local.properties
         val local = Properties()
         val lp = rootProject.file("local.properties")
         if (lp.exists()) {
             FileInputStream(lp).use { local.load(it) }
         }
         val mapsFromLocal = local.getProperty("GOOGLE_MAPS_API_KEY")?.trim().orEmpty()
+        val mapsFromEnv = System.getenv("GOOGLE_MAPS_API_KEY")?.trim().orEmpty()
         val mapsKey =
             (project.findProperty("GOOGLE_MAPS_API_KEY") as String?)?.trim()?.takeIf { it.isNotEmpty() }
+                ?: mapsFromEnv.takeIf { it.isNotEmpty() }
                 ?: mapsFromLocal.takeIf { it.isNotEmpty() }
-                ?: "AIzaSyDqTUgEpUZmwM602S6TVc57d5erB_c-dr4"
+                ?: error(
+                    "GOOGLE_MAPS_API_KEY is required (PR-005). " +
+                        "Set android/local.properties, env GOOGLE_MAPS_API_KEY, or -PGOOGLE_MAPS_API_KEY=... " +
+                        "See docs/android_maps_api_key.md. Do not commit the key."
+                )
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = mapsKey
     }
 
