@@ -58,6 +58,16 @@ class AppConfig {
 
   /// Approved initial ceiling when [mapBoundedFetch] is on (N2=32 → ~15× headroom).
   static const int mapBoundedFetchCarsLimit = 500;
+
+
+  /// PR-025 — optional upload draft outbox (`upload_drafts`).
+  ///
+  /// Feature flag dart-define name: `UPLOAD_OUTBOX` (default **false**).
+  /// When false, image upload path is unchanged. When true, a small Firestore
+  /// draft is written/updated around CloudflareImagesService.uploadImage.
+  static const bool uploadOutbox =
+      bool.fromEnvironment('UPLOAD_OUTBOX', defaultValue: false);
+
   
   // Support
   static const String supportEmail = 'support@reca.com';

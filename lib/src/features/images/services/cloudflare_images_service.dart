@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/services/cloudflare_functions_gateway.dart';
 import '../../../core/services/media_failure_log_service.dart';
 import '../config/image_upload_config.dart';
@@ -36,6 +38,9 @@ class CloudflareImagesService {
   /// مهلة صريحة لطلب الرفع الفعلي إلى Cloudflare (يمنع التعليق بلا نهاية).
   static const Duration uploadTimeout = Duration(seconds: 120);
 
+  static const String _uploadDraftsCollection = 'upload_drafts';
+  static const String _draftEntityType = 'cloudflare_image';
+
   static Future<CloudflareImagesService?> fromConfig() async {
     try {
       if (!await ImageUploadConfig.shouldUseCloudflare()) return null;
@@ -52,8 +57,13 @@ class CloudflareImagesService {
     required File imageFile,
     Function(double progress)? onProgress,
   }) async {
+    // One draft id per call — prevents duplicate drafts within the same upload.
+    DocumentReference<Map<String, dynamic>>? draftRef;
+
     try {
-      _logger.d('Starting Cloudflare Images upload (via Functions): ${imageFile.path}');
+      _logger.d(
+        'Starting Cloudflare Images upload (via Functions): ${imageFile.path}',
+      );
 
       if (!await imageFile.exists()) {
         await MediaFailureLogService.log(
@@ -68,13 +78,22 @@ class CloudflareImagesService {
         );
       }
 
+      // PR-025: optional expand — create pending then move to uploading before CF I/O.
+      draftRef = await _beginUploadDraft();
+      await _markDraftUploading(draftRef);
+
       final direct = await CloudflareFunctionsGateway.createImagesDirectUpload();
       final uploadURL = direct['uploadURL'] as String?;
       final imagesHash = direct['imagesHash'] as String?;
-      if (uploadURL == null || uploadURL.isEmpty || imagesHash == null || imagesHash.isEmpty) {
+      if (uploadURL == null ||
+          uploadURL.isEmpty ||
+          imagesHash == null ||
+          imagesHash.isEmpty) {
+        const err = 'استجابة غير صالحة من الخادم (رابط رفع الصورة).';
+        await _markDraftFailed(draftRef, err);
         return CloudflareImageResult(
           success: false,
-          error: 'استجابة غير صالحة من الخادم (رابط رفع الصورة).',
+          error: err,
         );
       }
 
@@ -120,7 +139,10 @@ class CloudflareImagesService {
         if (responseData['success'] == true) {
           final result = responseData['result'] as Map<String, dynamic>;
           final imageId = result['id'] as String;
-          final imageUrl = 'https://imagedelivery.net/$imagesHash/$imageId/public';
+          final imageUrl =
+              'https://imagedelivery.net/$imagesHash/$imageId/public';
+
+          await _markDraftCompleted(draftRef, imageId);
 
           return CloudflareImageResult(
             success: true,
@@ -139,8 +161,12 @@ class CloudflareImagesService {
           mediaKind: 'image',
           context: 'cloudflare_images_api',
           errorMessage: errorMessage,
-          detail: response.body.length > 1200 ? '${response.body.substring(0, 1200)}…' : response.body,
+          detail: response.body.length > 1200
+              ? '${response.body.substring(0, 1200)}…'
+              : response.body,
         );
+
+        await _markDraftFailed(draftRef, errorMessage);
 
         return CloudflareImageResult(
           success: false,
@@ -158,39 +184,140 @@ class CloudflareImagesService {
         mediaKind: 'image',
         context: 'cloudflare_images_http',
         errorMessage: '$errorMessage (HTTP ${response.statusCode})',
-        detail: response.body.length > 1200 ? '${response.body.substring(0, 1200)}…' : response.body,
+        detail: response.body.length > 1200
+            ? '${response.body.substring(0, 1200)}…'
+            : response.body,
       );
+
+      await _markDraftFailed(draftRef, errorMessage);
 
       return CloudflareImageResult(
         success: false,
         error: errorMessage,
       );
     } on TimeoutException catch (e, stackTrace) {
-      _logger.e('Cloudflare Images upload timed out', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Cloudflare Images upload timed out',
+        error: e,
+        stackTrace: stackTrace,
+      );
       await MediaFailureLogService.log(
         mediaKind: 'image',
         context: 'cloudflare_images_timeout',
         errorMessage: e.message ?? 'upload timeout',
         detail: imageFile.path,
       );
+      final msg =
+          'انتهت مهلة رفع الصورة (${uploadTimeout.inSeconds} ثانية). تحقق من الاتصال وحاول مرة أخرى.';
+      await _markDraftFailed(draftRef, msg);
       return CloudflareImageResult(
         success: false,
-        error:
-            'انتهت مهلة رفع الصورة (${uploadTimeout.inSeconds} ثانية). تحقق من الاتصال وحاول مرة أخرى.',
+        error: msg,
       );
     } catch (e, stackTrace) {
-      _logger.e('Error uploading image to Cloudflare Images', error: e, stackTrace: stackTrace);
+      _logger.e(
+        'Error uploading image to Cloudflare Images',
+        error: e,
+        stackTrace: stackTrace,
+      );
       await MediaFailureLogService.log(
         mediaKind: 'image',
         context: 'cloudflare_images_exception',
         errorMessage: e.toString(),
         detail: imageFile.path,
       );
+      await _markDraftFailed(draftRef, e.toString());
       return CloudflareImageResult(
         success: false,
         error: e.toString(),
       );
     }
+  }
+
+  /// PR-025: create at most one `pending` draft for this upload call.
+  Future<DocumentReference<Map<String, dynamic>>?> _beginUploadDraft() async {
+    if (!AppConfig.uploadOutbox) return null;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
+    try {
+      final ref =
+          FirebaseFirestore.instance.collection(_uploadDraftsCollection).doc();
+      await ref.set({
+        'ownerId': uid,
+        'entityType': _draftEntityType,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'attemptCount': 0,
+        'uploadedImageIds': <String>[],
+        'lastError': '',
+      });
+      return ref;
+    } catch (e) {
+      // Expand-only: never block the existing upload path.
+      _logger.w('UPLOAD_OUTBOX draft create skipped: $e');
+      return null;
+    }
+  }
+
+  Future<void> _markDraftUploading(
+    DocumentReference<Map<String, dynamic>>? ref,
+  ) async {
+    if (ref == null) return;
+    try {
+      await ref.update({
+        'status': 'uploading',
+        'attemptCount': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastError': '',
+      });
+    } catch (e) {
+      _logger.w('UPLOAD_OUTBOX draft uploading skipped: $e');
+    }
+  }
+
+  Future<void> _markDraftCompleted(
+    DocumentReference<Map<String, dynamic>>? ref,
+    String imageId,
+  ) async {
+    if (ref == null) return;
+    try {
+      await ref.update({
+        'status': 'completed',
+        'uploadedImageIds': [imageId],
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastError': '',
+      });
+    } catch (e) {
+      _logger.w('UPLOAD_OUTBOX draft completed skipped: $e');
+    }
+  }
+
+  Future<void> _markDraftFailed(
+    DocumentReference<Map<String, dynamic>>? ref,
+    String error,
+  ) async {
+    if (ref == null) return;
+    try {
+      await ref.update({
+        'status': 'failed',
+        'lastError': _sanitizeDraftError(error),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _logger.w('UPLOAD_OUTBOX draft failed skipped: $e');
+    }
+  }
+
+  /// Safe lastError for PR-025A rules (≤800) — no tokens / upload URLs / raw paths.
+  static String _sanitizeDraftError(String raw) {
+    var s = raw.trim();
+    s = s.replaceAll(RegExp(r'https?://\S+', caseSensitive: false), '[url]');
+    s = s.replaceAll(RegExp(r'Bearer\s+\S+', caseSensitive: false), '[redacted]');
+    if (s.length > 800) {
+      s = '${s.substring(0, 800)}…';
+    }
+    return s;
   }
 
   /// حذف صورة من Cloudflare Images
