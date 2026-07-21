@@ -213,10 +213,11 @@ void main() {
             customersService,
             context.read<AuthState>(),
           ),
-          update: (context, authState, previous) => CustomersProvider(
-            customersService,
-            authState,
-          ),
+          update: (context, authState, previous) {
+            final customers = previous!;
+            customers.syncAuthState(authState);
+            return customers;
+          },
         ),
         ChangeNotifierProxyProvider<AuthState, SalesProvider>(
           create: (context) => SalesProvider(

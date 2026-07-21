@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../models/car_showroom/customer_model.dart';
 import '../../services/car_showroom/customers_service.dart';
@@ -9,8 +11,19 @@ import '../../../../core/utils/logger.dart';
 /// يدير قائمة العملاء والعمليات CRUD
 class CustomersProvider extends ChangeNotifier {
   final CustomersService _customersService;
-  final AuthState _authState;
-  
+  AuthState _authState;
+
+  /// يُستدعى من [ChangeNotifierProxyProvider] عند تغيّر [AuthState] دون إعادة إنشاء المزود.
+  /// نفس نمط [CarProvider.syncAuthState].
+  void syncAuthState(AuthState authState) {
+    final oldUid = _authState.user?.id;
+    _authState = authState;
+    final newUid = authState.user?.id;
+    if (oldUid != newUid) {
+      unawaited(loadCustomers());
+    }
+  }
+
   CustomersProvider(this._customersService, this._authState) {
     logDebug('CustomersProvider initialized');
   }
@@ -46,27 +59,33 @@ class CustomersProvider extends ChangeNotifier {
   /// تحميل قائمة العملاء
   Future<void> loadCustomers() async {
     if (_isLoading) return;
-    
+
+    final user = _authState.user;
+    if (user == null) {
+      // Logout / no session: reset without throwing (syncAuthState on uid clear).
+      _safeSetState(() {
+        _customers = [];
+        _selectedCustomer = null;
+        _error = null;
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
       _safeSetState(() {
         _isLoading = true;
         _error = null;
       });
 
-      final user = _authState.user;
-      if (user == null) {
-        throw 'يجب تسجيل الدخول';
-      }
-
       logInfo('Loading customers for seller: ${user.id}');
       final customers = await _customersService.getCustomers(user.id);
-      
+
       _safeSetState(() {
         _customers = customers;
       });
-      
-      logInfo('Loaded ${customers.length} customers successfully');
 
+      logInfo('Loaded ${customers.length} customers successfully');
     } catch (e, stackTrace) {
       logError('Error loading customers', e, stackTrace);
       _safeSetState(() {
