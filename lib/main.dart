@@ -246,10 +246,11 @@ void main() {
             realEstateCustomersService,
             context.read<AuthState>(),
           ),
-          update: (context, authState, previous) => RealEstateCustomersProvider(
-            realEstateCustomersService,
-            authState,
-          ),
+          update: (context, authState, previous) {
+            final customers = previous!;
+            customers.syncAuthState(authState);
+            return customers;
+          },
         ),
         ChangeNotifierProxyProvider<AuthState, BranchesProvider>(
           create: (context) => BranchesProvider(
