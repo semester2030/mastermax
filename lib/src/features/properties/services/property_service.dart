@@ -1,5 +1,6 @@
 import '../models/property_model.dart';
 import '../models/property_type.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/geo/saudi_region_parser.dart';
 import '../../../core/utils/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -163,6 +164,11 @@ class PropertyService {
       // فلترة حسب المالك إذا تم توفيره (للحسابات التجارية)
       if (ownerId != null && ownerId.isNotEmpty) {
         query = query.where('ownerId', isEqualTo: ownerId);
+      }
+      // PR-023: optional ceiling. Default OFF → identical unbounded behavior.
+      // Reuses MAP_BOUNDED_FETCH / mapBoundedFetchCarsLimit (500) from PR-022.
+      if (AppConfig.mapBoundedFetch) {
+        query = query.limit(AppConfig.mapBoundedFetchCarsLimit);
       }
       
       final snapshot = await query.get();
