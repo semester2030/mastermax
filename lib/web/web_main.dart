@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart' as intl;
-import '../firebase_options.dart';
+import '../firebase_options_staging.dart';
 import '../src/features/auth/providers/auth_state.dart';
 import '../src/features/auth/services/auth_service.dart';
 import '../src/features/profile/providers/real_estate/real_estate_customers_provider.dart';
@@ -43,7 +43,7 @@ void main() async {
 
     // تهيئة Firebase للويب
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.web,
+      options: AppFirebaseOptions.web,
     );
     logInfo('✅ Firebase initialized for Web');
 

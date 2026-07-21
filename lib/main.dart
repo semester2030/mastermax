@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
-import 'firebase_options.dart';
+import 'firebase_options_staging.dart';
 import 'src/navigation/app_router.dart';
 import 'src/features/map/providers/map_state.dart';
 import 'src/features/auth/providers/auth_state.dart';
@@ -74,14 +74,14 @@ void main() {
       logInfo('Google Maps initialized successfully');
     }
     
-    // تهيئة Firebase بناءً على المنصة
+    // تهيئة Firebase بناءً على المنصة (PR-029: USE_STAGING selects project)
     if (kIsWeb) {
       await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.web,
+        options: AppFirebaseOptions.web,
       );
     } else {
       await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
+        options: AppFirebaseOptions.currentPlatform,
       );
     }
     logInfo('Firebase initialized successfully');

@@ -68,6 +68,18 @@ class AppConfig {
   static const bool uploadOutbox =
       bool.fromEnvironment('UPLOAD_OUTBOX', defaultValue: false);
 
+  /// PR-029 — select Firebase project via dart-define `USE_STAGING`.
+  ///
+  /// Default **false** → production (`mastermax-2030-backend`).
+  /// `true` → staging (`mastermax-2030-staging`) via
+  /// `AppFirebaseOptions` / `lib/firebase_options_staging.dart`.
+  /// No silent fallback to production when staging is requested.
+  ///
+  /// Example:
+  /// `flutter run --dart-define=USE_STAGING=true`
+  static const bool useStaging =
+      bool.fromEnvironment('USE_STAGING', defaultValue: false);
+
   
   // Support
   static const String supportEmail = 'support@reca.com';

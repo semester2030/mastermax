@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
-import '../firebase_options.dart';
+import '../firebase_options_staging.dart';
 import '../src/features/auth/providers/auth_state.dart';
 import '../src/features/auth/services/auth_service.dart';
 import '../src/features/cars/providers/car_provider.dart';
@@ -30,7 +30,7 @@ void main() async {
 
   try {
     logInfo('🚗 Starting Car CRM Web...');
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
+    await Firebase.initializeApp(options: AppFirebaseOptions.web);
     logInfo('✅ Firebase initialized for Car Web');
 
     final authService = AuthService();
