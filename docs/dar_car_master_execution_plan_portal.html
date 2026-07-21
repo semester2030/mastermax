@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="خطة التنفيذ الرئيسية لدار كار — PR تلو PR من يوم 1 حتى Commercial GO. تخطيط صارم بلا تنفيذ." />
+<title>دار كار · MASTER EXECUTION PLAN · صارم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="dar_car_master_execution_plan_portal.css" />
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand">
+    <span class="brand-mark" title="أيقونة التنفيذ — لوحة أوامر + قفل تسلسل" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="3" width="16" height="18" rx="2"/>
+  <path d="M8 8h8"/><path d="M8 12h5"/><path d="M8 16h6"/>
+  <circle cx="17.2" cy="16" r="2.2"/>
+  <path d="M17.2 14.6v1.4"/>
+</svg></span>
+    <div>
+      <h1>MASTER EXECUTION PLAN</h1>
+      <p>دار كار · برنامج التنفيذ الصارم · v1.0 + ملحق 0.5 · تعديل Smart Map Engine</p>
+    </div>
+  </div>
+  <div class="strict-banner">صارم: لا تنفيذ الآن · لا PR متداخلة على نفس مجال الخطر · راقب بعد كل دمج · إثباتات من EV/RK فقط</div>
+
+  <a class="switch audit" href="dar_car_production_readiness_portal.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></span><span>تدقيق الإنتاج · NO-GO</span></a>
+  <a class="switch blueprint" href="dar_car_engineering_remediation_portal.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.85"><path d="M12 3l7 3v5c0 5-3.2 8.2-7 9.5C8.2 19.2 5 16 5 11V6l7-3z"/><circle cx="12" cy="12.2" r="2.1"/></svg></span><span>مخطط المعالجة · Blueprint</span></a>
+  <a class="switch" href="dar_car_dev_improvement_portal.html" style="border-color:rgba(52,211,153,.4)"><span class="ico" style="background:linear-gradient(145deg,#34d399,#059669)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span><span>تطوير وتحسين دار كار · دستور Phase 0</span></a>
+  <a class="switch" href="dar_car_phase05_portal.html" style="border-color:rgba(251,191,36,.45)"><span class="ico" style="background:linear-gradient(145deg,#fbbf24,#d97706)"><svg viewBox="0 0 24 24" fill="none" stroke="#1c1917" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2.2"/></svg></span><span>Phase 0.5 · MEP v1.1 · حوكمة النطاق</span></a>
+  <a class="switch" href="dar_car_mep_v12_portal.html" style="border-color:rgba(165,180,252,.45)"><span class="ico" style="background:linear-gradient(145deg,#a5b4fc,#6366f1)"><svg viewBox="0 0 24 24" fill="none" stroke="#0c1222" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 14h10"/></svg></span><span>MEP v1.2 · نجاح + ميزانية التغيير</span></a>
+
+  <input class="nav-search" id="navSearch" type="search" placeholder="ابحث…" />
+  <div class="sec-label">الأقسام</div>
+  <a href="#s1">1 · ملخص تنفيذي <span class="st seq">START</span></a>
+  <a href="#s2">2 · خارطة رئيسية</a>
+  <a href="#s3">3 · الجدول الزمني</a>
+  <a href="#s4">4 · Epics</a>
+  <a href="#s5">5 · Milestones</a>
+  <a href="#s6">6 · Sprints</a>
+  <a href="#s7">7 · PR-001…030 <span class="st seq">CORE</span></a>
+  <a href="#s8">8 · توازي العمل</a>
+  <a href="#s9">9 · ترتيب الدمج</a>
+  <a href="#s10">10 · التحقق</a>
+  <a href="#s11">11 · منع الانحدار</a>
+  <a href="#s12">12 · التراجع</a>
+  <a href="#s13">13 · المراقبة</a>
+  <a href="#s14">14 · بوابات الإطلاق</a>
+  <a href="#s15">15 · Conditional GO</a>
+  <a href="#s16">16 · GO</a>
+  <a href="#s17">17 · توسّع مستقبلي</a>
+  <a href="#s18">18 · الخطة النهائية</a>
+  <div class="sec-label">فريق</div>
+  <a href="#team">الملكية والمراجعات</a>
+  <a href="#release">الإصدارات</a>
+</aside>
+
+<main>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="pill bad">EXECUTION PLANNING ONLY</span>
+    <span class="pill ok">إثباتات: EV/RK مقبولة</span>
+    <span class="pill cyan">PR-001 → … → Commercial GO</span>
+    <span class="pill ok">Epic E = Smart Map Engine</span>
+    <span class="pill warn">أيقونة: لوحة أوامر + قفل</span>
+    <h2>برنامج التنفيذ الرئيسي — دار كار</h2>
+    <p style="max-width:900px;margin:0;opacity:.92">ليس تدقيقاً جديداً. هذا هو الجدول الذي يبدأ به المهندسون غداً: <strong>ماذا أولاً؟ ماذا ثانياً؟</strong> كل خطوة مربوطة بـ RK/EV وملفات مثبتة ونصف قطر تراجع ومراقبة. التطوير الميزاتي يستمر على أسطح مملوكة — دون تداخل مع قطار المعالجة.</p>
+    <div class="chain" style="margin-top:1rem">
+      <span>PR-001</span><i>→</i><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe</span><i>→</i><span>PR-002</span><i>→</i><span>…</span><i>→</i><span>Conditional</span><i>→</i><span>GO</span>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+<section class="card" id="s1">
+  <h2><span class="num">1</span> الملخص التنفيذي</h2>
+  <div class="callout dead"><strong>صباح الغد — الأول:</strong> PR-001 (CI ناعم). <strong>الثاني:</strong> PR-002 (runbook). <strong>الثالث:</strong> PR-003 (طابور rules). لا تلم <code>firestore.rules</code> قبل PR-003 وجرد الحقول.</div>
+  <div class="grid">
+    <div class="stat" onclick="jump('s7')"><b>30</b><span>PRs مرقّمة للتنفيذ</span></div>
+    <div class="stat" onclick="jump('s4')"><b>6</b><span>Epics (A→F)</span></div>
+    <div class="stat" onclick="jump('s6')"><b>8</b><span>Sprints منطقية</span></div>
+    <div class="stat" onclick="jump('s15')"><b>★</b><span>Conditional بعد أمن+سلامة</span></div>
+  </div>
+  <p style="font-size:.8rem">المدخلات المقبولة: تدقيق الإنتاج v1.0 · Blueprint المعالجة · EV-001…175 · RK-001…073. القرار الحالي: <strong>NO-GO</strong> لإنتاج عام · بعد PR-030: Foundation <strong>PR-009…029 ملتزم</strong> لكن <strong>Conditional GO = NOT READY</strong> (حواجز Protect/Safety على HEAD — انظر <code>docs/conditional_go_gate_pr030.md</code>).</p>
+</section>
+
+<section class="card" id="s2">
+  <h2><span class="num">2</span> الخارطة الرئيسية</h2>
+  <div class="flow">DAY1  EpicA Protect: PR-001 CI → PR-002 Runbook → PR-003 CODEOWNERS → PR-004 Measure N
+     ↓
+EpicB Safety: PR-005 Maps key out of source → PR-006 Release signing → PR-007 DR drill → PR-008 CI required
+     ↓
+EpicC Security (SERIAL, rules-only PRs): PR-009 CRM1 → observe → PR-010 CRM2 → observe → PR-011 CRM3 → PR-012 Spotlight write → PR-013 cars admin (opt)
+     ↓  ★ CONDITIONAL GO GATE
+EpicD Reliability: PR-014 RC → PR-015 Crashlytics → PR-016…019 Proxy sync one-by-one → PR-020 Image timeout → PR-021 WA lease
+     ↓
+EpicE Smart Map Engine: PR-022 cars limit flag → PR-023 properties limit flag → PR-024 map empty/fail UX
+     (capability rename only — same PR IDs · after Security · Not Started)
+     ↓
+EpicF Closeout: PR-025 outbox expand → PR-026 monitoring → PR-027 tenant revalidate → PR-028 rules-in-CI → PR-029 staging prep → PR-030 flip Conditional doc
+     ↓
+Full GO train (post-measurement 1k/5k/10k + remaining P1) → Commercial GO</div>
+</section>
+
+<section class="card" id="s3">
+  <h2><span class="num">3</span> الجدول الزمني (فئات مدة — بلا تواريخ تقويم مخترعة)</h2>
+  <table>
+    <tr><th>المرحلة</th><th>PRs</th><th>فئة المدة</th><th>ملاحظة صارمة</th></tr>
+    <tr><td>Sprint 0 Protect</td><td>001–004</td><td>قصيرة</td><td>يوم 1 يبدأ هنا</td></tr>
+    <tr><td>Sprint 1 Safety</td><td>005–008</td><td>قصيرة–متوسطة</td><td>توقيع يحتاج أسرار جاهزة</td></tr>
+    <tr><td>Sprint 2–3 Security</td><td>009–013</td><td>متوسطة + observe 48h بين الدفعات</td><td>تسلسل إلزامي · لا توازي rules</td></tr>
+    <tr><td>Sprint 4 Reliability</td><td>014–021</td><td>متوسطة</td><td>Proxy واحد/PR</td></tr>
+    <tr><td>Sprint 5 Smart Map Engine</td><td>022–024</td><td>متوسطة</td><td>شريحة أولى · علم OFF افتراضياً · بعد Security</td></tr>
+    <tr><td>Sprint 6 Closeout</td><td>025–030</td><td>متوسطة–طويلة</td><td>Conditional معلن عند 030</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s4">
+  <h2><span class="num">4</span> تفكيك Epics</h2>
+  <table>
+    <tr><th>Epic</th><th>هدف</th><th>RK</th><th>EV</th><th>يُحجب بـ</th><th>يحجب</th><th>تعقيد</th><th>انحدار</th><th>تراجع</th><th>مالك</th></tr>
+    <tr><td>A Protect</td><td>درع عملية</td><td>002/060/056</td><td>005/132/140</td><td>—</td><td>B/C</td><td>منخفض</td><td>منخفض</td><td>سهل</td><td>CI+TPM</td></tr>
+    <tr><td>B Safety</td><td>مفاتيح+DR+CI إلزامي</td><td>062/061/060</td><td>144/150</td><td>A</td><td>C إطلاق</td><td>متوسط</td><td>متوسط</td><td>متوسط</td><td>Android+Infra</td></tr>
+    <tr><td>C Security</td><td>إغلاق ثغرات rules</td><td>036/020/037</td><td>093/047/092</td><td>A طابور + جرد</td><td>Conditional</td><td>عالٍ</td><td>عالٍ</td><td>سهل (tag)</td><td>Security</td></tr>
+    <tr><td>D Reliability</td><td>إقلاع/حالة/وسائط/WA</td><td>011/012/015/045/048</td><td>094/027/103/100/114</td><td>C مفضّل</td><td>E جزئياً</td><td>متوسط</td><td>متوسط</td><td>متوسط</td><td>Flutter+Func</td></tr>
+    <tr><td>E Smart Map Engine</td><td>محرك خريطة ذكي (أداء + ترتيب + viewport + clutter) — شريحة أولى: حدود جلب بعلم</td><td>018/026</td><td>038/154</td><td>N من 004 + C (Security أولاً)</td><td>قياس GO</td><td>متوسط→عالٍ</td><td>عالٍ UX</td><td>سهل (flag) للشريحة الأولى</td><td>Maps</td></tr>
+    <tr><td>F Closeout</td><td>outbox/مراقبة/staging/إعلان بوابة</td><td>045/070/001/073</td><td>109/164/002/173</td><td>D/E أساس</td><td>Full GO</td><td>متنوع</td><td>متوسط</td><td>متنوع</td><td>TPM+</td></tr>
+  </table>
+  <p style="font-size:.75rem"><strong>سبب أعمال:</strong> تحويل NO-GO → Conditional دون وقف الميزات. <strong>سبب هندسي:</strong> تقليل نصف القطر لكل دمج.</p>
+
+  <h3 id="epic-e-sme">Epic E — Smart Map Engine <span class="badge warn">PLANNED · Not Started</span></h3>
+  <div class="callout ok"><strong>تعديل تسمية فقط (تخطيط):</strong> كان الاسم «Map Performance». الأداء جزء من القدرة — وليس كل القدرة. تسلسل PR-022…024 وموضعها بعد Security <strong>لم يتغيّرا</strong>. لا تنفيذ الآن.</div>
+  <p style="font-size:.8rem"><strong>الغرض:</strong> بناء نظام الخريطة الذكي الذي يشغّل خرائط دار كار — تنظيم ما يراه المستخدم، عرض الأقرب/الأهم، ومنع ازدحام الآلاف من الإعلانات دفعة واحدة.</p>
+  <p style="font-size:.78rem;color:var(--muted)"><strong>الحالة:</strong> Planned · <strong>مرحلة التنفيذ:</strong> Epic E (بعد Protect → Safety → Security → Reliability) · <strong>الأولوية:</strong> High · <strong>التنفيذ:</strong> Not Started · <strong>لا يُقدَّم قبل Security.</strong></p>
+  <table>
+    <tr><th>مسار عمل مستقبلي (ضمن Epic E)</th><th>ملاحظة</th></tr>
+    <tr><td>Smart Map Search</td><td>بحث خريطة ذكي</td></tr>
+    <tr><td>Viewport-based loading</td><td>تحميل حسب نافذة العرض</td></tr>
+    <tr><td>Intelligent Result Ranking</td><td>ترتيب النتائج حسب الصلة</td></tr>
+    <tr><td>Smart Visual Filtering</td><td>تصفية بصرية ذكية</td></tr>
+    <tr><td>Smart Marker Management</td><td>إدارة العلامات</td></tr>
+    <tr><td>Smart Loading Strategy</td><td>استراتيجية تحميل</td></tr>
+    <tr><td>Map Performance</td><td>أداء (جزء من المحرك — ليس الكل)</td></tr>
+    <tr><td>Progressive Loading</td><td>تحميل تدريجي</td></tr>
+    <tr><td>Visual Clutter Prevention</td><td>منع الازدحام البصري</td></tr>
+    <tr><td>Large Dataset Scalability</td><td>قابلية التوسّع لمجموعات كبيرة</td></tr>
+  </table>
+  <p style="font-size:.75rem"><strong>الشريحة المجدولة حالياً (بدون تغيير أرقام PR):</strong> PR-022 · PR-023 · PR-024 — حدود جلب بعلم + UX فارغ/فشل. باقي مسارات العمل أعلاه = توسّع لاحق داخل نفس Epic E بعد اكتمال الشريحة الأولى وقياس N.</p>
+</section>
+
+<section class="card" id="s5">
+  <h2><span class="num">5</span> المعالم (Milestones)</h2>
+  <table>
+    <tr><th>معلم</th><th>هدف</th><th>مخرجات</th><th>تحقق</th><th>قبول</th><th>بوابة خروج</th></tr>
+    <tr><td>M0</td><td>الفريق قادر على الدمج الآمن</td><td>CI+runbook+owners+N</td><td>workflow أخضر</td><td>TPM يوقّع</td><td>→ Safety</td></tr>
+    <tr><td>M1</td><td>سلامة إصدار/DR</td><td>توقيع+مفتاح خارج المصدر+DR drill</td><td>internal track + وثيقة restore</td><td>Infra+Android</td><td>→ Security</td></tr>
+    <tr><td>M2</td><td>أمن بيانات حرج</td><td>CRM+spotlight rules</td><td>emulator+QA A/B</td><td>Security</td><td>→ <strong>Conditional</strong></td></tr>
+    <tr><td>M3</td><td>موثوقية تشغيل</td><td>RC/Crashlytics/Proxy/timeout/WA</td><td>إقلاع+CRM+رفع</td><td>Flutter+Func</td><td>→ Smart Map Engine</td></tr>
+    <tr><td>M4</td><td>Smart Map Engine — شريحة أولى</td><td>حدود cars/properties + UX فارغ/فشل (PR-022…024)</td><td>flag on/off</td><td>Maps</td><td>→ Closeout</td></tr>
+    <tr><td>M5</td><td>إعلان Conditional</td><td>PR-030</td><td>قائمة بوابة</td><td>لجنة</td><td>Pilot مسموح</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s6">
+  <h2><span class="num">6</span> تفكيك Sprints</h2>
+  <table>
+    <tr><th>Sprint</th><th>هدف</th><th>RK</th><th>مراجعون</th><th>اختبارات</th><th>بيئة</th><th>موافقات</th><th>دمج</th><th>تراجع</th></tr>
+    <tr><td>S0</td><td>Protect</td><td>002/056</td><td>CI + TPM</td><td>workflow</td><td>GitHub</td><td>TPM</td><td>متسلسل 001→004</td><td>revert docs/CI</td></tr>
+    <tr><td>S1</td><td>Safety</td><td>062/061</td><td>Android + Infra</td><td>bundle+drill</td><td>Play internal · Firebase ops</td><td>Infra</td><td>005→008</td><td>signing hotfix branch</td></tr>
+    <tr><td>S2</td><td>CRM rules 1–2</td><td>036</td><td>Security×2</td><td>emulator</td><td>rules emulator → prod</td><td>Security</td><td>009 ثم انتظار ثم 010</td><td>rules tag</td></tr>
+    <tr><td>S3</td><td>CRM3+Spotlight</td><td>036/020</td><td>Security+Media</td><td>emulator+رفع</td><td>prod rules window</td><td>Security</td><td>011→012(→013)</td><td>rules tag</td></tr>
+    <tr><td>S4</td><td>Reliability</td><td>011/012/015/045/048</td><td>Flutter+Func</td><td>manual+unit خفيف</td><td>dev/staging أجهزة</td><td>Flutter Lead</td><td>واحد/مجال</td><td>revert/flag</td></tr>
+    <tr><td>S5</td><td>Smart Map Engine (slice 1)</td><td>018/026</td><td>Maps+QA</td><td>map_phase*</td><td>أجهزة حقيقية</td><td>Maps</td><td>022→024</td><td>flag OFF</td></tr>
+    <tr><td>S6</td><td>Closeout</td><td>045/070/001/073</td><td>TPM+</td><td>حسب PR</td><td>متعدد</td><td>لجنة لـ 030</td><td>025→030</td><td>وثائقي/أعلام</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s7">
+  <h2><span class="num">7</span> خطة التنفيذ PR تلو PR</h2>
+  <div class="callout warn">إثبات مسارات مثبتة الآن: <code>firestore.rules</code> L488–490 spotlight write authed · CRM <code>allow read, write: if authed()</code> من ~L499 · <code>build.gradle.kts</code> L57 debug signing · <code>remote_config_service.dart</code> L28 timeout دقيقة · <code>main.dart</code> ProxyProviders L226+ · <code>cloudflare_images_service.dart</code> L67 بلا timeout عميل.</div>
+  <div class="toolbar">
+    <label>تصفية Epic:</label>
+    <select id="prFilter" onchange="filterPR()">
+      <option value="all">الكل</option>
+      <option value="A">A Protect</option>
+      <option value="B">B Safety</option>
+      <option value="C">C Security</option>
+      <option value="D">D Reliability</option>
+      <option value="E">E Smart Map Engine</option>
+      <option value="F">F Closeout</option>
+    </select>
+  </div>
+  
+<div class="pr-card" data-epic="A" id="pr001">
+  <h4><span class="badge seq">PR-001</span> إضافة CI ناعم: flutter test + analyze_critical <span class="badge p0">RK-002/060</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>يوم 1 — بلا سلوك منتج</div>
+    <div><strong>WHY NOT LATER</strong>أي CI صارم قبل تثبيت المجموعة يكسر الفريق</div>
+    <div><strong>RISK DOMAIN</strong>CI/Infra</div>
+    <div><strong>OWNER</strong>CI Owner</div>
+    <div><strong>OBSERVE</strong>12h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-005/140/152</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-002/060</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>.github/workflows/ci.yml (جديد) · يستدعي tool/analyze_critical.sh و flutter test</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> firestore.rules · lib/** · android/**</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>فشل وهمي يجمّد الدمج</div>
+    <div><strong>PREVENT</strong>required:false أولاً · استثناء widget_test القالب إن لزم</div>
+    <div><strong>TESTS</strong>تشغيل workflow على PR تجريبي</div>
+    <div><strong>MANUAL QA</strong>لا</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>تعطيل workflow / required:false</div>
+    <div><strong>MONITOR</strong>معدل فشل CI</div>
+    <div><strong>MERGE PRE</strong>لا يعتمد على شيء</div>
+    <div><strong>MERGE BLOCKERS</strong>لا PR rules موازٍ</div>
+    <div><strong>STATE AFTER</strong>بوابة خضراء اختيارية على main</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 12h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="A" id="pr002">
+  <h4><span class="badge seq">PR-002</span> توثيق تشغيل 4 مداخل + launch.json أهداف <span class="badge p0">RK-056</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>يوم 1 — يفتح الفريق</div>
+    <div><strong>WHY NOT LATER</strong>docs لاحقاً = أخطاء نشر</div>
+    <div><strong>RISK DOMAIN</strong>Docs/DX</div>
+    <div><strong>OWNER</strong>TPM / Flutter Lead</div>
+    <div><strong>OBSERVE</strong>0h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-132/133/134</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-056</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>README.md · docs/ops_runbook.md (جديد) · .vscode/launch.json</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> أي منطق تطبيق · rules · functions</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>تشغيل مدخل خاطئ من المطورين</div>
+    <div><strong>PREVENT</strong>أوامر نسخ-لصق مجرّبة · روابط البوابات</div>
+    <div><strong>TESTS</strong>مراجعة بشرية فقط</div>
+    <div><strong>MANUAL QA</strong>فتح كل target محلياً من التعليمات</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert docs</div>
+    <div><strong>MONITOR</strong>—</div>
+    <div><strong>MERGE PRE</strong>PR-001 مدمج أو موازٍ آمن</div>
+    <div><strong>MERGE BLOCKERS</strong>لا يغيّر runtime</div>
+    <div><strong>STATE AFTER</strong>runbook موجود</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 0h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="A" id="pr003">
+  <h4><span class="badge seq">PR-003</span> CODEOWNERS + سياسة طابور firestore.rules <span class="badge p0">RK-036/020 process</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>قبل أي PR أمني</div>
+    <div><strong>WHY NOT LATER</strong>بدونه PR-008 خطر</div>
+    <div><strong>RISK DOMAIN</strong>Process</div>
+    <div><strong>OWNER</strong>Security Lead</div>
+    <div><strong>OBSERVE</strong>0h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-173</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-036/020 process</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>.github/CODEOWNERS · docs/ops_rules_queue.md</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> firestore.rules محتوى القواعد</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>تأخير PRs</div>
+    <div><strong>PREVENT</strong>مالك Security وحيد للقواعد</div>
+    <div><strong>TESTS</strong>—</div>
+    <div><strong>MANUAL QA</strong>موافقة مالك</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert owners</div>
+    <div><strong>MONITOR</strong>تعارضات rules</div>
+    <div><strong>MERGE PRE</strong>PR-002</div>
+    <div><strong>MERGE BLOCKERS</strong>لا تغيير سلوك</div>
+    <div><strong>STATE AFTER</strong>طابور rules مفعّل</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 0h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="A" id="pr004">
+  <h4><span class="badge seq">PR-004</span> قياس N (قراءة فقط) — تقرير عدد cars/properties النشطة <span class="badge p0">RK-018 prep</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>قبل حد الخريطة</div>
+    <div><strong>WHY NOT LATER</strong>حد بلا N = إخفاء إعلانات</div>
+    <div><strong>RISK DOMAIN</strong>Metrics</div>
+    <div><strong>OWNER</strong>Firebase/Data</div>
+    <div><strong>OBSERVE</strong>0h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-038/154</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-018 prep</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>docs/metrics/listing_cardinality.md (نتائج قياس) — سكربت قراءة فقط إن لزم خارج prod write</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> أي تغيير getCars/getProperties</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>لا — قراءة</div>
+    <div><strong>PREVENT</strong>لا تكتب حدود في الكود هنا</div>
+    <div><strong>TESTS</strong>—</div>
+    <div><strong>MANUAL QA</strong>لقطة Console/Admin</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>حذف التقرير</div>
+    <div><strong>MONITOR</strong>تحديث N ربع سنوي</div>
+    <div><strong>MERGE PRE</strong>PR-002</div>
+    <div><strong>MERGE BLOCKERS</strong>لا كود جلب</div>
+    <div><strong>STATE AFTER</strong>N موثّق لـ PR-018</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 0h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="B" id="pr005">
+  <h4><span class="badge seq">PR-005</span> إزالة fallback مفتاح Maps من المصدر <span class="badge p0">RK-062 (مفاتيح)</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>فوري — تسريب مفتاح</div>
+    <div><strong>WHY NOT LATER</strong>التوقيع منفصل لتقليل نصف القطر</div>
+    <div><strong>RISK DOMAIN</strong>Secrets/Android</div>
+    <div><strong>OWNER</strong>Android Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-144</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-062 (مفاتيح)</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>android/app/build.gradle.kts (سطر fallback فقط) · توثيق local.properties</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> signingConfig · lib/** · iOS</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>خريطة فارغة إن لم يُضبط المفتاح محلياً</div>
+    <div><strong>PREVENT</strong>إلزام GOOGLE_MAPS_API_KEY في local/CI secret · الإبقاء على قراءة local.properties</div>
+    <div><strong>TESTS</strong>بناء debug مع مفتاح محلي</div>
+    <div><strong>MANUAL QA</strong>خريطة تظهر على جهاز dev</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إعادة fallback مؤقت خلف تعليق موثّق (لا تُرجع المفتاح الحقيقي لـ git)</div>
+    <div><strong>MONITOR</strong>أخطاء Maps SDK</div>
+    <div><strong>MERGE PRE</strong>مفتاح في Secret Manager/CI</div>
+    <div><strong>MERGE BLOCKERS</strong>لا توقيع في نفس PR</div>
+    <div><strong>STATE AFTER</strong>لا مفتاح في git</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="B" id="pr006">
+  <h4><span class="badge seq">PR-006</span> توقيع Android release بمفتاح إنتاج (بدون debug) <span class="badge p0">RK-062</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>قبل أي متجر</div>
+    <div><strong>WHY NOT LATER</strong>مفتاح Maps منفصل تم</div>
+    <div><strong>RISK DOMAIN</strong>Release Eng</div>
+    <div><strong>OWNER</strong>Android Owner</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-144</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-062</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>android/app/build.gradle.kts (signingConfigs.release) · key.properties (غير committed) · .gitignore</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> Maps key · Flutter UI · rules</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>قطع تحديث لمستخدمين على debug-sign إن وُجدوا</div>
+    <div><strong>PREVENT</strong>Play App Signing · internal track أولاً · debug يبقى لـ debug buildType</div>
+    <div><strong>TESTS</strong>تجميع appbundle signed</div>
+    <div><strong>MANUAL QA</strong>تثبيت من internal track</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إعادة signingConfig debug للطوارئ فقط على فرع hotfix موثّق</div>
+    <div><strong>MONITOR</strong>فشل تثبيت Play</div>
+    <div><strong>MERGE PRE</strong>PR-005 مستقر</div>
+    <div><strong>MERGE BLOCKERS</strong>لا rules</div>
+    <div><strong>STATE AFTER</strong>release موقّع</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="B" id="pr007">
+  <h4><span class="badge seq">PR-007</span> Backup Firestore مجدول + تمرين restore معزول (وثيقة+تشغيل Ops) <span class="badge p0">RK-061</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>شرط Conditional</div>
+    <div><strong>WHY NOT LATER</strong>بدونه RPO مجهول</div>
+    <div><strong>RISK DOMAIN</strong>DR</div>
+    <div><strong>OWNER</strong>Infra Owner</div>
+    <div><strong>OBSERVE</strong>— بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-150/151/171</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-061</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>docs/ops_dr_firestore.md · إعداد Console/Terraform خارج التطبيق — لا كود عميل</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> منع أي restore على مشروع mastermax-2030-backend الحي</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>مسح بيانات إن نُفّذ على prod</div>
+    <div><strong>PREVENT</strong>مشروع/قاعدة معزولة فقط · checklist موقّع</div>
+    <div><strong>TESTS</strong>تمرين restore موثّق بتاريخ</div>
+    <div><strong>MANUAL QA</strong>عينة hash/عدد مستندات</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>N/A للتمرين المعزول</div>
+    <div><strong>MONITOR</strong>عمر آخر backup</div>
+    <div><strong>MERGE PRE</strong>موافقة Infra</div>
+    <div><strong>MERGE BLOCKERS</strong>أي PR بيانات</div>
+    <div><strong>STATE AFTER</strong>DR proof موجود</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe —</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="B" id="pr008">
+  <h4><span class="badge seq">PR-008</span> CI يصبح required على PR (بعد استقرار PR-001) <span class="badge p0">RK-060</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد استقرار</div>
+    <div><strong>WHY NOT LATER</strong>إلزام مبكر = شلل</div>
+    <div><strong>RISK DOMAIN</strong>CI</div>
+    <div><strong>OWNER</strong>CI Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-140</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-060</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>.github/workflows/ci.yml (branch protection note في docs)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> لا توسيع اختبارات في نفس PR</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>حظر دمج شرعي إن فلِك</div>
+    <div><strong>PREVENT</strong>إصلاح flake أولاً · quarantine</div>
+    <div><strong>TESTS</strong>3 PRs خضراء متتالية</div>
+    <div><strong>MANUAL QA</strong>—</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إرجاع optional</div>
+    <div><strong>MONITOR</strong>معدل الحظر</div>
+    <div><strong>MERGE PRE</strong>PR-001 أخضر 3 أيام</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>required checks</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="C" id="pr009">
+  <h4><span class="badge seq">PR-009</span> تضييق قواعد CRM دفعة-1: sales + rentals + property_sales <span class="badge p0">RK-036</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>شرط NO-GO أمني</div>
+    <div><strong>WHY NOT LATER</strong>تجميع كل CRM دفعة واحدة = انفجار نصف قطر</div>
+    <div><strong>RISK DOMAIN</strong>Security/Rules</div>
+    <div><strong>OWNER</strong>Security Lead</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-093</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-036</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firestore.rules فقط (match sales/rentals/property_sales)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> Dart · spotlight · cars/properties rules · باقي CRM في PR لاحق</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>تاجر لا يحفظ مبيعة · ويب CRM يفشل</div>
+    <div><strong>PREVENT</strong>جرد حقول sellerId/ownerId مسبقاً · emulator: مالك OK / غير مالك DENIED / isAdmin سياسة صريحة</div>
+    <div><strong>TESTS</strong>firebase emulators:exec rules tests (جديد minimal)</div>
+    <div><strong>MANUAL QA</strong>مسار إنشاء مبيعة لحساب تاجر + رفض حساب آخر</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>firebase deploy rules من git tag السابق</div>
+    <div><strong>MONITOR</strong>PERMISSION_DENIED spike</div>
+    <div><strong>MERGE PRE</strong>PR-003 طابور · جرد حقول مرفق</div>
+    <div><strong>MERGE BLOCKERS</strong>أي PR يغيّر شكل مستندات CRM</div>
+    <div><strong>STATE AFTER</strong>دفعة-1 حيّة</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="C" id="pr010">
+  <h4><span class="badge seq">PR-010</span> تضييق CRM دفعة-2: contracts + branches + businesses <span class="badge p0">RK-036</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>تسلسل إلزامي</div>
+    <div><strong>WHY NOT LATER</strong>التوازي مع 009 ممنوع</div>
+    <div><strong>RISK DOMAIN</strong>Security/Rules</div>
+    <div><strong>OWNER</strong>Security Lead</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-093</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-036</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firestore.rules فقط</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> Dart · دفعة-1 (لا إعادة فتح إن مستقرة)</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>فروع/عقود تُقفل</div>
+    <div><strong>PREVENT</strong>نفس مصفوفة emulator</div>
+    <div><strong>TESTS</strong>rules tests موسّعة</div>
+    <div><strong>MANUAL QA</strong>WR/WC مسارات عقود</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>tag سابق</div>
+    <div><strong>MONITOR</strong>permission errors</div>
+    <div><strong>MERGE PRE</strong>PR-009 راقب ≥48h أخضر</div>
+    <div><strong>MERGE BLOCKERS</strong>تغيير نماذج CRM</div>
+    <div><strong>STATE AFTER</strong>دفعة-2</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="C" id="pr011">
+  <h4><span class="badge seq">PR-011</span> تضييق CRM دفعة-3: المتبقي (inspections/shares/… حسب الجرد) <span class="badge p0">RK-036</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>إكمال الحاجز</div>
+    <div><strong>WHY NOT LATER</strong>ترك بقايا = ثغرة</div>
+    <div><strong>RISK DOMAIN</strong>Security/Rules</div>
+    <div><strong>OWNER</strong>Security Lead</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-093</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-036</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firestore.rules فقط</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> spotlight_videos (PR-012)</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>مسارات CRM نادرة تُكسر</div>
+    <div><strong>PREVENT</strong>قائمة مجموعات مكتملة من الجرد</div>
+    <div><strong>TESTS</strong>emulator كامل للمجموعات المستهدفة</div>
+    <div><strong>MANUAL QA</strong>smoke CRM</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>tag سابق</div>
+    <div><strong>MONITOR</strong>permission errors</div>
+    <div><strong>MERGE PRE</strong>PR-010 راقب</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>RK-036 مغلق وظيفياً</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="C" id="pr012">
+  <h4><span class="badge seq">PR-012</span> spotlight_videos write بملكية (+ isAdmin إن لزم) <span class="badge p0">RK-020</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد CRM لتقليل ضوضاء الصلاحيات</div>
+    <div><strong>WHY NOT LATER</strong>خلط مع CRM يخفي السبب</div>
+    <div><strong>RISK DOMAIN</strong>Security/Spotlight</div>
+    <div><strong>OWNER</strong>Security + Media</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-047</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-020</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firestore.rules (match spotlight_videos فقط)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> video_service.dart منطق · CRM rules</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>المالك لا يحدّث فيديو · رفع يفشل بعد CF</div>
+    <div><strong>PREVENT</strong>تأكيد حقل المالك من video_service قبل القواعد · لا تغيّر Dart هنا إن الحقل موجود</div>
+    <div><strong>TESTS</strong>emulator owner/non-owner</div>
+    <div><strong>MANUAL QA</strong>رفع/تعديل فيديو كمالك · رفض غير مالك</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>tag سابق</div>
+    <div><strong>MONITOR</strong>فشل رفع Spotlight</div>
+    <div><strong>MERGE PRE</strong>PR-011 مستقر</div>
+    <div><strong>MERGE BLOCKERS</strong>تغيير video_service في نفس اليوم</div>
+    <div><strong>STATE AFTER</strong>RK-020 مغلق</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="C" id="pr013">
+  <h4><span class="badge seq">PR-013</span> اختياري: cars update يسمح isAdmin (تناسق مع properties) <span class="badge p0">RK-037</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد الأمن الحرج</div>
+    <div><strong>WHY NOT LATER</strong>ليس حاجز Conditional إن مؤجّل</div>
+    <div><strong>RISK DOMAIN</strong>Security</div>
+    <div><strong>OWNER</strong>Security</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-092</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-037</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firestore.rules (match /cars فقط سطر update)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> كل شيء آخر</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>أدمن يعبث بإعلانات إن نقص UI حماية</div>
+    <div><strong>PREVENT</strong>قيّد isAdmin + audit لاحق</div>
+    <div><strong>TESTS</strong>emulator admin/seller</div>
+    <div><strong>MANUAL QA</strong>أدمن يصلح إعلان تجريبي</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>tag سابق</div>
+    <div><strong>MONITOR</strong>تحديثات cars من admin</div>
+    <div><strong>MERGE PRE</strong>PR-012</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>تناسق صلاحيات</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr014">
+  <h4><span class="badge seq">PR-014</span> RC fetchTimeout قصير + fetch غير حاجب للإقلاع <span class="badge p0">RK-011</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد الأمن — يقلل ألم الإطلاق</div>
+    <div><strong>WHY NOT LATER</strong>مع map يخفي السبب</div>
+    <div><strong>RISK DOMAIN</strong>Startup/RC</div>
+    <div><strong>OWNER</strong>Flutter Lead</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-021/035/094</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-011</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/src/core/services/remote_config_service.dart · lib/main.dart (نداء RC فقط)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> ProxyProvider · Crashlytics · map</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>أعلام قديمة تفعّل ميزات</div>
+    <div><strong>PREVENT</strong>جدول defaults موثّق في PR · ميزانية ≤5s · fetch بالخلفية</div>
+    <div><strong>TESTS</strong>اختبار وحدة للdefaults إن أمكن</div>
+    <div><strong>MANUAL QA</strong>Cold start على شبكة بطيئة</div>
+    <div><strong>FLAG</strong>RC_BOOT_BUDGET_MS</div>
+    <div><strong>ROLLBACK</strong>إعادة await الطويل عبر flag/dart-define</div>
+    <div><strong>MONITOR</strong>زمن الإقلاع · mismatch أعلام</div>
+    <div><strong>MERGE PRE</strong>CI required</div>
+    <div><strong>MERGE BLOCKERS</strong>rules PRs</div>
+    <div><strong>STATE AFTER</strong>إقلاع لا ينتظر دقيقة</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr015">
+  <h4><span class="badge seq">PR-015</span> تهيئة Crashlytics/ErrorTracker + FlutterError/zone في main <span class="badge p0">RK-015/042</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>رؤية الإنتاج</div>
+    <div><strong>WHY NOT LATER</strong>مع RC في نفس PR ممنوع</div>
+    <div><strong>RISK DOMAIN</strong>Observability</div>
+    <div><strong>OWNER</strong>Flutter Lead</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-103/104/147</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-015/042</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/main.dart · lib/src/core/monitoring/error_tracker.dart</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> RC · CRM Proxy · map</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>حلقات crash / ضوضاء</div>
+    <div><strong>PREVENT</strong>لا تسجّل PII · init بعد Firebase</div>
+    <div><strong>TESTS</strong>—</div>
+    <div><strong>MANUAL QA</strong>إطلاق استثناء اختباري في debug</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إزالة handlers</div>
+    <div><strong>MONITOR</strong>Crashlytics intake</div>
+    <div><strong>MERGE PRE</strong>PR-014</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>أعطال تُرى</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr016">
+  <h4><span class="badge seq">PR-016</span> ProxyProvider→sync لـ CustomersProvider فقط (نمط CarProvider) <span class="badge p0">RK-012</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>تقسيم نصف القطر</div>
+    <div><strong>WHY NOT LATER</strong>دفعة كل الـ Proxy = انحدار واسع</div>
+    <div><strong>RISK DOMAIN</strong>State/CRM</div>
+    <div><strong>OWNER</strong>Flutter + CRM</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-027/028</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-012</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/main.dart (CustomersProvider فقط) · customers provider syncAuthState إن لزم ملف واحد</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> Sales/Branches/Rental proxies · AuthState منطق</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>فقدان نموذج عملاء</div>
+    <div><strong>PREVENT</strong>انسخ نمط syncAuthState من CarProvider حرفياً</div>
+    <div><strong>TESTS</strong>widget/manual: login/logout مع شاشة عملاء مفتوحة</div>
+    <div><strong>MANUAL QA</strong>CRM عملاء</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert هذا الجزء من main</div>
+    <div><strong>MONITOR</strong>أخطاء null CRM</div>
+    <div><strong>MERGE PRE</strong>PR-015</div>
+    <div><strong>MERGE BLOCKERS</strong>لا تلمس باقي Proxy في نفس PR</div>
+    <div><strong>STATE AFTER</strong>Customers مستقر</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr017">
+  <h4><span class="badge seq">PR-017</span> sync SalesProvider <span class="badge p0">RK-012</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>تسلسل</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>State/CRM</div>
+    <div><strong>OWNER</strong>CRM Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-027</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-012</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/main.dart + sales provider sync فقط</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> باقي Proxy · rules</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>فقدان مسودة مبيعة</div>
+    <div><strong>PREVENT</strong>نفس نمط 016</div>
+    <div><strong>TESTS</strong>manual sales form</div>
+    <div><strong>MANUAL QA</strong>WC/M</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert</div>
+    <div><strong>MONITOR</strong>null sales</div>
+    <div><strong>MERGE PRE</strong>PR-016 راقب</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>Sales مستقر</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr018">
+  <h4><span class="badge seq">PR-018</span> sync RealEstateCustomersProvider + BranchesProvider (PR واحد لكلٍ إن لزم فصل) <span class="badge p0">RK-012</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>تسلسل</div>
+    <div><strong>WHY NOT LATER</strong>يمكن فصلها PR-018 و PR-018b</div>
+    <div><strong>RISK DOMAIN</strong>State/CRM</div>
+    <div><strong>OWNER</strong>CRM Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-027</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-012</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/main.dart + المزوّدان المعنيان — يُفضّل PR-018a/b منفصلان في التنفيذ الفعلي</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> RentalProvider</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>نماذج عقارية</div>
+    <div><strong>PREVENT</strong>نفس النمط</div>
+    <div><strong>TESTS</strong>manual</div>
+    <div><strong>MANUAL QA</strong>WR</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert</div>
+    <div><strong>MONITOR</strong>null providers</div>
+    <div><strong>MERGE PRE</strong>PR-017</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>RE customers/branches</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr019">
+  <h4><span class="badge seq">PR-019</span> sync RentalProvider (آخر Proxy CRM) <span class="badge p0">RK-012</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>إكمال</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>State/CRM</div>
+    <div><strong>OWNER</strong>CRM Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-027</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-012</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/main.dart + rental provider</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> أي map/media</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>إيجار</div>
+    <div><strong>PREVENT</strong>نفس النمط</div>
+    <div><strong>TESTS</strong>manual</div>
+    <div><strong>MANUAL QA</strong>M/WR</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert</div>
+    <div><strong>MONITOR</strong>null rental</div>
+    <div><strong>MERGE PRE</strong>PR-018</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>RK-012 مغلق</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr020">
+  <h4><span class="badge seq">PR-020</span> timeout على رفع صور Cloudflare Images <span class="badge p0">RK-045 partial</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>أمان سريع</div>
+    <div><strong>WHY NOT LATER</strong>لا تخلط مع outbox</div>
+    <div><strong>RISK DOMAIN</strong>Media</div>
+    <div><strong>OWNER</strong>Media Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-100</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-045 partial</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/src/features/images/services/cloudflare_images_service.dart فقط</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> car_provider ترتيب الرفع · add_property · delete CF</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>رفع يفشل على شبكة بطيئة شرعاً</div>
+    <div><strong>PREVENT</strong>Duration صريح · رسالة خطأ · لا تغيير ترتيب الكتابة</div>
+    <div><strong>TESTS</strong>اختبار يدوي صورة كبيرة</div>
+    <div><strong>MANUAL QA</strong>إنشاء إعلان</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إزالة timeout</div>
+    <div><strong>MONITOR</strong>فشل رفع</div>
+    <div><strong>MERGE PRE</strong>PR-019 أو أمن مستقر</div>
+    <div><strong>MERGE BLOCKERS</strong>لا outbox هنا</div>
+    <div><strong>STATE AFTER</strong>لا تعليق لا نهائي</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="D" id="pr021">
+  <h4><span class="badge seq">PR-021</span> WA: lease/expiry لـ processing العالق (تصميم+تنفيذ صغير) <span class="badge p0">RK-048/071</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>موثوقية قنوات</div>
+    <div><strong>WHY NOT LATER</strong>مع media ممنوع</div>
+    <div><strong>RISK DOMAIN</strong>Functions/WA</div>
+    <div><strong>OWNER</strong>Functions Owner</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-114/166</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-048/071</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>functions/whatsapp/idempotency.js · webhook.js (حدود ضيقة)</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> index.js تسجيل واسع · NLU</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>تكرار رسائل / إسقاط</div>
+    <div><strong>PREVENT</strong>attemptCount + expiresAt · لا تحذف claim</div>
+    <div><strong>TESTS</strong>اختبار وحدة claim</div>
+    <div><strong>MANUAL QA</strong>رسالة تجريبية Meta sandbox</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>redeploy tag سابق</div>
+    <div><strong>MONITOR</strong>عمر processing</div>
+    <div><strong>MERGE PRE</strong>موافقة Functions</div>
+    <div><strong>MERGE BLOCKERS</strong>لا قواعد</div>
+    <div><strong>STATE AFTER</strong>WA قابل للاسترداد</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="E" id="pr022">
+  <h4><span class="badge seq">PR-022</span> علم dart-define/RC: mapBoundedFetch + حد getCars <span class="badge p0">RK-018</span> <span class="badge warn">Epic E · Smart Map Engine · slice 1</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>قياس أولاً</div>
+    <div><strong>WHY NOT LATER</strong>خلط مع properties يخفي المصدر</div>
+    <div><strong>RISK DOMAIN</strong>Map/Data</div>
+    <div><strong>OWNER</strong>Maps Owner</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-038/154</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-018</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/src/features/cars/services/car_service.dart · قراءة العلم من AppConfig فقط إن لزم ملف config صغير</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> property_service · map_state · clustering · main_map_screen UI كبير</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>سيارات تختفي من الخريطة</div>
+    <div><strong>PREVENT</strong>الافتراضي=غير محدود · العلم OFF في الإنتاج حتى قبول</div>
+    <div><strong>TESTS</strong>اختبار وحدة حد الاستعلام إن أمكن · map_phase*</div>
+    <div><strong>MANUAL QA</strong>خريطة مع flag OFF=سلوك قديم</div>
+    <div><strong>FLAG</strong>MAP_BOUNDED_FETCH</div>
+    <div><strong>ROLLBACK</strong>إطفاء العلم</div>
+    <div><strong>MONITOR</strong>عدد docs المجلوبة</div>
+    <div><strong>MERGE PRE</strong>PR-004 N موثّق · أمن مغلق</div>
+    <div><strong>MERGE BLOCKERS</strong>property في نفس PR</div>
+    <div><strong>STATE AFTER</strong>cars محدودة خلف علم</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="E" id="pr023">
+  <h4><span class="badge seq">PR-023</span> علم mapBoundedFetch لـ getProperties <span class="badge p0">RK-018/021</span> <span class="badge warn">Epic E · Smart Map Engine · slice 1</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>تسلسل مع cars</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Map/Data</div>
+    <div><strong>OWNER</strong>Maps Owner</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-040/154</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-018/021</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/src/features/properties/services/property_service.dart</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> clustering · UI</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>عقارات تختفي</div>
+    <div><strong>PREVENT</strong>نفس العلم · نفس الافتراضي OFF</div>
+    <div><strong>TESTS</strong>map_phase* + يدوي</div>
+    <div><strong>MANUAL QA</strong>خريطة</div>
+    <div><strong>FLAG</strong>MAP_BOUNDED_FETCH</div>
+    <div><strong>ROLLBACK</strong>إطفاء العلم</div>
+    <div><strong>MONITOR</strong>عدد properties</div>
+    <div><strong>MERGE PRE</strong>PR-022 راقب 48h</div>
+    <div><strong>MERGE BLOCKERS</strong>clustering rewrite</div>
+    <div><strong>STATE AFTER</strong>properties محدودة خلف علم</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="E" id="pr024">
+  <h4><span class="badge seq">PR-024</span> UI: تمييز فشل التحميل vs فارغ على الخريطة (عند تفعيل العلم) <span class="badge p0">RK-049/026 UX</span> <span class="badge warn">Epic E · Smart Map Engine · slice 1</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد حدود الخدمة</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Map/UI</div>
+    <div><strong>OWNER</strong>Maps Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-117</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-049/026 UX</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>lib/src/features/map/screens/main_map_screen.dart (حد أدنى) أو طبقة خطأ صغيرة</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> clustering algorithm · services</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>إنذار كاذب</div>
+    <div><strong>PREVENT</strong>لا تغيّر الاستعلام هنا</div>
+    <div><strong>TESTS</strong>map_phase*</div>
+    <div><strong>MANUAL QA</strong>رسالة خطأ ظاهرة</div>
+    <div><strong>FLAG</strong>MAP_BOUNDED_FETCH</div>
+    <div><strong>ROLLBACK</strong>revert UI</div>
+    <div><strong>MONITOR</strong>شكاوى خريطة فارغة</div>
+    <div><strong>MERGE PRE</strong>PR-023</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>UX آمن مع الحدود</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr025">
+  <h4><span class="badge seq">PR-025</span> outbox/مسودة رفع (مجموعة upload_drafts) — مرحلة expand فقط <span class="badge p0">RK-045</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد timeout</div>
+    <div><strong>WHY NOT LATER</strong>لا Big Bang ترتيب</div>
+    <div><strong>RISK DOMAIN</strong>Media</div>
+    <div><strong>OWNER</strong>Media Owner</div>
+    <div><strong>OBSERVE</strong>72h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-109/157</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-045</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>خدمة رفع + كتابة مسودة اختيارية — ملفات media محددة في تصميم مفصّل عند التنفيذ</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> حذف CF تلقائي · reorder إلزامي لكل المسارات</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>إعلانات بلا صور</div>
+    <div><strong>PREVENT</strong>كتابة المسودة اختيارية · المسار القديم يبقى</div>
+    <div><strong>TESTS</strong>يدوي</div>
+    <div><strong>MANUAL QA</strong>إنشاء إعلان</div>
+    <div><strong>FLAG</strong>UPLOAD_OUTBOX</div>
+    <div><strong>ROLLBACK</strong>تجاهل المسودات / إطفاء علم</div>
+    <div><strong>MONITOR</strong>معدل orphan</div>
+    <div><strong>MERGE PRE</strong>PR-020</div>
+    <div><strong>MERGE BLOCKERS</strong>حذف وسائط</div>
+    <div><strong>STATE AFTER</strong>مسار توسعة موجود</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 72h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr026">
+  <h4><span class="badge seq">PR-026</span> مراقبة: لوحة/عدّاد permission + map fetch count (أدمن أو تلميتر) <span class="badge p0">RK-068 partial</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>Conditional</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Observability</div>
+    <div><strong>OWNER</strong>Admin Owner</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-149</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-068 partial</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>admin monitoring_service أو تلميتر خفيف — نطاق ضيق</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> rules</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>ضوضاء</div>
+    <div><strong>PREVENT</strong>قراءة فقط</div>
+    <div><strong>TESTS</strong>—</div>
+    <div><strong>MANUAL QA</strong>لوحة تظهر أرقاماً</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>revert</div>
+    <div><strong>MONITOR</strong>العدادات</div>
+    <div><strong>MERGE PRE</strong>بعد PR-012</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>رؤية تشغيل</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr027">
+  <h4><span class="badge seq">PR-027</span> فرض تعليق tenant: إعادة تحقق عند إجراءات حسّاسة (بدون rewrite AuthState كامل) <span class="badge p0">RK-070/047</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>ثقة</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Storefront</div>
+    <div><strong>OWNER</strong>Storefront Owner</div>
+    <div><strong>OBSERVE</strong>48h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-164/165</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-070/047</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>public_storefront_screen أو tenant gate ضيق</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> AuthState listeners شاملة</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>طرد زائر بالخطأ</div>
+    <div><strong>PREVENT</strong>revalidate on resume/navigate فقط</div>
+    <div><strong>TESTS</strong>يدوي تعليق+تحديث</div>
+    <div><strong>MANUAL QA</strong>معرض معلّق</div>
+    <div><strong>FLAG</strong>TENANT_REVALIDATE</div>
+    <div><strong>ROLLBACK</strong>إطفاء</div>
+    <div><strong>MONITOR</strong>زيارة بعد تعليق</div>
+    <div><strong>MERGE PRE</strong>أمن مستقر</div>
+    <div><strong>MERGE BLOCKERS</strong>AuthState mega-PR</div>
+    <div><strong>STATE AFTER</strong>تعليق أوضح</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 48h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr028">
+  <h4><span class="badge seq">PR-028</span> اختبارات دنيا: rules emulator suite في CI <span class="badge p0">RK-003/063</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>بعد الأمن</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Quality</div>
+    <div><strong>OWNER</strong>CI+Security</div>
+    <div><strong>OBSERVE</strong>24h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-138</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-003/063</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>test/rules أو tools/rules · workflow</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> لا ميزات</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>CI أبطأ</div>
+    <div><strong>PREVENT</strong>حزمة صغيرة جداً</div>
+    <div><strong>TESTS</strong>emulator</div>
+    <div><strong>MANUAL QA</strong>—</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إزالة job</div>
+    <div><strong>MONITOR</strong>مدة CI</div>
+    <div><strong>MERGE PRE</strong>PR-009+</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>قواعد محروسة آلياً</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 24h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr029">
+  <h4><span class="badge seq">PR-029</span> staging Firebase options (flavor) — تحضير دون قطع prod <span class="badge p0">RK-001/064</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>قبل GO الكامل</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Infra</div>
+    <div><strong>OWNER</strong>Infra</div>
+    <div><strong>OBSERVE</strong>72h بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-002/143</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-001/064</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>firebase_options فصل لاحق / dart-define PROJECT — خطة تنفيذ حذرة</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> قواعد prod</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>تطبيق يشير لمشروع خطأ</div>
+    <div><strong>PREVENT</strong>flavor dev فقط</div>
+    <div><strong>TESTS</strong>smoke 4 مداخل على staging</div>
+    <div><strong>MANUAL QA</strong>—</div>
+    <div><strong>FLAG</strong>USE_STAGING</div>
+    <div><strong>ROLLBACK</strong>العودة لخيارات prod</div>
+    <div><strong>MONITOR</strong>crash wrong-project</div>
+    <div><strong>MERGE PRE</strong>DR+CI</div>
+    <div><strong>MERGE BLOCKERS</strong>—</div>
+    <div><strong>STATE AFTER</strong>dev على staging</div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe 72h</span><i>→</i><span>Next PR</span></div>
+</div>
+<div class="pr-card" data-epic="F" id="pr030">
+  <h4><span class="badge seq">PR-030</span> إغلاق توثيقي: تحديث حالة RK-073 → Conditional GO بعد البوابات <span class="badge p0">RK-073</span> <span class="badge bad">NOT READY</span></h4>
+  <div class="pr-meta">
+    <div><strong>WHY NOW</strong>نهاية المسار</div>
+    <div><strong>WHY NOT LATER</strong>—</div>
+    <div><strong>RISK DOMAIN</strong>Governance</div>
+    <div><strong>OWNER</strong>TPM</div>
+    <div><strong>OBSERVE</strong>— بعد الدمج</div>
+    <div><strong>EV</strong><span class="mono">EV-173/175</span></div>
+  </div>
+  <p style="font-size:.74rem;margin:.25rem 0"><strong>يحل:</strong> RK-073 (تقييم فقط — لم يُغلق)</p>
+  <p style="font-size:.72rem;margin:.2rem 0"><strong>ملفات مسموحة فقط:</strong> <code>docs portals status only</code></p>
+  <p style="font-size:.72rem;margin:.2rem 0;color:var(--muted)"><strong>مستبعدة صراحة:</strong> كود</p>
+  <div class="pr-meta">
+    <div><strong>WHAT CAN BREAK</strong>إعلان GO كاذب</div>
+    <div><strong>PREVENT</strong>قائمة تحقق بوابة من git HEAD · رفض الإعلان عند FAIL</div>
+    <div><strong>TESTS</strong>—</div>
+    <div><strong>MANUAL QA</strong>مراجعة لجنة</div>
+    <div><strong>FLAG</strong>لا</div>
+    <div><strong>ROLLBACK</strong>إعادة NO-GO في الوثيقة</div>
+    <div><strong>MONITOR</strong>—</div>
+    <div><strong>MERGE PRE</strong>كل بوابات Conditional</div>
+    <div><strong>MERGE BLOCKERS</strong>أي P0 مفتوح · PR-005/006/007 غير على HEAD</div>
+    <div><strong>STATE AFTER</strong>تقييم موثّق · Conditional <strong>NOT READY</strong></div>
+  </div>
+  <div class="chain"><span>Review</span><i>→</i><span>Test</span><i>→</i><span>Merge</span><i>→</i><span>Observe —</span><i>→</i><span>Close blockers</span></div>
+</div>
+</section>
+
+<section class="card" id="s8">
+  <h2><span class="num">8</span> مصفوفة العمل المتوازي</h2>
+  <table>
+    <tr><th>قطار</th><th>مع Protect</th><th>مع Safety</th><th>مع Security rules</th><th>مع Reliability</th><th>مع Smart Map Engine</th></tr>
+    <tr><td>Feature Maps UI</td><td>نعم</td><td>نعم</td><td>نعم إن لم يلمس services get*</td><td>نعم</td><td><strong>لا</strong> على نفس الملفات</td></tr>
+    <tr><td>Storefront/AI/Ads</td><td>نعم</td><td>نعم</td><td>لا تغيير شكل مستندات CRM/spotlight</td><td>نعم</td><td>نعم</td></tr>
+    <tr><td>Admin UI</td><td>نعم</td><td>نعم</td><td>بعد مراقبة كل rules PR</td><td>نعم</td><td>نعم</td></tr>
+    <tr><td>Functions غير WA</td><td>نعم</td><td>نعم</td><td>نعم</td><td>لا يتعارض مع PR-021</td><td>نعم</td></tr>
+    <tr><td>Rules PRs</td><td>—</td><td>—</td><td><strong>تسلسل واحد فقط</strong></td><td>لا توازٍ</td><td>لا توازٍ</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s9">
+  <h2><span class="num">9</span> ترتيب الدمج الصارم</h2>
+  <div class="flow">001 → 002 → 003 → 004
+005 → 006 → 007 → 008
+009 → [48h] → 010 → [48h] → 011 → 012 → (013 opt)
+014 → 015 → 016 → 017 → 018 → 019 → 020 → 021
+022 → [48h] → 023 → 024
+025 → 026 → 027 → 028 → 029 → 030
+
+HARD BAN: never merge two of {009..013} overlapping
+HARD BAN: never merge 022 with 023 same day without observe
+HARD BAN: never combine rules + Dart behavior in one PR</div>
+</section>
+
+<section class="card" id="s10">
+  <h2><span class="num">10</span> خطة التحقق</h2>
+  <ul class="compact">
+    <li>كل PR: checklist في الوصف (ملفات مسموحة/مستبعدة · تراجع · مراقبة).</li>
+    <li>Rules: emulator إلزامي قبل deploy.</li>
+    <li>Map: مقارنة flag OFF/ON وعدد العلامات.</li>
+    <li>Android: تثبيت internal track قبل أي طرح أوسع.</li>
+    <li>بعد كل Sprint: Health + Repo + Regression + Security + Launch-readiness checklist (أدناه في S14).</li>
+  </ul>
+</section>
+
+<section class="card" id="s11">
+  <h2><span class="num">11</span> منع الانحدار</h2>
+  <table>
+    <tr><th>مجال</th><th>آلي</th><th>يدوي</th></tr>
+    <tr><td>Rules</td><td>emulator في CI من PR-028</td><td>A/B مستخدمين</td></tr>
+    <tr><td>Map</td><td>map_phase* (~78)</td><td>pan/zoom/فلتر</td></tr>
+    <tr><td>CRM</td><td>—</td><td>حفظ سجل بعد كل rules دفعة</td></tr>
+    <tr><td>Auth/إقلاع</td><td>—</td><td>cold start بعد PR-014/015</td></tr>
+    <tr><td>Web targets</td><td>build اختياري لاحقاً</td><td>login smoke</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s12">
+  <h2><span class="num">12</span> خطة التراجع</h2>
+  <table>
+    <tr><th>نوع</th><th>أمر/آلية</th><th>مالك</th></tr>
+    <tr><td>Rules</td><td>deploy tag git السابق لـ firestore.rules</td><td>Security</td></tr>
+    <tr><td>App flag</td><td>إطفاء MAP_BOUNDED_FETCH / RC</td><td>Maps/Flutter</td></tr>
+    <tr><td>Functions</td><td>redeploy tag</td><td>Functions</td></tr>
+    <tr><td>Hosting</td><td>Firebase hosting rollback</td><td>Web</td></tr>
+    <tr><td>Signing</td><td>فرع hotfix موثّق فقط</td><td>Android</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s13">
+  <h2><span class="num">13</span> خطة المراقبة (بعد كل دمج)</h2>
+  <ol class="compact">
+    <li>PERMISSION_DENIED (بعد 009–012)</li>
+    <li>Crashlytics (بعد 015)</li>
+    <li>زمن إقلاع (بعد 014)</li>
+    <li>فشل رفع صور (بعد 020)</li>
+    <li>عمر WA processing (بعد 021)</li>
+    <li>عدد docs خريطة (بعد 022–023)</li>
+    <li>فشل تثبيت Android (بعد 006)</li>
+  </ol>
+</section>
+
+<section class="card" id="s14">
+  <h2><span class="num">14</span> بوابات الإطلاق + فحص صحة Sprint</h2>
+  <p>بعد كل Sprint: Repository clean · CI green · لا P0 جديد مفتوح بسبب الدمج · Smoke المنصات المتأثرة · تحديث لوحة RK.</p>
+  <table>
+    <tr><th>بوابة</th><th>شرط</th></tr>
+    <tr><td>Internal dogfood</td><td>M1</td></tr>
+    <tr><td>Conditional / Pilot</td><td>M2 (+ مفضّل بداية M3)</td></tr>
+    <tr><td>Full GO</td><td>M5 + قياس خريطة + P1 متفق</td></tr>
+  </table>
+</section>
+
+<section class="card" id="s15">
+  <h2><span class="num">15</span> خارطة Conditional GO</h2>
+  <div class="callout dead"><strong>PR-030 (2026-07-21):</strong> Conditional GO <strong>غير معلن</strong>. الشرط MEP كان: PR-009…012 مغلقة · PR-005/006/007 تمت · CI required · N موثّق · لجنة توقّع PR-030. على git HEAD: 009…013 + N + CI workflow + 014…029 = PASS جزئي · <strong>005/006/007 غير ملتزمة على HEAD</strong> · CI required يدوي غير مثبت · DR drill ناقص. SSOT: <a href="conditional_go_gate_pr030.md" style="color:var(--p2)">conditional_go_gate_pr030.md</a>.</div>
+  <div class="callout ok">عند الإغلاق لاحقاً: النطاق المسموح = دعوة محدودة · كتالوج معلوم · مراقبة يومية · لا حملة مدفوعة.</div>
+</section>
+
+<section class="card" id="s16">
+  <h2><span class="num">16</span> خارطة Full GO / Commercial</h2>
+  <ul class="compact">
+    <li>قياس 1k/5k/10k ضمن ميزانية أو حد معلن.</li>
+    <li>outbox وسائط فعّال أو معدل orphan مقبول.</li>
+    <li>Crashlytics + تنبيه.</li>
+    <li>staging للتجارب.</li>
+    <li>تغطية اختبارات auth/CRUD/Functions دنيا.</li>
+    <li>ثم فقط: متاجر عامة + تسويق.</li>
+  </ul>
+</section>
+
+<section class="card" id="s17">
+  <h2><span class="num">17</span> توسّع مستقبلي + تقنيات أساسية للمستثمر</h2>
+  <p>AI/Ads/Auctions/Marketplace: فروع feature + قواعد ملكية من اليوم الأول · لا collections جديدة بـ authed مفتوح · لا تتعارض مع قطار rules أثناء S2–S3.</p>
+
+  <h3>Core Technologies · Competitive Advantages</h3>
+  <table>
+    <tr><th>التقنية</th><th>للمستثمر (غير تقني)</th><th>الموقع على الخارطة</th><th>الحالة</th></tr>
+    <tr>
+      <td><strong>Smart Map Engine</strong></td>
+      <td>تقنية خريطة ذكية تنظّم ما يراه المستخدم وتعرض الأقرب والأكثر صلة بدل ازدحام آلاف الإعلانات — تجربة أنظف وأسرع وأكثر احترافية.</td>
+      <td>Epic E · بعد Security · Priority High</td>
+      <td><span class="badge ok">Slice 1 DONE · PR-022…024</span></td>
+    </tr>
+  </table>
+
+  <h3>سيناريو أعمال (مستثمر)</h3>
+  <div class="callout">
+    إذا احتوت مدينة على عشرات الآلاف من الإعلانات، لا ينبغي أن يرى العميل كل إعلان دفعة واحدة.
+    بدلاً من ذلك، تعرض الخريطة بذكاء أقرب الخيارات وأكثرها صلة.
+    ومع تحريك الخريطة أو التكبير/التصغير، تظهر نتائج جديدة ذات صلة تلقائياً —
+    فتبقى الخريطة نظيفة ومنظّمة وسهلة الاستخدام.
+  </div>
+  <p style="font-size:.75rem;color:var(--muted)">هذا تسجيل تخطيط لقدرة أساسية — ليس شعاراً تسويقياً فقط، وليس تنفيذاً، وليس تقديماً قبل قطار الأمن.</p>
+</section>
+
+<section class="card" id="team">
+  <h2>ملكية الفريق والمراجعات</h2>
+  <table>
+    <tr><th>الدور</th><th>يملك</th><th>يراجع</th></tr>
+    <tr><td>Security Lead</td><td>rules PRs 009–013</td><td>أي لمس users/tenant rules</td></tr>
+    <tr><td>Flutter Lead</td><td>014–020 جزئياً · main.dart</td><td>PRs تلمس AuthState</td></tr>
+    <tr><td>Maps Owner</td><td>022–024</td><td>تغييرات getCars/getProperties</td></tr>
+    <tr><td>Media Owner</td><td>020/025 · spotlight مع Security</td><td>CF functions</td></tr>
+    <tr><td>Functions Owner</td><td>021</td><td>whatsapp/*</td></tr>
+    <tr><td>Android Owner</td><td>005–006</td><td>gradle</td></tr>
+    <tr><td>Infra/CI</td><td>001/007/008/028/029</td><td>workflows</td></tr>
+    <tr><td>TPM</td><td>002/003/030 · البوابات</td><td>ترتيب القطار</td></tr>
+  </table>
+</section>
+
+<section class="card" id="release">
+  <h2>استراتيجية الإصدار</h2>
+  <ul class="compact">
+    <li><strong>Internal:</strong> بعد M1.</li>
+    <li><strong>Pilot:</strong> بعد Conditional.</li>
+    <li><strong>Production mobile:</strong> بعد Full GO.</li>
+    <li><strong>Hotfix:</strong> من release/* فقط · لا قواعد كبيرة داخل hotfix.</li>
+    <li><strong>Emergency rules tighten:</strong> مسموح خارج الترتيب مع إعلان حادث.</li>
+  </ul>
+</section>
+
+<section class="card" id="s18">
+  <h2><span class="num">18</span> الخطة التنفيذية النهائية</h2>
+  <div class="callout dead">
+    <strong>قانون لا مفاجآت:</strong> لا يبدأ تنفيذ أي PR بلا: مالك · تراجع · تحقق · مراقبة · ملفات مستبعدة مكتوبة.
+  </div>
+  <p><strong>غداً:</strong> ابدأ PR-001. لا تقفز إلى القواعد أو الخريطة. اتبع التسلسل. راقب. ثم التالي.</p>
+  <div class="flow">Tomorrow = PR-001
+Commercial GO = after gates on PR-030 + Full GO checklist
+This portal = schedule of record</div>
+</section>
+
+<footer>
+  دار كار · MASTER EXECUTION PLAN v1.0 · أيقونة لوحة الأوامر+قفل · تخطيط فقط · مربوط بالتدقيق والـ Blueprint · 2026-07-18
+</footer>
+</div>
+</main>
+</div>
+<script src="dar_car_master_execution_plan_portal.js"></script>
+</body>
+</html>

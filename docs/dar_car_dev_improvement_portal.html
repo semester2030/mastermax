@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="تطوير وتحسين دار كار — الدستور الرسمي للتنفيذ + قانون Zero Exit Gate. لا انتقال لمرحلة تالية قبل Critical=0 و Warnings=0 في نطاق المرحلة." />
+<title>تطوير وتحسين دار كار · المرجع الرسمي · v1.4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="dar_car_dev_improvement_portal.css" />
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#052e1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V7l8-4z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </span>
+    <div>
+      <h1>تطوير وتحسين دار كار</h1>
+      <p>المرجع الرسمي · دستور + سجل تنفيذ · v1.4</p>
+    </div>
+  </div>
+  <div class="strict-banner">SSOT للتنفيذ · كل مرحلة تُوثَّق هنا (ماذا نُفّذ + النتائج) · Zero Exit إلزامي · لا انتقال قبل Critical=0</div>
+
+  <a class="switch audit" href="dar_car_production_readiness_portal.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></span><span>تدقيق الإنتاج · EV/RK · NO-GO</span></a>
+  <a class="switch blueprint" href="dar_car_engineering_remediation_portal.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.85"><path d="M12 3l7 3v5c0 5-3.2 8.2-7 9.5C8.2 19.2 5 16 5 11V6l7-3z"/><circle cx="12" cy="12.2" r="2.1"/></svg></span><span>مخطط المعالجة · Blueprint</span></a>
+  <a class="switch plan" href="dar_car_master_execution_plan_portal.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8"/><path d="M8 12h5"/><path d="M8 16h6"/></svg></span><span>Master Execution Plan · PR-001…030</span></a>
+  <a class="switch" href="dar_car_phase05_portal.html" style="border-color:rgba(251,191,36,.4)"><span class="ico" style="background:linear-gradient(145deg,#fbbf24,#d97706)"><svg viewBox="0 0 24 24" fill="none" stroke="#1c1917" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2.2"/></svg></span><span>Phase 0.5 · حوكمة النطاق · MEP v1.1</span></a>
+  <a class="switch" href="dar_car_mep_v12_portal.html" style="border-color:rgba(165,180,252,.4)"><span class="ico" style="background:linear-gradient(145deg,#a5b4fc,#6366f1)"><svg viewBox="0 0 24 24" fill="none" stroke="#0c1222" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 14h10"/></svg></span><span>MEP v1.2 · نجاح + ميزانية التغيير</span></a>
+
+  <input class="nav-search" id="navSearch" type="search" placeholder="ابحث في الأقسام…" />
+  <div class="sec-label">سجل التنفيذ</div>
+  <a href="#exec-hub">لوحة التنفيذ الحية <span class="st ok">LIVE</span></a>
+  <a href="#exec-stack">طبقات الحوكمة</a>
+  <a href="#pr001">PR-001 · Soft CI <span class="st ok">REVIEW</span></a>
+  <a href="#pr001-verify">PR-001 · تحقق ما بعد التنفيذ <span class="st ok">PASS</span></a>
+  <a href="#pr002">PR-002 · Runbook + Launch <span class="st ok">REVIEW</span></a>
+  <a href="#pr003">PR-003 · CODEOWNERS + Rules Queue <span class="st ok">REVIEW</span></a>
+  <a href="#pr004">PR-004 · Cardinality Baseline <span class="st ok">REVIEW</span></a>
+  <a href="#sme">Smart Map Engine · Epic E <span class="st ok">SLICE1</span></a>
+  <a href="#pr005">PR-005 · Maps Key Fallback <span class="st ok">REVIEW</span></a>
+  <a href="#pr006">PR-006 · Release Signing <span class="st ok">REVIEW</span></a>
+  <a href="#pr007">PR-007 · Firestore DR <span class="st ok">REVIEW</span></a>
+  <a href="#pr008">PR-008 · Required CI <span class="st ok">REVIEW</span></a>
+  <a href="#pr009">PR-009 · CRM Rules Batch-1 <span class="st ok">COMMITTED</span></a>
+  <a href="#pr010">PR-010 · CRM Rules Batch-2 <span class="st ok">COMMITTED</span></a>
+  <a href="#pr011">PR-011 · Property Contracts <span class="st ok">COMMITTED</span></a>
+  <a href="#pr012">PR-012 · Spotlight Write <span class="st ok">COMMITTED</span></a>
+  <a href="#pr013">PR-013 · Cars Admin Update <span class="st ok">COMMITTED</span></a>
+  <a href="#pr014">PR-014 · Remote Config <span class="st ok">COMMITTED</span></a>
+  <a href="#pr015">PR-015 · Crashlytics <span class="st ok">COMMITTED</span></a>
+  <a href="#pr016">PR-016 · CustomersProvider Sync <span class="st ok">COMMITTED</span></a>
+  <a href="#pr017">PR-017 · SalesProvider Sync <span class="st ok">COMMITTED</span></a>
+  <a href="#pr018a">PR-018a · RE Customers Sync <span class="st ok">COMMITTED</span></a>
+  <a href="#pr018b">PR-018b · BranchesProvider Sync <span class="st ok">COMMITTED</span></a>
+  <a href="#pr019">PR-019 · RentalProvider Sync <span class="st ok">COMMITTED</span></a>
+  <a href="#pr020">PR-020 · CF Upload Timeout <span class="st ok">COMMITTED</span></a>
+  <a href="#pr021">PR-021 · WA Lease Expiry <span class="st ok">COMMITTED</span></a>
+  <a href="#pr022">PR-022 · Bounded Car Fetch <span class="st ok">COMMITTED</span></a>
+  <a href="#pr023">PR-023 · Bounded Property Fetch <span class="st ok">COMMITTED</span></a>
+  <a href="#pr024">PR-024 · Map Empty vs Failure <span class="st ok">COMMITTED</span></a>
+  <a href="#pr025a">PR-025A · Upload Drafts Rules <span class="st ok">COMMITTED</span></a>
+  <a href="#pr025">PR-025 · Upload Outbox <span class="st ok">COMMITTED</span></a>
+  <a href="#pr026">PR-026 · Runtime Telemetry <span class="st ok">COMMITTED</span></a>
+  <a href="#pr027">PR-027 · Tenant Revalidate <span class="st ok">COMMITTED</span></a>
+  <a href="#pr028">PR-028 · Rules Tests in CI <span class="st ok">COMMITTED</span></a>
+  <a href="#pr029">PR-029 · Firebase Staging <span class="st ok">COMMITTED</span></a>
+  <a href="#pr030">PR-030 · Conditional GO Gate <span class="st bad">NOT READY</span></a>
+  <a href="#exec-next">الحوكمة · بعد الإغلاق</a>
+  <div class="sec-label">الدستور</div>
+  <a href="#s1">1 · ملخص تنفيذي <span class="st ok">START</span></a>
+  <a href="#s2">2 · تجميد النطاق <span class="st ok">CORE</span></a>
+  <a href="#s3">3 · سجل المؤجّل</a>
+  <a href="#s4">4 · خارج النطاق</a>
+  <a href="#s5">5 · مكوّنات محمية</a>
+  <a href="#s6">6 · حدود التنفيذ</a>
+  <a href="#s7">7 · خط أساس المستودع</a>
+  <a href="#s8">8 · خريطة التبعيات</a>
+  <a href="#s9">9 · مصفوفة التعارض <span class="st warn">RULES</span></a>
+  <a href="#s10">10 · مسارات العمل A–H</a>
+  <a href="#s11">11 · متطلبات المستثمر</a>
+  <a href="#s12">12 · ترتيب التنفيذ</a>
+  <a href="#s15">15 · Zero Exit Gate <span class="st bad">LAW</span></a>
+  <a href="#s13">13 · قائمة الجاهزية</a>
+  <a href="#s14">14 · تقرير اكتمال Phase 0</a>
+  <div class="sec-label">بوابات مرتبطة</div>
+  <a href="dar_car_phase05_portal.html">Phase 0.5 · حوكمة النطاق</a>
+  <a href="dar_car_mep_v12_portal.html">MEP v1.2 · نجاح + ميزانية</a>
+  <a href="dar_car_master_execution_plan_portal.html">MEP v1.0 · PR-001…030</a>
+  <a href="dar_car_map_development_portal.html">تطوير الخريطة</a>
+  <a href="dar_car_ads_portal.html">بوابة الإعلانات</a>
+  <a href="dar_car_ui_colors_portal.html">ألوان وواجهة</a>
+</aside>
+
+<main>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="pill ok">SSOT · تنفيذ + دستور</span>
+    <span class="pill cyan">PR-001 VERIFY PASS · READY</span>
+    <span class="pill ok">PR-002 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-003 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-004 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-005 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-006 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-007 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-008 READY_TO_REVIEW</span>
+    <span class="pill ok">PR-009 COMMITTED · 9771a35</span>
+    <span class="pill ok">PR-010 COMMITTED · 710f97c</span>
+    <span class="pill ok">PR-011 COMMITTED · 165b73d</span>
+    <span class="pill ok">PR-012 COMMITTED · 7e80133</span>
+    <span class="pill ok">PR-013 COMMITTED · e927adc</span>
+    <span class="pill ok">PR-014…021 Reliability COMMITTED</span>
+    <span class="pill ok">PR-022…024 Smart Map slice COMMITTED</span>
+    <span class="pill ok">PR-025…028 Closeout COMMITTED</span>
+    <span class="pill ok">PR-029 Staging COMMITTED · e0da423</span>
+    <span class="pill ok">HEAD · e0da423 · PR-029</span>
+    <span class="pill bad">PR-030 · Conditional GO NOT READY</span>
+    <span class="pill bad">ZERO EXIT GATE</span>
+    <span class="pill warn">Commercial NO-GO</span>
+    <h2>تطوير وتحسين دار كار</h2>
+    <p style="max-width:920px;margin:0;opacity:.93">المرجع الرسمي الوحيد: دستور التنفيذ + <strong>سجل ما نُفّذ ونتائجه</strong> بعد كل مرحلة/PR. لا تعتمد على تقارير الشات وحدها — كل نتيجة تُسجَّل هنا مرتّبة.</p>
+    <div class="grid" style="margin-top:1.1rem">
+      <div class="stat" data-jump="pr029"><b>029</b><span>آخر PR ملتزم</span></div>
+      <div class="stat" data-jump="pr030"><b>NR</b><span>Conditional NOT READY</span></div>
+      <div class="stat" data-jump="s15"><b>0</b><span>Critical للانتقال</span></div>
+      <div class="stat" data-jump="exec-next"><b>005+</b><span>حواجز Protect/Safety</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+<section class="card" id="exec-hub">
+  <h2><span class="num">◉</span> لوحة التنفيذ الحية</h2>
+  <div class="callout ok"><strong>سياسة الموقع:</strong> بعد كل مرحلة أو PR يُحدَّث هذا السجل بما نُفّذ والنتائج (PASS/FAIL/ميزانية/Zero Exit) قبل الانتقال للتالي.</div>
+  <div class="toolbar">
+    <label>الحالة</label>
+    <select id="execFilter" onchange="filterExec()">
+      <option value="all">الكل</option>
+      <option value="done">مكتمل / مراجعة</option>
+      <option value="plan">تخطيط فقط</option>
+      <option value="next">التالي</option>
+    </select>
+  </div>
+  <div class="exec-timeline">
+    <article class="exec-item" data-exec="plan">
+      <div class="exec-meta"><span class="badge ok">PLAN</span> <time>2026-07-20</time></div>
+      <h3>Phase 0 — دستور التنفيذ</h3>
+      <p><strong>ماذا:</strong> تجميد نطاق · مؤجّل · محمي · تعارضات · مسارات A–H · Zero Exit.</p>
+      <p><strong>النتيجة:</strong> تخطيط مكتمل · بلا كود · READY لبدء المعالجة.</p>
+    </article>
+    <article class="exec-item" data-exec="plan">
+      <div class="exec-meta"><span class="badge ready">PLAN</span> <time>2026-07-20</time></div>
+      <h3>Phase 0.5 / MEP v1.1 — حوكمة النطاق</h3>
+      <p><strong>ماذا:</strong> DF · أعلام · Epic G Brand · Epic H Ads · جداول A/B.</p>
+      <p><strong>النتيجة:</strong> ملحق ملزم · <a href="dar_car_phase05_portal.html" style="color:var(--p2)">بوابة Phase 0.5</a> · READY PR-001.</p>
+    </article>
+    <article class="exec-item" data-exec="plan">
+      <div class="exec-meta"><span class="badge ready">PLAN</span> <time>2026-07-20</time></div>
+      <h3>MEP v1.2 — نجاح + ميزانية التغيير</h3>
+      <p><strong>ماذا:</strong> SC-01…20 · S0–S5 · CB-0…X · BR · Cursor Law · CBE.</p>
+      <p><strong>النتيجة:</strong> قانون تشغيل يومي · <a href="dar_car_mep_v12_portal.html" style="color:var(--p2)">بوابة v1.2</a> · READY TO EXECUTE PR-001.</p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-20</time></div>
+      <h3>PR-001 — Soft CI</h3>
+      <p><strong>ماذا:</strong> إنشاء <code>.github/workflows/ci.yml</code> فقط · flutter test + analyze_critical.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET · Zero Exit PASS · تحليل 0 error · كل الاختبارات نجحت محلياً. <a href="#pr001" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">VERIFY PASS · READY</span> <time>2026-07-20</time></div>
+      <h3>PR-001 — تحقق ما بعد التنفيذ</h3>
+      <p><strong>ماذا:</strong> تحقق فقط بلا تعديل كود · فحص النطاق/الميزانية/YAML/أوامر محلية/أمن.</p>
+      <p><strong>النتيجة:</strong> كل بنود التحقق PASS · Merge Readiness = <strong>READY</strong>. <a href="#pr001-verify" style="color:var(--p2)">تقرير التحقق ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-20</time></div>
+      <h3>PR-002 — Runbook + Launch Config</h3>
+      <p><strong>ماذا:</strong> <code>docs/ops_runbook.md</code> · تحديث <code>README.md</code> · <code>.vscode/launch.json</code> — توثيق 4 مداخل فقط · بلا runtime.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET (CB-0 · 3 ملفات) · Zero Exit PASS · JSON صالح · كل entry موجودة. <a href="#pr002" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-20</time></div>
+      <h3>PR-003 — CODEOWNERS + طابور Rules</h3>
+      <p><strong>ماذا:</strong> <code>.github/CODEOWNERS</code> · <code>docs/ops_rules_queue.md</code> · إشارة قصيرة في <code>README.md</code> — حوكمة فقط · بلا تعديل <code>firestore.rules</code>.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET (CB-0 · 3 ملفات) · Zero Exit PASS · مسارات CODEOWNERS موجودة. <a href="#pr003" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="plan">
+      <div class="exec-meta"><span class="badge ready">PLAN AMENDMENT</span> <time>2026-07-21</time></div>
+      <h3>تعديل MEP — Epic E = Smart Map Engine</h3>
+      <p><strong>ماذا:</strong> إعادة تسمية Epic E من Map Performance إلى <strong>Smart Map Engine</strong> · تسجيل تقنية أساسية للمستثمر · مسارات عمل مستقبلية · بلا تنفيذ · بلا تغيير أرقام PR · بلا تقديم قبل Security.</p>
+      <p><strong>النتيجة:</strong> تخطيط فقط · PLANNING_COMPLETE · <a href="#sme" style="color:var(--p2)">التفاصيل ↓</a> · MEP: <a href="dar_car_master_execution_plan_portal.html#epic-e-sme" style="color:var(--p2)">#epic-e-sme</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-20</time></div>
+      <h3>PR-004 — قياس N (قراءة فقط)</h3>
+      <p><strong>ماذا:</strong> <code>docs/metrics/listing_cardinality.md</code> + إشارة README — استراتيجية التحميل من الكود · N الإنتاج = <strong>MEASUREMENT_REQUIRED</strong> · بلا تغيير runtime.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET (CB-0 · 2 ملفات) · Zero Exit PASS · لا حدود/استعلامات معدّلة. <a href="#pr004" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-21</time></div>
+      <h3>PR-005 — إزالة fallback مفتاح Maps (Android)</h3>
+      <p><strong>ماذا:</strong> حذف المفتاح الثابت من <code>android/app/build.gradle.kts</code> · إلزام <code>local.properties</code> / env / <code>-P</code> · توثيق <code>docs/android_maps_api_key.md</code> · بلا تغيير توقيع (PR-006).</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET (CB-2 · 2 ملفات) · بناء يفشل بلا مفتاح · ينجح مع <code>-P</code> · بقايا نفس المفتاح في iOS/<code>lib</code> خارج نطاق MEP. <a href="#pr005" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-21</time></div>
+      <h3>PR-006 — توقيع Android release</h3>
+      <p><strong>ماذا:</strong> <code>signingConfigs.release</code> من <code>android/key.properties</code> (غير committed) · إزالة debug من release · مثال + توثيق · حماية gitignore.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET · release بلا key.properties يفشل برسالة PR-006 · مع keystore تجريبي: Config=release · debug يبقى debug. <a href="#pr006" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-21</time></div>
+      <h3>PR-007 — Firestore DR Runbook</h3>
+      <p><strong>ماذا:</strong> <code>docs/ops_dr_firestore.md</code> + إشارة README — إجراءات backup/restore · عزل إلزامي · بلا تنفيذ backup/restore · بلا تعديل Firebase.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET (CB-0 · 2 ملفات) · Zero Exit PASS · NO_DRILL_YET. <a href="#pr007" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">READY_TO_REVIEW</span> <time>2026-07-21</time></div>
+      <h3>PR-008 — Required CI readiness</h3>
+      <p><strong>ماذا:</strong> تحديث <code>.github/workflows/ci.yml</code> (اسم CI + تعليقات) · <code>docs/ci_required.md</code> لإعدادات branch protection اليدوية · README.</p>
+      <p><strong>النتيجة:</strong> WITHIN_BUDGET · YAML OK · analyze+test محلياً PASS · حماية الفرع = إعداد Admin وليس YAML. <a href="#pr008" style="color:var(--p2)">التفاصيل ↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-009 — CRM Rules Batch-1</h3>
+      <p><strong>ماذا:</strong> تضييق <code>sales</code> · <code>rentals</code> · <code>property_sales</code> · اختبارات batch1.</p>
+      <p><strong>النتيجة:</strong> SHA <code>9771a35</code> · WITHIN_BUDGET · Emulator PASS · بلا نشر. <a href="#pr009" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-010 — CRM Rules Batch-2</h3>
+      <p><strong>ماذا:</strong> تضييق <code>rental_contracts</code> · <code>branches</code> · <code>businesses</code>.</p>
+      <p><strong>النتيجة:</strong> SHA <code>710f97c</code> · WITHIN_BUDGET · Emulator PASS · بلا نشر. <a href="#pr010" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-011 — Property Contracts</h3>
+      <p><strong>ماذا:</strong> تضييق <code>property_contracts</code> فقط عبر <code>ownsLinkedProperty</code>.</p>
+      <p><strong>النتيجة:</strong> SHA <code>165b73d</code> · WITHIN_BUDGET · Emulator ALL PASSED · بلا نشر. <a href="#pr011" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-012 — Spotlight Videos Write Ownership</h3>
+      <p><strong>ماذا:</strong> تضييق كتابة <code>spotlight_videos</code> · ملكية <code>userId</code>/<code>sellerId</code> · عدّادات عامة · قراءة عامة محفوظة.</p>
+      <p><strong>النتيجة:</strong> SHA <code>7e80133</code> · WITHIN_BUDGET · Emulator ALL PASSED · بلا نشر · بلا Dart. <a href="#pr012" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-013 — Cars Admin Update Alignment</h3>
+      <p><strong>ماذا:</strong> محاذاة <code>match /cars</code> update مع نموذج العقارات · مالك أو <code>isAdmin()</code> · حذف/إنشاء/قراءة دون توسيع.</p>
+      <p><strong>النتيجة:</strong> SHA <code>e927adc</code> · WITHIN_BUDGET (CB-1) · Emulator ALL PASSED · بلا نشر. <a href="#pr013" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-014 — Remote Config Startup Optimization</h3>
+      <p><strong>ماذا:</strong> تقصير RC fetch timeout + fetch غير حاجب للإقلاع.</p>
+      <p><strong>النتيجة:</strong> SHA <code>9d5b99f</code> · WITHIN · بلا نشر. <a href="#pr014" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-015 — Crashlytics + Global Error Tracking</h3>
+      <p><strong>ماذا:</strong> تهيئة Crashlytics وتتبع أخطاء عالمي عند الإقلاع.</p>
+      <p><strong>النتيجة:</strong> SHA <code>880dbc8</code> · WITHIN · بلا نشر. <a href="#pr015" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-016…019 — Provider AuthState Sync</h3>
+      <p><strong>ماذا:</strong> مزامنة AuthState واحداً تلو الآخر: Customers · Sales · RE Customers · Branches · Rental.</p>
+      <p><strong>النتيجة:</strong> SHAs <code>bedc066</code>…<code>30d87e2</code> · WITHIN · بلا نشر. <a href="#pr016" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-020 — Cloudflare Image Upload Timeout</h3>
+      <p><strong>ماذا:</strong> مهلة عميل لرفع صور Cloudflare.</p>
+      <p><strong>النتيجة:</strong> SHA <code>088cf41</code> · WITHIN · بلا نشر. <a href="#pr020" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-021 — WhatsApp Lease Expiry Reliability</h3>
+      <p><strong>ماذا:</strong> موثوقية انتهاء lease واتساب + idempotency.</p>
+      <p><strong>النتيجة:</strong> SHA <code>cfa197f</code> · WITHIN · بلا نشر. <a href="#pr021" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-022…024 — Smart Map Engine (slice 1)</h3>
+      <p><strong>ماذا:</strong> <code>MAP_BOUNDED_FETCH</code> للسيارات/العقارات + تمييز empty vs load-failure على الخريطة.</p>
+      <p><strong>النتيجة:</strong> SHAs <code>1096175</code> · <code>1bf727b</code> · <code>e50325f</code> · flag OFF افتراضياً · بلا نشر. <a href="#pr022" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-025A / 025 — Upload Drafts Rules + Outbox</h3>
+      <p><strong>ماذا:</strong> قواعد <code>upload_drafts</code> ثم outbox اختياري خلف <code>UPLOAD_OUTBOX</code>.</p>
+      <p><strong>النتيجة:</strong> SHAs <code>0ca3ef2</code> · <code>bf5e0a1</code> · Emulator PASS · بلا نشر. <a href="#pr025a" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-026 — Runtime Telemetry Counters</h3>
+      <p><strong>ماذا:</strong> أحداث map_fetch / permission-denied → security_logs + hub KPIs.</p>
+      <p><strong>النتيجة:</strong> SHA <code>4104f86</code> · WITHIN · بلا نشر. <a href="#pr026" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-027 — Tenant Revalidation</h3>
+      <p><strong>ماذا:</strong> إعادة تحقق tenant خفيفة عند resume / navigation / عمليات حسّاسة في المعرض العام.</p>
+      <p><strong>النتيجة:</strong> SHA <code>3bb88ab</code> · WITHIN · بلا Listeners دائمة · بلا نشر. <a href="#pr027" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-028 — Firestore Rules Tests in CI</h3>
+      <p><strong>ماذا:</strong> job CI + <code>tool/run_firestore_rules_tests.sh</code> لتشغيل كل اختبارات القواعد على الـ Emulator.</p>
+      <p><strong>النتيجة:</strong> SHA <code>f291cf5</code> · 6/6 PASS محلياً · بلا نشر. <a href="#pr028" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge ok">COMMITTED</span> <time>2026-07-21</time></div>
+      <h3>PR-029 — Firebase Staging Environment Selection</h3>
+      <p><strong>ماذا:</strong> مشروع <code>mastermax-2030-staging</code> · <code>USE_STAGING</code> · <code>AppFirebaseOptions</code>.</p>
+      <p><strong>النتيجة:</strong> SHA <code>e0da423</code> · WITHIN · بلا نشر. <a href="#pr029" style="color:var(--p2)">↓</a></p>
+    </article>
+    <article class="exec-item" data-exec="done">
+      <div class="exec-meta"><span class="badge bad">NOT READY</span> <time>2026-07-21</time></div>
+      <h3>PR-030 — Conditional GO Gate Assessment</h3>
+      <p><strong>ماذا:</strong> مراجعة بوابات MEP §15 + Readiness §10.4 من git فقط · توثيق بلا كود.</p>
+      <p><strong>النتيجة:</strong> <strong>Conditional GO غير معلن</strong> — حواجز PR-005/006/007 + CI required يدوي + DR drill. <a href="#pr030" style="color:var(--p2)">↓</a> · <a href="conditional_go_gate_pr030.md" style="color:var(--p2)">SSOT</a></p>
+    </article>
+  </div>
+</section>
+
+<section class="card" id="exec-stack">
+  <h2><span class="num">▣</span> طبقات الحوكمة (مرجع سريع)</h2>
+  <table>
+    <thead><tr><th>الطبقة</th><th>المحتوى</th><th>البوابة</th><th>الحالة</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MEP v1.0</strong></td><td>PR-001…030 · Epics A–F · <strong>Epic E = Smart Map Engine</strong> · Conditional/Full/Commercial GO</td><td><a href="dar_car_master_execution_plan_portal.html#epic-e-sme" style="color:var(--p2)">فتح · Epic E</a></td><td><span class="badge ok">مقبول + تعديل تسمية</span></td></tr>
+      <tr><td><strong>MEP v1.1 / 0.5</strong></td><td>نطاق · DF · أعلام · Brand G · Ads H</td><td><a href="dar_car_phase05_portal.html" style="color:var(--p2)">فتح</a></td><td><span class="badge ok">مقبول</span></td></tr>
+      <tr><td><strong>MEP v1.2</strong></td><td>نجاح · ميزانية · شدة · Cursor</td><td><a href="dar_car_mep_v12_portal.html" style="color:var(--p2)">فتح</a></td><td><span class="badge ok">مقبول</span></td></tr>
+      <tr><td><strong>هذا الموقع</strong></td><td>دستور Phase 0 + Zero Exit + <strong>سجل التنفيذ الحي</strong></td><td>#exec-hub</td><td><span class="badge ok">v1.3 SSOT</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="card" id="pr001">
+  <h2><span class="num">PR</span> PR-001 — Soft CI · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Observe</b><span>12س بعد الدمج</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>A — Protect</td></tr>
+    <tr><th>الهدف</th><td>CI ناعم: <code>flutter test</code> + <code>tool/analyze_critical.sh</code> — رؤية بلا إلزام دمج</td></tr>
+    <tr><th>RK / EV</th><td>RK-002 · RK-060 · EV-005 · EV-140 · EV-152</td></tr>
+    <tr><th>ميزانية / نصف قطر</th><td>CB-1 · BR-0/BR-1 · مجال واحد: CI</td></tr>
+  </table>
+
+  <h3>2) ماذا نُفّذ</h3>
+  <ul style="font-size:.82rem">
+    <li>إنشاء الملف الوحيد: <code>.github/workflows/ci.yml</code> (~45 سطر).</li>
+    <li>تشغيل على <code>pull_request</code> و <code>push</code> إلى <code>main</code>/<code>master</code>.</li>
+    <li>خطوات: Checkout → Flutter 3.38.9 → <code>pub get</code> → <code>bash tool/analyze_critical.sh</code> → <code>flutter test</code>.</li>
+    <li><strong>لم يُعدَّل:</strong> <code>tool/analyze_critical.sh</code> · <code>lib/**</code> · اختبارات · أعلام · Firebase · قواعد.</li>
+    <li>لا branch protection · لا <code>continue-on-error</code> · لا نشر/أسرار.</li>
+  </ul>
+
+  <h3>3) النتائج (تحقق محلي)</h3>
+  <table>
+    <thead><tr><th>الفحص</th><th>النتيجة</th><th>ملاحظة</th></tr></thead>
+    <tbody>
+      <tr><td>YAML</td><td><span class="badge ok">OK</span></td><td>تحميل البنية نجح</td></tr>
+      <tr><td><code>flutter pub get</code></td><td><span class="badge ok">exit 0</span></td><td>—</td></tr>
+      <tr><td><code>bash tool/analyze_critical.sh</code></td><td><span class="badge ok">exit 0</span></td><td>0 أسطر <code>error •</code> · infos كثيرة (لا تحجب هذا السكربت)</td></tr>
+      <tr><td><code>flutter test</code></td><td><span class="badge ok">All tests passed</span></td><td>exit 0</td></tr>
+      <tr><td>تشغيل GitHub Actions على السحابة</td><td><span class="badge important">لم يُنفَّذ بعد</span></td><td>يُراقب بعد الدمج (12 ساعة)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4) ميزانية التغيير</h3>
+  <table>
+    <tr><th>الملفات</th><td>1 / سقف 3 (مفضّل 1)</td></tr>
+    <tr><th>LOC</th><td>~45 / سقف 200</td></tr>
+    <tr><th>منصات / وحدات تشغيل</th><td>CI فقط · 0 runtime</td></tr>
+    <tr><th>أعلام / Firebase / Functions</th><td>0</td></tr>
+  </table>
+
+  <h3>5) Flutter</h3>
+  <p style="font-size:.8rem">الإصدار في CI: <strong>3.38.9 stable</strong>. الدليل: لا FVM في المستودع · <code>flutter --version</code> محلياً · sdk في pubspec <code>&gt;=3.0.6 &lt;4.0.0</code>. المشروع <strong>غير مُثبَّت بـ FVM</strong> (توصية مؤجّلة).</p>
+
+  <h3>6) التراجع والمراقبة</h3>
+  <ul style="font-size:.8rem">
+    <li><strong>تراجع:</strong> حذف/Revert لـ <code>.github/workflows/ci.yml</code> فقط.</li>
+    <li><strong>بعد الدمج (12س):</strong> صحة التشغيل · اكتمال analyze/test · فشل وهمي · مدة · تكرار workflows.</li>
+    <li>يبقى <strong>غير إلزامي</strong> حتى PR-008.</li>
+  </ul>
+
+  <h3>7) توصيات مؤجّلة (لم تُنفَّذ)</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>تثبيت Flutter عبر FVM لاحقاً</li>
+    <li>PR-008: جعل الفحوصات مطلوبة بعد استقرار أخضر</li>
+    <li>لا تبدأ PR-002 قبل مراجعة/دمج PR-001</li>
+  </ul>
+
+  <div class="callout ok">
+    <strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS.
+    النطاق الفعلي لهذا الـ PR: <code>.github/</code> فقط (باقي الملفات المعدّلة في الشجرة خارج PR-001).
+  </div>
+</section>
+
+<section class="card" id="pr001-verify">
+  <h2><span class="num">✓</span> PR-001 — تقرير التحقق (ما بعد التنفيذ)</h2>
+  <div class="callout cyan"><strong>وضع التحقق فقط.</strong> لم يُعدَّل كود المنتج أثناء هذا التحقق. النتائج أدناه من إعادة تشغيل الأوامر + فحص الملفات.</div>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>Scope</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Files</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Budget CB-1</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>BR-0/1</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Workflow</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Local cmds</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Security</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Zero Exit</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>Merge</b><span>READY</span></div>
+  </div>
+
+  <h3>ملفات PR-001 فقط</h3>
+  <table>
+    <tr><th>معدل / مُنشأ ضمن PR-001</th><td><code>.github/workflows/ci.yml</code> (45 سطر · ?? untracked)</td></tr>
+    <tr><th>غير متوقع داخل PR-001</th><td><strong>لا يوجد</strong></td></tr>
+  </table>
+
+  <h3>شجرة محلية غير مرتبطة (B — لا تفشل التحقق)</h3>
+  <p style="font-size:.76rem;color:var(--muted)">تعديلات كثيرة خارج <code>.github/</code> (lib، docs بوابات، firebase، ios…) = عمل محلي سابق · <strong>ليست جزءاً من PR-001</strong>. بوابات التوثيق محدّثة للسجل فقط وليست runtime.</p>
+
+  <h3>Workflow</h3>
+  <table>
+    <tr><td>المسار</td><td><code>.github/workflows/ci.yml</code></td></tr>
+    <tr><td>YAML</td><td>PASS (Ruby load)</td></tr>
+    <tr><td>Triggers</td><td><code>pull_request</code> + <code>push</code> → main/master</td></tr>
+    <tr><td>خطوات</td><td>pub get · bash tool/analyze_critical.sh · flutter test</td></tr>
+    <tr><td>Flutter</td><td>3.38.9 stable عبر flutter-action</td></tr>
+    <tr><td>Deploy / secrets / release</td><td><strong>لا يوجد</strong></td></tr>
+  </table>
+
+  <h3>تحقق محلي (إعادة تشغيل)</h3>
+  <table>
+    <tr><td><code>flutter pub get</code></td><td><span class="badge ok">PASS</span> exit 0</td></tr>
+    <tr><td><code>bash tool/analyze_critical.sh</code></td><td><span class="badge ok">PASS</span> exit 0 · 0 error •</td></tr>
+    <tr><td><code>flutter test</code></td><td><span class="badge ok">PASS</span> All tests passed · exit 0</td></tr>
+  </table>
+
+  <h3>أمن / إنتاج / مؤجّل</h3>
+  <ul style="font-size:.8rem">
+    <li>لا نشر Firebase/Hosting/Functions · لا أسرار · لا تغيير runtime · لا أعلام · لا تفعيل مؤجّلات.</li>
+  </ul>
+
+  <div class="callout ok"><strong>Merge Readiness: READY</strong> — لا حواجز. راقب 12 ساعة بعد الدمج. لا تبدأ PR-002 قبل الدمج.</div>
+</section>
+
+<section class="card" id="pr002">
+  <h2><span class="num">PR</span> PR-002 — Developer Runbook + VS Code Launch · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-0</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip pass"><b>Blast</b><span>BR-0</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>A — Protect</td></tr>
+    <tr><th>الهدف</th><td>Runbook رسمي + أهداف VS Code لتشغيل كل مدخل DAR CAR بأمان</td></tr>
+    <tr><th>RK / EV</th><td>RK-056 · EV-132 · EV-133 · EV-134</td></tr>
+    <tr><th>ميزانية / نصف قطر</th><td>CB-0 · BR-0 · Documentation only · 0 runtime</td></tr>
+  </table>
+
+  <h3>2) مداخل المستودع (مؤكدة بالملفات)</h3>
+  <table>
+    <thead><tr><th>#</th><th>التطبيق</th><th>الملف</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Mobile</td><td><code>lib/main.dart</code></td></tr>
+      <tr><td>2</td><td>Property Web</td><td><code>lib/web/web_main.dart</code></td></tr>
+      <tr><td>3</td><td>Car Web</td><td><code>lib/car_web/car_web_main.dart</code></td></tr>
+      <tr><td>4</td><td>Admin Web</td><td><code>lib/admin_web/admin_main.dart</code></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.78rem;color:var(--muted)">لا product flavors (<code>--flavor</code>) في المستودع. أوضاع Flutter: debug / profile / release للموبايل فقط في launch.json.</p>
+
+  <h3>3) ماذا نُفّذ</h3>
+  <ul style="font-size:.82rem">
+    <li>إنشاء <code>docs/ops_runbook.md</code> — نظرة عامة · هيكل · متطلبات · أوامر تشغيل · أخطاء شائعة · analyze/test/CI · قيود · تراجع.</li>
+    <li>استبدال <code>README.md</code> الافتراضي بروابط runbook + أوامر المداخل الأربعة.</li>
+    <li>إعادة كتابة <code>.vscode/launch.json</code> — 6 أهداف مرتبطة بمداخل حقيقية فقط.</li>
+    <li><strong>لم يُعدَّل:</strong> <code>lib/**</code> · Firebase · rules · functions · أعلام · أي runtime.</li>
+  </ul>
+
+  <h3>4) التحقق</h3>
+  <table>
+    <thead><tr><th>الفحص</th><th>النتيجة</th></tr></thead>
+    <tbody>
+      <tr><td>JSON لـ launch.json</td><td><span class="badge ok">OK</span></td></tr>
+      <tr><td>كل <code>program</code> موجود</td><td><span class="badge ok">6/6</span></td></tr>
+      <tr><td>Markdown / ملفات مرجعية</td><td><span class="badge ok">OK</span></td></tr>
+      <tr><td>أوامر analyze/test موثّقة تطابق Soft CI</td><td><span class="badge ok">OK</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>5) ميزانية التغيير (حزمة PR-002)</h3>
+  <table>
+    <tr><th>الملفات</th><td>3 / سقف 3</td></tr>
+    <tr><th>Runtime files / modules</th><td>0 / 0</td></tr>
+    <tr><th>إنتاج / Firebase / أعلام</th><td>0</td></tr>
+  </table>
+  <p style="font-size:.76rem;color:var(--muted)">تحديث هذا الموقع (SSOT سجل) طلب تشغيلي منفصل عن حزمة الدمج لـ PR-002 وليس runtime.</p>
+
+  <h3>6) التراجع والمراقبة</h3>
+  <ul style="font-size:.8rem">
+    <li><strong>تراجع:</strong> revert لـ README + ops_runbook + launch.json فقط.</li>
+    <li><strong>مراقبة:</strong> لا مراقبة إنتاج — Observe 0h حسب MEP.</li>
+  </ul>
+
+  <h3>7) مؤجّل (لم يُنفَّذ)</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>تثبيت Flutter بـ FVM</li>
+    <li>PR-003 نُفّذ لاحقاً — انظر <a href="#pr003" style="color:var(--p2)">#pr003</a></li>
+  </ul>
+
+  <div class="callout ok">
+    <strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-0.
+  </div>
+</section>
+
+<section class="card" id="pr003">
+  <h2><span class="num">PR</span> PR-003 — CODEOWNERS + طابور Firestore Rules · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-0</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip pass"><b>Blast</b><span>BR-0</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>A — Protect</td></tr>
+    <tr><th>الهدف</th><td>حوكمة ملكية المستودع قبل أي PR أمني · CODEOWNERS + طابور مراجعة rules</td></tr>
+    <tr><th>RK / EV</th><td>RK-036 · RK-020 (process) · EV-173</td></tr>
+    <tr><th>ميزانية / نصف قطر</th><td>CB-0 · BR-0 · Governance only · 0 runtime · <strong>لا تعديل firestore.rules</strong></td></tr>
+  </table>
+
+  <h3>2) مناطق حسّاسة (من هيكل المستودع)</h3>
+  <table>
+    <thead><tr><th>المجال</th><th>مسارات موجودة</th></tr></thead>
+    <tbody>
+      <tr><td>Rules / Firebase</td><td><code>firestore.rules</code> · <code>storage.rules</code> · <code>firebase.json</code> · indexes</td></tr>
+      <tr><td>Functions</td><td><code>functions/</code></td></tr>
+      <tr><td>Flutter / Auth / Maps / Theme / Ads</td><td><code>lib/src/…</code> (features + core)</td></tr>
+      <tr><td>Admin / Storefront</td><td><code>lib/admin_web/</code> · <code>lib/car_web/</code> · <code>storefront/</code></td></tr>
+      <tr><td>Docs / Infra</td><td><code>docs/</code> · <code>.github/</code> · <code>tool/</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>3) ماذا نُفّذ</h3>
+  <ul style="font-size:.82rem">
+    <li>إنشاء <code>.github/CODEOWNERS</code> — ملكية حسب المجال · المالك الحالي <code>@FAYEZ2030</code> (handle موجود على GitHub).</li>
+    <li>إنشاء <code>docs/ops_rules_queue.md</code> — غرض · تنفيذ تسلسلي · موافقة · ترتيب دمج · Observe · تراجع · تركيبات ممنوعة.</li>
+    <li>إشارة قصيرة في <code>README.md</code> إلى CODEOWNERS + طابور القواعد.</li>
+    <li><strong>لم يُلم:</strong> محتوى <code>firestore.rules</code> / <code>storage.rules</code> · <code>lib/**</code> · functions · أعلام · Firebase runtime.</li>
+  </ul>
+
+  <h3>4) التحقق</h3>
+  <table>
+    <thead><tr><th>الفحص</th><th>النتيجة</th></tr></thead>
+    <tbody>
+      <tr><td>صيغة CODEOWNERS + owners</td><td><span class="badge ok">OK</span></td></tr>
+      <tr><td>مسارات CODEOWNERS موجودة</td><td><span class="badge ok">36/36</span> (<code>*</code> افتراضي مقصود)</td></tr>
+      <tr><td>Markdown لطابور القواعد</td><td><span class="badge ok">OK</span></td></tr>
+      <tr><td>لا تغيير على محتوى القواعد</td><td><span class="badge ok">PASS</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>5) ميزانية التغيير (حزمة PR-003)</h3>
+  <table>
+    <tr><th>الملفات</th><td>3 / سقف 3</td></tr>
+    <tr><th>Runtime files / modules</th><td>0 / 0</td></tr>
+    <tr><th>إنتاج / Rules محتوى / أعلام</th><td>0</td></tr>
+  </table>
+  <p style="font-size:.76rem;color:var(--muted)">تحديث هذا الموقع (SSOT سجل) طلب تشغيلي منفصل عن حزمة الدمج لـ PR-003.</p>
+
+  <h3>6) التراجع</h3>
+  <ul style="font-size:.8rem">
+    <li>revert لـ <code>.github/CODEOWNERS</code> + <code>docs/ops_rules_queue.md</code> + سطر README — بلا نشر Firebase.</li>
+  </ul>
+
+  <h3>7) مؤجّل</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>GitHub Teams منفصلة لكل دور (عند توفر org teams)</li>
+    <li>تفعيل branch protection «required reviews» لاحقاً</li>
+    <li>PR-004 قياس N — انظر <a href="#pr004" style="color:var(--p2)">#pr004</a></li>
+  </ul>
+
+  <div class="callout ok">
+    <strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-0.
+  </div>
+</section>
+
+<section class="card" id="pr004">
+  <h2><span class="num">PR</span> PR-004 — Listing Cardinality Baseline · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-0</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Prod N</b><span>MEASUREMENT_REQUIRED</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>A — Protect</td></tr>
+    <tr><th>الهدف</th><td>خط أساس N لمجموعات الخريطة قبل PR-022/023 — قراءة/توثيق فقط</td></tr>
+    <tr><th>RK / EV</th><td>RK-018 (prep) · EV-038 · EV-154</td></tr>
+    <tr><th>ميزانية</th><td>CB-0 · BR-0 · 0 runtime · لا حدود ولا استعلامات</td></tr>
+  </table>
+
+  <h3>2) استراتيجية التحميل (من المستودع)</h3>
+  <ul style="font-size:.82rem">
+    <li><code>MainMapScreen._loadInitialData</code> → <code>loadProperties</code> + <code>loadCars</code> بالتوازي ثم تمرير القوائم كاملة إلى <code>MapState</code>.</li>
+    <li><code>getCars</code>: مجموعة <code>cars</code> · <code>isActive==true</code> · <strong>بلا limit</strong>.</li>
+    <li><code>getProperties</code>: مجموعة <code>properties</code> · <code>get()</code> كامل · فلترة عميل · <strong>بلا limit</strong>.</li>
+    <li>لا جلب جماعي لـ Spotlight/CRM على الخريطة كمصدر pins أساسي.</li>
+  </ul>
+
+  <h3>3) القياسات</h3>
+  <table>
+    <tr><td>سلوك غير محدود (كود)</td><td><span class="badge ok">مؤكد</span></td></tr>
+    <tr><td>N_cars / N_properties إنتاج</td><td><span class="badge important">MEASUREMENT_REQUIRED</span> — لا أرقام مخترعة · ADC غير متاح للعد في الجلسة</td></tr>
+  </table>
+
+  <h3>4) الملفات</h3>
+  <ul style="font-size:.8rem">
+    <li><code>docs/metrics/listing_cardinality.md</code> (جديد)</li>
+    <li><code>README.md</code> (إشارة قصيرة)</li>
+    <li><strong>لم يُلم:</strong> <code>lib/**</code> · functions · rules · maps runtime</li>
+  </ul>
+
+  <h3>5) ميزانية</h3>
+  <table>
+    <tr><th>الملفات</th><td>2 / سقف 2</td></tr>
+    <tr><th>Runtime / إنتاج</th><td>0</td></tr>
+  </table>
+
+  <h3>6) مؤجّل</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>إكمال قالب N1–N7 بعد عدّ قراءة فقط على الإنتاج</li>
+    <li>PR-005 نُفّذ — انظر <a href="#pr005" style="color:var(--p2)">#pr005</a></li>
+    <li>PR-022/023 — لم تبدأ</li>
+  </ul>
+
+  <div class="callout ok"><strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-0.</div>
+</section>
+
+<section class="card" id="pr005">
+  <h2><span class="num">PR</span> PR-005 — Remove Maps API Key Fallback (Android) · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-2</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Observe</b><span>24س بعد الدمج</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>B — Safety</td></tr>
+    <tr><th>الهدف</th><td>إزالة fallback مفتاح Google Maps من مصدر Android</td></tr>
+    <tr><th>RK / EV</th><td>RK-062 (مفاتيح) · EV-144</td></tr>
+    <tr><th>ميزانية</th><td>CB-2 · BR-2 · مجال Secrets/Android فقط</td></tr>
+  </table>
+
+  <h3>2) الاستراتيجية الجديدة</h3>
+  <ul style="font-size:.82rem">
+    <li>لا مفتاح ثابت في <code>android/app/build.gradle.kts</code>.</li>
+    <li>الترتيب: <code>-PGOOGLE_MAPS_API_KEY</code> → env → <code>android/local.properties</code>.</li>
+    <li>غياب المفتاح = فشل بناء صريح.</li>
+    <li>التوثيق: <code>docs/android_maps_api_key.md</code>.</li>
+    <li><strong>لم يُغيَّر:</strong> signingConfig (PR-006) · <code>lib/**</code> · iOS (مستبعد MEP).</li>
+  </ul>
+
+  <h3>3) التحقق</h3>
+  <table>
+    <tr><td>لا <code>AIzaSyDq…</code> في gradle</td><td><span class="badge ok">PASS</span></td></tr>
+    <tr><td>بناء بلا مفتاح</td><td><span class="badge ok">FAIL متوقع</span> · رسالة PR-005</td></tr>
+    <tr><td>بناء مع <code>-PGOOGLE_MAPS_API_KEY</code></td><td><span class="badge ok">PASS</span> · <code>processDebugMainManifest</code> EXIT 0</td></tr>
+  </table>
+
+  <h3>4) ميزانية</h3>
+  <table>
+    <tr><th>الملفات</th><td>2 / سقف 5</td></tr>
+    <tr><th>Runtime modules / سلوك خريطة</th><td>0</td></tr>
+  </table>
+
+  <h3>5) مؤجّل</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>تنظيف نفس المفتاح من iOS xcconfig / AppDelegate / <code>app_config.dart</code> (خارج نطاق PR-005)</li>
+    <li>تدوير المفتاح في Google Cloud</li>
+    <li>PR-006 نُفّذ — انظر <a href="#pr006" style="color:var(--p2)">#pr006</a></li>
+  </ul>
+
+  <div class="callout ok"><strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-2.</div>
+</section>
+
+<section class="card" id="pr006">
+  <h2><span class="num">PR</span> PR-006 — Secure Android Release Signing · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-2</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Observe</b><span>48س بعد الدمج</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>B — Safety</td></tr>
+    <tr><th>الهدف</th><td>توقيع release بمفتاح إنتاج عبر key.properties — بلا debug لـ release</td></tr>
+    <tr><th>RK / EV</th><td>RK-062 · EV-144</td></tr>
+    <tr><th>ميزانية</th><td>CB-2 · BR-3 · Android Release Eng فقط</td></tr>
+  </table>
+
+  <h3>2) الاستراتيجية</h3>
+  <ul style="font-size:.82rem">
+    <li><code>signingConfigs.release</code> من <code>android/key.properties</code> (gitignored).</li>
+    <li>debug يبقى على مفتاح debug الافتراضي.</li>
+    <li>release بلا key.properties → فشل صريح (لا fallback لـ debug).</li>
+    <li>مثال: <code>android/key.properties.example</code> · دليل: <code>docs/android_release_signing.md</code>.</li>
+  </ul>
+
+  <h3>3) التحقق</h3>
+  <table>
+    <tr><td>assembleRelease بلا key.properties</td><td><span class="badge ok">FAIL متوقع</span> · رسالة PR-006</td></tr>
+    <tr><td>signingReport مع keystore تجريبي</td><td><span class="badge ok">PASS</span> · Variant release → Config release</td></tr>
+    <tr><td>أسرار في git</td><td><span class="badge ok">لا</span> · key.properties / *.jks محمية</td></tr>
+  </table>
+
+  <h3>4) الميزانية</h3>
+  <table>
+    <tr><th>الملفات</th><td>4 / سقف 5</td></tr>
+    <tr><th>Runtime</th><td>0</td></tr>
+  </table>
+
+  <h3>5) مؤجّل</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>إنشاء upload keystore إنتاجي في بيئة آمنة + Play App Signing</li>
+    <li>حقن CI secrets لـ key.properties</li>
+    <li>PR-007 DR — انظر <a href="#pr007" style="color:var(--p2)">#pr007</a></li>
+  </ul>
+
+  <div class="callout ok"><strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-3.</div>
+</section>
+
+<section class="card" id="pr007">
+  <h2><span class="num">PR</span> PR-007 — Firestore Backup &amp; DR Preparation · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-0</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Drill</b><span>NO_DRILL_YET</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>B — Safety</td></tr>
+    <tr><th>الهدف</th><td>Runbook رسمي لـ backup/restore Firestore — تحضير تشغيلي بلا لمس إنتاج</td></tr>
+    <tr><th>RK / EV</th><td>RK-061 · EV-150 · EV-151 · EV-171</td></tr>
+    <tr><th>ميزانية</th><td>CB-0 · BR-0 · Documentation only</td></tr>
+  </table>
+
+  <h3>2) ماذا نُفّذ</h3>
+  <ul style="font-size:.82rem">
+    <li>إنشاء <code>docs/ops_dr_firestore.md</code> — أهداف RPO/RTO · استراتيجية backup · سير استعادة · قواعد سلامة · تحقق · checklist · ملاك · قيود · دروس.</li>
+    <li>إشارة في <code>README.md</code>.</li>
+    <li><strong>لم يُنفَّذ:</strong> أي backup/restore · أي إعداد GCP · أي تعديل Firebase/rules/كود.</li>
+  </ul>
+
+  <h3>3) قاعدة ذهبية</h3>
+  <div class="callout dead">ممنوع restore على <code>mastermax-2030-backend</code> بلا موافقة مكتوبة. تمارين الاستعادة فقط على مشروع معزول.</div>
+
+  <h3>4) الميزانية</h3>
+  <table>
+    <tr><th>الملفات</th><td>2 / سقف 2</td></tr>
+    <tr><th>تأثير إنتاج</th><td>0</td></tr>
+  </table>
+
+  <h3>5) مؤجّل (Ops لاحقاً)</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>تفعيل backup مجدول / export GCS</li>
+    <li>مشروع scratch + تمرين واحد وملء جدول الدروس</li>
+    <li>PR-008 — انظر <a href="#pr008" style="color:var(--p2)">#pr008</a></li>
+  </ul>
+
+  <div class="callout ok"><strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-0.</div>
+</section>
+
+<section class="card" id="pr008">
+  <h2><span class="num">PR</span> PR-008 — Enable Required CI Verification · تقرير النتائج</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>BUDGET</b><span>WITHIN_BUDGET · CB-0</span></div>
+    <div class="result-chip pass"><b>ZERO EXIT</b><span>PASS</span></div>
+    <div class="result-chip pass"><b>توصية</b><span>READY_TO_REVIEW</span></div>
+    <div class="result-chip warn"><b>Branch protection</b><span>ADMIN MANUAL</span></div>
+  </div>
+
+  <h3>1) الهوية</h3>
+  <table>
+    <tr><th>Epic</th><td>B — Safety</td></tr>
+    <tr><th>الهدف</th><td>جاهزية بوابة CI الإلزامية بعد Soft CI (PR-001)</td></tr>
+    <tr><th>RK / EV</th><td>RK-060 · EV-140</td></tr>
+    <tr><th>ميزانية</th><td>CB-0 · BR-1 · CI governance فقط</td></tr>
+  </table>
+
+  <h3>2) الاستراتيجية</h3>
+  <ul style="font-size:.82rem">
+    <li>Workflow name: <code>CI</code> · check المطلوب: <strong>Analyze critical + Flutter tests</strong>.</li>
+    <li><code>docs/ci_required.md</code> يفرّق إعداد المستودع عن GitHub Settings.</li>
+    <li>Admin يفعّل Require status checks يدوياً — لا تزييف حماية من YAML.</li>
+  </ul>
+
+  <h3>3) التحقق</h3>
+  <table>
+    <tr><td>YAML</td><td><span class="badge ok">OK</span></td></tr>
+    <tr><td><code>analyze_critical</code> + <code>flutter test</code> محلياً</td><td><span class="badge ok">PASS</span></td></tr>
+    <tr><td>Branch protection مطبّقة من هذه الـ PR</td><td><span class="badge important">لا — يدوي</span></td></tr>
+  </table>
+
+  <h3>4) الميزانية</h3>
+  <table>
+    <tr><th>الملفات</th><td>3 / سقف 3</td></tr>
+    <tr><th>Runtime</th><td>0</td></tr>
+  </table>
+
+  <h3>5) مؤجّل</h3>
+  <ul style="font-size:.78rem;color:var(--muted)">
+    <li>Admin: تفعيل required check بعد أول تشغيل Actions على GitHub</li>
+  </ul>
+
+  <div class="callout ok"><strong>الحكم:</strong> READY_TO_REVIEW · WITHIN_BUDGET · Zero Exit PASS · BR-1.</div>
+</section>
+
+<section class="card" id="pr009">
+  <h2><span class="num">09</span> PR-009 — CRM Firestore Rules Hardening (Batch 1)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>9771a35</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>Collections:</strong> <code>sales</code> · <code>rentals</code> · <code>property_sales</code>. Helpers: <code>isCrmSalesParty</code> · <code>isRentalOwner</code> · <code>ownsLinkedProperty</code>.</p>
+  <h3>النموذج الأمني</h3>
+  <table>
+    <thead><tr><th>المجموعة</th><th>قبل</th><th>بعد</th><th>الملكية</th></tr></thead>
+    <tbody>
+      <tr><td><code>sales</code></td><td><code>authed()</code> R/W</td><td>طرف البيع + admin</td><td><code>isCrmSalesParty</code> (companyId/sellerId/ownerId/userId)</td></tr>
+      <tr><td><code>rentals</code></td><td><code>authed()</code> R/W</td><td>مالك الإيجار + admin</td><td><code>isRentalOwner</code></td></tr>
+      <tr><td><code>property_sales</code></td><td><code>authed()</code> R/W</td><td>مالك العقار المرتبط + admin</td><td><code>ownsLinkedProperty</code></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.78rem;color:var(--muted)">ملفات: <code>firestore.rules</code> + <code>test/firestore_rules/crm_batch1_rules.test.js</code>. ميزانية WITHIN · Zero Exit PASS · بلا نشر.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>9771a35</code> · بلا نشر Firebase.</div>
+</section>
+
+<section class="card" id="pr010">
+  <h2><span class="num">10</span> PR-010 — CRM Firestore Rules Hardening (Batch 2)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>710f97c</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+
+  <h3>قرار النطاق (نهائي)</h3>
+  <p style="font-size:.85rem">الخيار <strong>A</strong>: <code>rental_contracts</code> + <code>branches</code> + <code>businesses</code>. <code>property_contracts</code> نُفِّذ لاحقاً في PR-011.</p>
+
+  <h3>النموذج الأمني</h3>
+  <table>
+    <thead><tr><th>المجموعة</th><th>قبل</th><th>بعد</th><th>الملكية</th><th>تجميد</th></tr></thead>
+    <tbody>
+      <tr><td><code>rental_contracts</code></td><td><code>authed()</code> R/W</td><td>مالك العقار المرتبط + admin</td><td><code>ownsLinkedProperty</code></td><td><code>propertyId</code></td></tr>
+      <tr><td><code>branches</code></td><td><code>authed()</code> R/W</td><td>مالك الشركة + admin</td><td><code>companyId</code></td><td><code>companyId</code></td></tr>
+      <tr><td><code>businesses</code></td><td><code>authed()</code> R/W</td><td>مالك النشاط + admin</td><td><code>ownerId</code></td><td><code>ownerId</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>710f97c</code> · WITHIN_BUDGET · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr011">
+  <h2><span class="num">11</span> PR-011 — CRM Firestore Rules Hardening (Property Contracts)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>165b73d</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>المجموعة الوحيدة:</strong> <code>property_contracts</code>. الملكية عبر <code>ownsLinkedProperty</code> → <code>properties/{propertyId}.ownerId</code>. لا حقل مالك على المستند. <code>propertyId</code> ثابت عند تحديث غير الأدمن.</p>
+  <p style="font-size:.78rem;color:var(--muted)">ملفات: <code>firestore.rules</code> + <code>test/firestore_rules/crm_batch3_rules.test.js</code>. عزل index دون لمس WIP. Owner/admin/non-owner/unauth emulator scenarios ALL PASSED.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>165b73d</code> · WITHIN_BUDGET · PR-012 نُفّذ بعده · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr012">
+  <h2><span class="num">12</span> PR-012 — Spotlight Videos Write Ownership (RK-020)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>7e80133</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>المجموعة:</strong> <code>spotlight_videos</code> فقط. قراءة عامة محفوظة. كتابة: مالك عبر <code>userId</code> أو <code>sellerId</code> · تجميد الملكية · عدّادات <code>viewsCount</code>/<code>likesCount</code> لأي مستخدم مصادَق · أدمن update/delete.</p>
+  <p style="font-size:.78rem;color:var(--muted)">اختبارات: <code>test/firestore_rules/spotlight_videos_rules.test.js</code> · بلا Dart. تحقق لاحق للعدّادات: <strong>VERIFIED_NO_FIX_REQUIRED</strong> — الشرط داخل المساعد يتطلب <code>authed()</code> (ليست عدّادات عامة بلا مصادقة).</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>7e80133</code> · PR-013 نُفّذ بعده · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr013">
+  <h2><span class="num">13</span> PR-013 — Cars Admin Update Alignment (RK-037 · EV-092)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>e927adc</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+
+  <h3>الاكتشاف (قبل التنفيذ)</h3>
+  <table>
+    <thead><tr><th>المجموعة</th><th>update / delete</th><th>isAdmin؟</th></tr></thead>
+    <tbody>
+      <tr><td><code>cars</code> (قبل)</td><td><code>authed() && sellerId == uid</code> فقط</td><td>لا</td></tr>
+      <tr><td><code>properties</code> (مرجع)</td><td>admin أو مالك + <code>mayCreatePropertyListing…</code></td><td>نعم</td></tr>
+    </tbody>
+  </table>
+
+  <h3>قواعد بعد PR-013</h3>
+  <table>
+    <thead><tr><th>الإذن</th><th>القاعدة</th><th>تغيّر؟</th></tr></thead>
+    <tbody>
+      <tr><td>read</td><td><code>if true</code></td><td>لا</td></tr>
+      <tr><td>create</td><td>مالك + (admin أو mayCreateCar…)</td><td>لا</td></tr>
+      <tr><td>update</td><td><code>authed() && (isAdmin() || sellerId == uid)</code></td><td><strong>نعم</strong></td></tr>
+      <tr><td>delete</td><td><code>authed() && sellerId == uid</code> (بدون أدمن)</td><td>لا (نطاق update فقط)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Emulator</h3>
+  <ul style="font-size:.85rem">
+    <li>Owner update → PASS</li>
+    <li>Admin update → PASS</li>
+    <li>Non-owner update → DENY</li>
+    <li>Unauthenticated update → DENY</li>
+    <li>Owner create / owner delete → سلوك محفوظ PASS</li>
+    <li>Admin delete → DENY (خارج النطاق المعتمد)</li>
+  </ul>
+  <p style="font-size:.78rem;color:var(--muted)">ملفات: <code>firestore.rules</code> + <code>test/firestore_rules/cars_admin_update_rules.test.js</code> فقط. Parent = PR-012 (<code>7e80133</code>). CB-1 · BR-2 · بلا Dart · بلا نشر.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · WITHIN_BUDGET · Zero Exit PASS · PR-014…028 نُفّذت بعده · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr014">
+  <h2><span class="num">14</span> PR-014 — Remote Config Startup Optimization (RK-011)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>9d5b99f</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> تقصير مهلة RC + جعل الجلب غير حاجب لإقلاع التطبيق. ملفات: <code>remote_config_service.dart</code> · <code>main.dart</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>9d5b99f</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr015">
+  <h2><span class="num">15</span> PR-015 — Crashlytics + Global Error Tracking</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>880dbc8</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> تهيئة Crashlytics وتتبع أخطاء عالمي عند الإقلاع. ملفات: <code>main.dart</code> · <code>error_tracker.dart</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>880dbc8</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr016">
+  <h2><span class="num">16</span> PR-016 — CustomersProvider AuthState Sync</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>bedc066</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مزامنة <code>CustomersProvider</code> مع AuthState (ProxyProvider) · ملف واحد للمجال + ربط <code>main.dart</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>bedc066</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr017">
+  <h2><span class="num">17</span> PR-017 — SalesProvider AuthState Sync</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>ef0b934</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> نفس نمط المزامنة لـ <code>SalesProvider</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>ef0b934</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr018a">
+  <h2><span class="num">18a</span> PR-018a — RealEstateCustomersProvider AuthState Sync</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>4b34250</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مزامنة <code>RealEstateCustomersProvider</code> مع AuthState.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>4b34250</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr018b">
+  <h2><span class="num">18b</span> PR-018b — BranchesProvider AuthState Sync</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>f319f0f</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مزامنة <code>BranchesProvider</code> مع AuthState.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>f319f0f</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr019">
+  <h2><span class="num">19</span> PR-019 — RentalProvider AuthState Sync</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>30d87e2</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مزامنة <code>RentalProvider</code> — آخر حلقة Proxy sync في القطار.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>30d87e2</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr020">
+  <h2><span class="num">20</span> PR-020 — Cloudflare Image Upload Timeout</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>088cf41</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مهلة HTTP لرفع الصور عبر Cloudflare Images Service — ملف واحد.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>088cf41</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr021">
+  <h2><span class="num">21</span> PR-021 — WhatsApp Lease Expiry Reliability</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>cfa197f</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>D Reliability</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> موثوقية انتهاء lease واتساب + idempotency. ملفات: <code>functions/whatsapp/webhook.js</code> · <code>idempotency.js</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>cfa197f</code> · WITHIN · بلا نشر Functions.</div>
+</section>
+
+<section class="card" id="pr022">
+  <h2><span class="num">22</span> PR-022 — Bounded Car Fetch (MAP_BOUNDED_FETCH)</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>1096175</span></div>
+    <div class="result-chip pass"><b>FLAG</b><span>OFF default</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> علم <code>MAP_BOUNDED_FETCH</code> + <code>.limit(500)</code> على <code>CarService.getCars</code> · توثيق cardinality. Epic E شريحة 1.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>1096175</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr023">
+  <h2><span class="num">23</span> PR-023 — Bounded Property Fetch</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>1bf727b</span></div>
+    <div class="result-chip pass"><b>FLAG</b><span>MAP_BOUNDED_FETCH</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> نفس الحد على <code>PropertyService.getProperties</code> خلف العلم نفسه.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>1bf727b</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr024">
+  <h2><span class="num">24</span> PR-024 — Map Empty vs Load Failure UI</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>e50325f</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>E Smart Map</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> تمييز واجهة «لا نتائج» عن «فشل التحميل» في <code>main_map_screen.dart</code>.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>e50325f</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr025a">
+  <h2><span class="num">25A</span> PR-025A — Upload Drafts Firestore Rules</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>0ca3ef2</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>ALL PASSED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> قواعد <code>upload_drafts</code> + <code>test/firestore_rules/upload_drafts_rules.test.js</code> — prerequisite لـ PR-025.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>0ca3ef2</code> · WITHIN · بلا نشر rules.</div>
+</section>
+
+<section class="card" id="pr025">
+  <h2><span class="num">25</span> PR-025 — Optional Upload Draft Outbox</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>bf5e0a1</span></div>
+    <div class="result-chip pass"><b>FLAG</b><span>UPLOAD_OUTBOX OFF</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> outbox اختياري في <code>CloudflareImagesService</code> خلف <code>UPLOAD_OUTBOX</code> (افتراضي false).</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>bf5e0a1</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr026">
+  <h2><span class="num">26</span> PR-026 — Runtime Telemetry Counters</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>4104f86</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+    <div class="result-chip pass"><b>EPIC</b><span>F Closeout</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> <code>telemetry.map_fetch</code> · <code>telemetry.permission_denied</code> → <code>security_logs</code> + مؤشرات في monitoring hub. ملفات: monitoring + car/property services.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>4104f86</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr027">
+  <h2><span class="num">27</span> PR-027 — Tenant Revalidation for Sensitive Operations</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>3bb88ab</span></div>
+    <div class="result-chip pass"><b>FLAG</b><span>TENANT_REVALIDATE</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> إعادة تحقق خفيفة لحالة tenant في <code>public_storefront_screen.dart</code> عند Resume / Navigation / عمليات حسّاسة فقط — بلا AuthState rewrite · بلا polling · بلا listeners دائمة.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>3bb88ab</code> · WITHIN · READY_FOR_PR028 · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr028">
+  <h2><span class="num">28</span> PR-028 — Firestore Rules Tests in CI</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>f291cf5</span></div>
+    <div class="result-chip pass"><b>EMULATOR</b><span>6/6 PASS</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> job <code>Firestore Rules Emulator Tests</code> في <code>.github/workflows/ci.yml</code> + <code>tool/run_firestore_rules_tests.sh</code>. يشغّل كل <code>test/firestore_rules/*.test.js</code>. فشل أي اختبار يكسر CI. لا deploy.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>f291cf5</code> · WITHIN · READY_FOR_PR029 · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr029">
+  <h2><span class="num">29</span> PR-029 — Firebase Staging Environment Selection</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>STATUS</b><span>COMMITTED</span></div>
+    <div class="result-chip pass"><b>SHA</b><span>e0da423</span></div>
+    <div class="result-chip pass"><b>STAGING</b><span>mastermax-2030-staging</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem"><strong>ماذا:</strong> مشروع Staging حقيقي · تطبيقات Android/iOS/Web · <code>lib/firebase_options_staging.dart</code> · <code>USE_STAGING</code> (افتراضي false) · بلا overwrite لخيارات الإنتاج.</p>
+  <div class="callout ok"><strong>الحكم:</strong> COMMITTED · SHA <code>e0da423</code> · WITHIN · بلا نشر.</div>
+</section>
+
+<section class="card" id="pr030">
+  <h2><span class="num">30</span> PR-030 — Conditional GO Documentation / Gate Assessment (RK-073)</h2>
+  <div class="result-grid">
+    <div class="result-chip warn"><b>STATUS</b><span>DOCUMENTED</span></div>
+    <div class="result-chip bad"><b>CONDITIONAL</b><span>NOT READY</span></div>
+    <div class="result-chip pass"><b>RUNTIME</b><span>UNCHANGED</span></div>
+    <div class="result-chip pass"><b>DEPLOY</b><span>NONE</span></div>
+  </div>
+  <p style="font-size:.85rem">تقييم البوابات من <strong>git HEAD</strong> فقط. التفاصيل: <a href="conditional_go_gate_pr030.md" style="color:var(--p2)"><code>docs/conditional_go_gate_pr030.md</code></a>.</p>
+  <h3>بوابات (ملخص)</h3>
+  <table>
+    <thead><tr><th>البوابة</th><th>النتيجة</th></tr></thead>
+    <tbody>
+      <tr><td>Security PR-009…013</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>CI workflow + Rules emulator tests</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>Reliability 014…021 · Map 022…024 · Closeout 025…029</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>CI branch-protection required</td><td><span class="badge bad">FAIL</span> — يدوي / غير مثبت من git</td></tr>
+      <tr><td>PR-005 Maps key out of source (HEAD)</td><td><span class="badge bad">FAIL</span> — fallback ثابت ما زال على HEAD</td></tr>
+      <tr><td>PR-006 Release signing (HEAD)</td><td><span class="badge bad">FAIL</span> — release→debug على HEAD</td></tr>
+      <tr><td>PR-007 DR + restore drill</td><td><span class="badge bad">FAIL</span> — وثيقة غير committed · لا drill</td></tr>
+      <tr><td>Protect PR-001…004 committed package</td><td><span class="badge bad">FAIL</span> — WIP غير ملتزم كقطار Protect</td></tr>
+    </tbody>
+  </table>
+  <div class="callout dead"><strong>الحكم:</strong> <strong>NOT READY</strong> لإعلان Conditional GO · Commercial يبقى NO-GO · Foundation PR-009…029 ملتزم.</div>
+</section>
+
+<section class="card" id="sme">
+  <h2><span class="num">◎</span> Smart Map Engine — تسجيل تقنية أساسية</h2>
+  <div class="result-grid">
+    <div class="result-chip pass"><b>MODE</b><span>SLICE 1 DONE</span></div>
+    <div class="result-chip pass"><b>Epic</b><span>E</span></div>
+    <div class="result-chip pass"><b>Status</b><span>PR-022…024 COMMITTED</span></div>
+    <div class="result-chip warn"><b>Flag</b><span>MAP_BOUNDED_FETCH OFF</span></div>
+  </div>
+
+  <h3>وصف للمستثمر (غير تقني)</h3>
+  <p style="font-size:.85rem"><strong>Smart Map Engine</strong> — تقنية خريطة ذكية تنظّم تلقائياً ما يراه المستخدم على الخريطة، وتعرض فقط أقرب النتائج وأكثرها صلة بدل ازدحام الخريطة بآلاف الإعلانات. النتيجة: تجربة أنظف وأسرع وأكثر احترافية.</p>
+
+  <h3>الشريحة الأولى (منفّذة)</h3>
+  <table>
+    <tr><th>PR-022</th><td>Bounded car fetch خلف علم · SHA <code>1096175</code></td></tr>
+    <tr><th>PR-023</th><td>Bounded property fetch · SHA <code>1bf727b</code></td></tr>
+    <tr><th>PR-024</th><td>Empty vs load-failure UI · SHA <code>e50325f</code></td></tr>
+  </table>
+  <div class="callout ok"><strong>تأكيد:</strong> الشريحة الأولى ملتزمة · العلم OFF افتراضياً · توسّع لاحق حسب القياس.</div>
+  <p style="font-size:.75rem">التفاصيل في MEP: <a href="dar_car_master_execution_plan_portal.html#epic-e-sme" style="color:var(--p2)">dar_car_master_execution_plan_portal.html#epic-e-sme</a>.</p>
+</section>
+
+<section class="card" id="exec-next">
+  <h2><span class="num">→</span> الحوكمة بعد PR-030</h2>
+  <div class="flow">PR-009…PR-029 COMMITTED · HEAD <code>e0da423</code>
+    ↓
+PR-030: Conditional GO = <strong>NOT READY</strong> (توثيق بوابة)
+    ↓
+أغلق حواجز Protect/Safety على git: PR-005 · PR-006 · PR-007 (+ Protect docs)
+    ↓
+Admin: تفعيل required CI على GitHub
+    ↓
+ثم فقط: وثيقة لاحقة تقلب RK-073 → Conditional GO
+    ↓
+Full / Commercial GO ما زال مغلقاً</div>
+  <div class="callout warn">لا إعلان Pilot مشروط قبل إغلاق الحواجز أعلاه. راجع <a href="conditional_go_gate_pr030.md" style="color:var(--p2)">conditional_go_gate_pr030.md</a>.</div>
+</section>
+
+<section class="card" id="s1">
+  <h2><span class="num">1</span> الملخص التنفيذي</h2>
+  <p>دار كار منصة Flutter + Firebase متعددة الأسطح (سيارات + عقارات + خريطة + Spotlight + متجر + إدارة). الحالة التجارية الحالية: <strong>NO-GO</strong> لإنتاج عام. بعد PR-030: قطار Foundation <strong>PR-009…029 ملتزم</strong>، لكن <strong>Conditional GO = NOT READY</strong> حتى إغلاق حواجز Protect/Safety على HEAD (انظر <a href="#pr030">PR-030</a>).</p>
+  <p>Phase 0 يجمّد <strong>ما هو المنتج</strong>، <strong>ما أُجّل عمداً</strong>، <strong>ما يجوز للمعالجة لمسه</strong>، و<strong>كيف تسير مسارات العمل دون تصادم</strong>. عمل المستثمر (هوية خضراء، ثيم موحّد، إعلانات) يُجدول <strong>بعد</strong> سلامة الإنتاج + أمن Conditional — وليس كإصلاح أخطاء.</p>
+  <div class="callout">
+    <strong>قاعدة الدستور:</strong> المعالجة تتبع Master Execution Plan Epics A→F / PR-001…030.
+    توسّع الميزات لا يشارك PR مع Security Rules أو Auth أو تصلّب تحميل الخريطة.
+  </div>
+  <div class="callout dead">
+    <strong>قانون غير قابل للتجاوز:</strong>
+    <a href="#s15" style="color:#fecaca;font-weight:800">Zero Exit Gate (§15)</a>
+    — بعد كل مرحلة: تحليل حرج / تحذير / معلومات. الانتقال ممنوع ما دام Critical &gt; 0 أو Warnings داخل نطاق المرحلة &gt; 0.
+  </div>
+  <div class="callout ok">المدخلات المقبولة: تدقيق الإنتاج · Blueprint · EV · RK · Master Execution Plan. هذا الدستور لا يعيد اكتشاف المشاكل.</div>
+</section>
+
+<section class="card" id="s2">
+  <h2><span class="num">2</span> تجميد نطاق المشروع</h2>
+  <div class="toolbar">
+    <label>الحالة</label>
+    <select id="scopeStatus" onchange="filterScope()">
+      <option value="all">الكل</option>
+      <option value="active">ACTIVE</option>
+      <option value="ready">READY</option>
+      <option value="progress">IN PROGRESS</option>
+      <option value="deferred">DEFERRED</option>
+      <option value="disabled">DISABLED</option>
+      <option value="experimental">EXPERIMENTAL</option>
+    </select>
+    <label>بحث</label>
+    <input type="search" id="scopeSearch" placeholder="ميزة…" oninput="filterScope()" />
+    <span id="scopeCount" style="font-size:.68rem;color:var(--muted)"></span>
+  </div>
+  <div class="legend">
+    <span class="badge active">ACTIVE</span>
+    <span class="badge ready">READY</span>
+    <span class="badge progress">IN PROGRESS</span>
+    <span class="badge deferred">DEFERRED</span>
+    <span class="badge disabled">DISABLED</span>
+    <span class="badge experimental">EXPERIMENTAL</span>
+  </div>
+  <table class="scroll-x" id="scopeTable">
+    <thead><tr><th>المجال / الميزة</th><th>الحالة</th><th>ملاحظات</th></tr></thead>
+    <tbody>
+<tr data-status="active"><td>تطبيق الجوال (lib/main.dart)</td><td><span class="badge active">ACTIVE</span></td><td>السطح الأساسي للمستهلك</td></tr><tr data-status="active"><td>ويب العقارات (lib/web)</td><td><span class="badge active">ACTIVE</span></td><td>هدف الاستضافة realestate</td></tr><tr data-status="active"><td>ويب السيارات / لوحة التاجر (lib/car_web)</td><td><span class="badge active">ACTIVE</span></td><td>هدف الاستضافة car</td></tr><tr data-status="active"><td>لوحة الإدارة (lib/admin_web)</td><td><span class="badge active">ACTIVE</span></td><td>هدف الاستضافة admin</td></tr><tr data-status="active"><td>المصادقة (هاتف / هجين / تفعيل)</td><td><span class="badge active">ACTIVE</span></td><td>أساسي · نصف قطر انفجار عالٍ</td></tr><tr data-status="active"><td>الخريطة الرئيسية + الفلاتر</td><td><span class="badge active">ACTIVE</span></td><td>حرج أداءً (RK-018/026)</td></tr><tr data-status="active"><td>سيارات — CRUD</td><td><span class="badge active">ACTIVE</span></td><td></td></tr><tr data-status="active"><td>عقارات / إيجارات</td><td><span class="badge active">ACTIVE</span></td><td></td></tr><tr data-status="active"><td>المفضلة</td><td><span class="badge active">ACTIVE</span></td><td></td></tr><tr data-status="ready"><td>الدردشة</td><td><span class="badge ready">READY / ACTIVE</span></td><td>علم enableChatFeature=true</td></tr><tr data-status="active"><td>Spotlight — فيديو</td><td><span class="badge active">ACTIVE</span></td><td>أمان P0 على الكتابة (RK-020)</td></tr><tr data-status="active"><td>Dynamic listing overlay</td><td><span class="badge active">ACTIVE</span></td><td>enableDynamicListingOverlay</td></tr><tr data-status="progress"><td>متجر متعدد المستأجرين</td><td><span class="badge progress">ACTIVE / IN PROGRESS</span></td><td>Tenants + visit/walk</td></tr><tr data-status="active"><td>زيارة سينمائية للمتجر</td><td><span class="badge active">ACTIVE</span></td><td>العلم مفعّل</td></tr><tr data-status="experimental"><td>جولة صالة افتراضية</td><td><span class="badge experimental">ACTIVE / EXPERIMENTAL</span></td><td>العلم مفعّل · صقل منتج</td></tr><tr data-status="experimental"><td>مشاريع عقارية سينمائية</td><td><span class="badge experimental">ACTIVE / EXPERIMENTAL</span></td><td>العلم مفعّل</td></tr><tr data-status="progress"><td>مساعد الذكاء الاصطناعي</td><td><span class="badge progress">IN PROGRESS</span></td><td>Backend موجود · نضج المنتج متفاوت</td></tr><tr data-status="disabled"><td>WhatsApp (مستهلك / بوت / أعمال)</td><td><span class="badge disabled">DISABLED</span></td><td>أعلام AppConfig = false صراحةً</td></tr><tr data-status="disabled"><td>شاشة الكاميرا الاحترافية</td><td><span class="badge disabled">DISABLED</span></td><td>إعادة تصميم معلّقة · مسار Spotlight منفصل</td></tr><tr data-status="active"><td>الإشعارات / FCM</td><td><span class="badge active">ACTIVE</span></td><td>جوال · تكافؤ الويب مؤجّل (RK-039)</td></tr><tr data-status="active"><td>CRM (مبيعات، إيجار، عقود، فروع، عملاء)</td><td><span class="badge active">ACTIVE</span></td><td>مخاطر قواعد RK-036 — معالجة تسلسلية</td></tr><tr data-status="active"><td>التحقق / المستندات</td><td><span class="badge active">ACTIVE</span></td><td></td></tr><tr data-status="active"><td>قانوني / عهدة المنصة</td><td><span class="badge active">ACTIVE</span></td><td>Admin + rules</td></tr><tr data-status="progress"><td>مراقبة / تحليلات إدارية</td><td><span class="badge progress">ACTIVE / IN PROGRESS</span></td><td></td></tr><tr data-status="deferred"><td>إعلانات مميزة / داخل التطبيق</td><td><span class="badge deferred">DEFERRED / PLANNING</span></td><td>بوابة مواصفات موجودة · ليست منصة إنتاج</td></tr><tr data-status="deferred"><td>بوابة دفع (PSP بطاقة)</td><td><span class="badge deferred">DEFERRED</span></td><td>تحويلات بنكية / خطط دفع كبيانات — ليست PSP كاملة</td></tr><tr data-status="deferred"><td>سوق / شبكة بائعين طرف ثالث</td><td><span class="badge deferred">DEFERRED</span></td><td>قرار أعمال</td></tr><tr data-status="deferred"><td>تكاملات حكومية</td><td><span class="badge deferred">DEFERRED</span></td><td>لا عقد في المستودع (RK-009)</td></tr><tr data-status="deferred"><td>IntentCore / Smart Intent</td><td><span class="badge deferred">EXPERIMENTAL / DEFERRED</span></td><td>مواصفات فقط</td></tr><tr data-status="deferred"><td>هياكل ميزات فارغة</td><td><span class="badge deferred">DEFERRED</span></td><td>ليست أخطاء (RK-008)</td></tr><tr data-status="deferred"><td>server/ ASP.NET</td><td><span class="badge deferred">DEFERRED</span></td><td>فارغ تقريباً (EV-010/018)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="card" id="s3">
+  <h2><span class="num">3</span> سجل الميزات المؤجّلة</h2>
+  <div class="callout warn"><strong>ليست أخطاء.</strong> قرارات أعمال مقصودة — لا تُعامل كعيوب إنتاج.</div>
+  <div class="toolbar">
+    <label>الأهمية</label>
+    <select id="defTier" onchange="filterDeferred()">
+      <option value="all">الكل</option>
+      <option value="critical">Critical path</option>
+      <option value="important">Important</option>
+      <option value="future">Future</option>
+    </select>
+  </div>
+  <table class="scroll-x" id="deferredTable">
+    <thead><tr><th>الميزة</th><th>لماذا مؤجّلة</th><th>المالك</th><th>المرحلة المستقبلية</th><th>ليست خطأ؟</th></tr></thead>
+    <tbody>
+<tr data-tier="critical"><td>بوابة دفع بالبطاقة</td><td>Commercial PSP + امتثال غير ملتزم</td><td>Product + Finance</td><td>بعد Commercial GO</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="important"><td>منصة إعلانات كاملة</td><td>مسار مستثمر · يحتاج هوية + سياسة مخزون</td><td>Product + Growth</td><td>بعد Conditional GO</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="future"><td>شبكة Marketplace</td><td>ثقة + KYC + تسوية</td><td>Product</td><td>توسّع مستقبلي</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="future"><td>APIs حكومية / وزارية</td><td>لا عقد حي · تكامل ASP.NET غائب</td><td>Partnerships</td><td>توسّع مستقبلي</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="important"><td>WhatsApp بوت/مركز حي</td><td>معطّل مؤقتاً لإعادة تصميم/تشغيل</td><td>Product + Ops</td><td>Epic Reliability أو مرحلة WA</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="future"><td>واجهة كاميرا احترافية</td><td>إيقاف إعادة تصميم صريح</td><td>Design + Mobile</td><td>بعد استقرار Spotlight</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="future"><td>IntentCore / توسّع AI</td><td>مواصفات فقط · تجنّب SSOT مزدوج</td><td>AI lead</td><td>بعد صيانة المعمارية</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="important"><td>مشروع Firebase staging</td><td>قرار بنية تحتية معلّق (RK-001)</td><td>Platform</td><td>Epic B / PR-029</td><td><span class="badge ok">نعم</span></td></tr><tr data-tier="future"><td>تكافؤ FCM/RC للويب</td><td>فجوة مقبولة عمداً (RK-039)</td><td>Platform</td><td>تكافؤ لاحق</td><td><span class="badge ok">نعم</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="card" id="s4">
+  <h2><span class="num">4</span> خارج النطاق (خلال برنامج المعالجة حتى Conditional GO)</h2>
+  <p style="font-size:.78rem;color:var(--muted)">ما لم يملك سطح العمل رقم PR صريح.</p>
+  <table class="scroll-x">
+    <thead><tr><th>البند</th><th>السبب</th><th>المالك</th><th>المرحلة</th><th>التبعية</th><th>خطر التعديل الآن</th></tr></thead>
+    <tbody>
+<tr><td>بناء تحقيق أرباح إعلانية كامل</td><td>مسار مستثمر · يتعارض مع سلامة/أمن</td><td>Growth</td><td>ميزات المستثمر</td><td>هوية العلامة</td><td>انفجار نطاق</td></tr><tr><td>تكامل Payment PSP</td><td>امتثال + أسرار</td><td>Finance</td><td>بعد GO</td><td>بيانات بنكية</td><td>فوضى PCI</td></tr><tr><td>توسّع Marketplace</td><td>نموذج أعمال</td><td>Product</td><td>توسّع مستقبلي</td><td>Auth + قوائم</td><td>مخزون نصف مكتمل</td></tr><tr><td>تكاملات حكومية</td><td>لا عقد</td><td>Partnerships</td><td>توسّع مستقبلي</td><td>APIs خارجية</td><td>كود ميت</td></tr><tr><td>إعادة كتابة معمارية واسعة</td><td>Blueprint يقول لاحقاً (P7)</td><td>Architecture</td><td>مرحلة المعمارية</td><td>كل الخدمات</td><td>انحدار جماعي</td></tr><tr><td>تجديد Theme مع Security</td><td>مصفوفة تعارض</td><td>Design</td><td>مستثمر / Brand</td><td>رموز UI</td><td>فروقات غير قابلة للمراجعة</td></tr><tr><td>إعادة تفعيل WhatsApp بلا lease</td><td>معطّل بالسياسة</td><td>Ops</td><td>بعد WA lease PR</td><td>Functions WA</td><td>سبام / حصة</td></tr><tr><td>بناء ASP.NET / server/</td><td>فارغ · ليس معالجة</td><td>Backend مستقبلي</td><td>توسّع</td><td>—</td><td>تشتيت</td></tr><tr><td>البوابات المواصفية كمهام تنفيذ</td><td>Docs ≠ أخطاء backlog</td><td>Docs</td><td>حسب الموافقة</td><td>—</td><td>سرعة وهمية</td></tr><tr><td>كود Mira غير ذي صلة</td><td>منتج مختلف</td><td>—</td><td>—</td><td>—</td><td>تلوث</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="card" id="s5">
+  <h2><span class="num">5</span> المكوّنات المحمية</h2>
+  <table>
+    <thead><tr><th>الفئة</th><th>الأصول المحمية</th></tr></thead>
+    <tbody><tr><td><strong>نقاط الدخول</strong></td><td><code>lib/main.dart · lib/web/web_main.dart · lib/car_web/car_web_main.dart · lib/admin_web/admin_main.dart</code></td></tr><tr><td><strong>المصادقة</strong></td><td><code>lib/src/features/auth/** · hybrid auth Functions · phone OTP</code></td></tr><tr><td><strong>قواعد الأمان</strong></td><td><code>firestore.rules · storage.rules · firestore.indexes.json</code></td></tr><tr><td><strong>الخريطة</strong></td><td><code>lib/src/features/map/** · Maps bootstrap · Places keys</code></td></tr><tr><td><strong>قلب القوائم</strong></td><td><code>خدمات/مزودات cars و properties</code></td></tr><tr><td><strong>Spotlight</strong></td><td><code>spotlight + video · قواعد spotlight_videos</code></td></tr><tr><td><strong>المتجر / المستأجرون</strong></td><td><code>storefront/** · tenants rules · redirects</code></td></tr><tr><td><strong>مسارات امتياز Admin</strong></td><td><code>lib/admin_web/** · audit logs</code></td></tr><tr><td><strong>Functions</strong></td><td><code>functions/index.js · whatsapp/** · assistant/** · account_activation/** · admin_hybrid_auth.js</code></td></tr><tr><td><strong>الإعدادات / الأعلام</strong></td><td><code>app_config.dart · Remote Config · dart-defines</code></td></tr><tr><td><strong>مشروع Firebase</strong></td><td><code>.firebaserc → هوية الإنتاج (لا إعادة توجيه صامتة)</code></td></tr><tr><td><strong>CI / الإصدار</strong></td><td><code>التوقيع · أهداف hosting في firebase.json</code></td></tr></tbody>
+  </table>
+</section>
+
+<section class="card" id="s6">
+  <h2><span class="num">6</span> حدود التنفيذ</h2>
+  <h3>يُسمح للمهندسين بتعديل (ضمن PR مملوك)</h3>
+  <ul style="font-size:.8rem;margin:.3rem 0;padding-inline-start:1.2rem">
+    <li>الأسطح المذكورة في نصف قطر انفجار ذلك الـ PR فقط</li>
+    <li>اختبارات، خطافات مراقبة، أعلام ميزات <strong>للخطر المملوك</strong></li>
+    <li>توثيق مرتبط بالـ PR</li>
+    <li>عمل ميزات موازٍ على وحدات مملوكة <strong>غير متعارضة</strong> — لا تخلط مع PRs أمنية تسلسلية</li>
+  </ul>
+  <h3>يُمنع التعديل (بدون ملكية PR + مراجعة مزدوجة)</h3>
+  <ul style="font-size:.8rem;margin:.3rem 0;padding-inline-start:1.2rem">
+    <li><code>firestore.rules</code> خارج PR أمني للقواعد فقط</li>
+    <li>Auth + Routing معاً</li>
+    <li>رموز Theme/Brand أثناء تصلّب الإنتاج / الأمن</li>
+    <li>مجال الدفع أثناء التصلّب</li>
+    <li>أعلام تفعيل WhatsApp بشكل عابر</li>
+    <li>مسار تحميل الخريطة غير المحدود مع شحن ثيم UI</li>
+    <li>مجموعات قواعد CRM متعددة في PR واحد</li>
+  </ul>
+  <div class="callout dead">
+    <strong>مجلدات عالية الحذر:</strong>
+    <code>functions/whatsapp/**</code> بلا ملكية epic WA ·
+    <code>android/</code> / <code>ios/</code> توقيع بلا Release PR ·
+    تنظيف هياكل فارغة بلا PR لنطاق RK-008
+  </div>
+</section>
+
+<section class="card" id="s7">
+  <h2><span class="num">7</span> خط أساس المستودع</h2>
+  <table>
+    <thead><tr><th>البُعد</th><th>الخط الأساس (EV + تحقق)</th></tr></thead>
+    <tbody><tr><td>حجم المستودع</td><td>~2.5G (يشمل build/node)</td></tr><tr><td>ملفات Dart في lib/</td><td>~793 (EV-003)</td></tr><tr><td>إصدار التطبيق</td><td>7.0.0</td></tr><tr><td>أسطح Flutter</td><td>Mobile · RE web · Car web · Admin web (EV-001)</td></tr><tr><td>وحدات الميزات</td><td>auth, map, cars, properties, spotlight, storefront, chat, cinematic, assistant, CRM, legal, monitoring…</td></tr><tr><td>الحالة</td><td>provider (EV-011) · بلا melos/packages (EV-004)</td></tr><tr><td>Backend</td><td>mastermax-2030-backend · Assistant + WhatsApp + activation + hybrid auth (EV-009)</td></tr><tr><td>Hosting</td><td>admin / realestate / car (EV-020)</td></tr><tr><td>Firestore</td><td>users, cars, properties, tenants, spotlight_*, CRM, chat, activation… (EV-013)</td></tr><tr><td>Storage</td><td>storage.rules · مسار Cloudflare media</td></tr><tr><td>أطراف ثالثة</td><td>Firebase · Google Maps · Cloudflare · Meta WA (معطّل) · FCM</td></tr><tr><td>أعلام الميزات</td><td>AppConfig.enable* + Remote Config + MAP_HOME_SHEET_V2</td></tr><tr><td>الاختبارات</td><td>~6 ملفات (EV-006) — يجب إضافة لا افتراض</td></tr><tr><td>CI</td><td>غائب عند التدقيق (EV-005/RK-002) — PR-001</td></tr><tr><td>README</td><td>قالب غير تشغيلي (EV-014)</td></tr></tbody>
+  </table>
+</section>
+
+<section class="card" id="s8">
+  <h2><span class="num">8</span> خريطة التبعيات (الحرجة فقط)</h2>
+  <div class="flow">Flutter apps (mobile / web / car_web / admin_web)
+    ↓
+Providers (Auth, Map, Cars, Properties, Video, Chat, CRM, …)
+    ↓
+Services (direct Firebase; no repository layer — EV-008)
+    ↓
+Firebase Auth + Firestore + Storage + Remote Config + FCM
+    ↓
+Cloud Functions (assistant, whatsapp, activation, hybrid auth, media)
+    ↓
+Cloudflare media · Google Maps · (optional Meta WA)
+    ↑
+Admin web (privileged reads/writes; audit logs)</div>
+  <div class="callout cyan" style="margin-top:.7rem">
+    <strong>حواف حرجة:</strong> Auth → كل المزودات · Map → استعلامات cars/properties غير محدودة ·
+    Spotlight → rules + daily_views · Storefront → tenants · Functions → أسرار الهاتف/WA/المساعد.
+  </div>
+</section>
+
+<section class="card" id="s9">
+  <h2><span class="num">9</span> مصفوفة التعارض</h2>
+  <div class="toolbar">
+    <label>مستوى الصف</label>
+    <select id="conflictLevel" onchange="filterConflict()">
+      <option value="all">الكل</option>
+      <option value="critical">حرج (فيه NO/Serial)</option>
+      <option value="important">مهم (Avoid)</option>
+      <option value="ok">أخف</option>
+    </select>
+  </div>
+  <table class="scroll-x" id="conflictTable">
+    <thead><tr><th>A ↓ / B →</th><th>Security Rules</th><th>Auth</th><th>Map / listings</th><th>Theme / Brand</th><th>Ads</th><th>Payment</th><th>WhatsApp</th><th>Functions</th><th>Routing / Nav</th></tr></thead>
+    <tbody>
+<tr data-level="critical"><td><strong>Security Rules</strong></td><td class="matrix-cell self">—</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Observe</td><td class="matrix-cell no">NO</td></tr><tr data-level="critical"><td><strong>Auth</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell self">—</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Careful</td><td class="matrix-cell no">NO</td></tr><tr data-level="critical"><td><strong>Map / listings</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell self">—</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell avoid">Avoid</td></tr><tr data-level="critical"><td><strong>Theme / Brand</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell self">—</td><td class="matrix-cell ok">After</td><td class="matrix-cell no">NO</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell avoid">Careful</td></tr><tr data-level="critical"><td><strong>Ads</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell ok">After</td><td class="matrix-cell self">—</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell avoid">Careful</td></tr><tr data-level="critical"><td><strong>Payment</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell ok">OK</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell self">—</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td></tr><tr data-level="critical"><td><strong>WhatsApp enable</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell no">NO</td><td class="matrix-cell self">—</td><td class="matrix-cell no">Serial</td><td class="matrix-cell avoid">Avoid</td></tr><tr data-level="critical"><td><strong>Functions</strong></td><td class="matrix-cell avoid">Observe</td><td class="matrix-cell avoid">Careful</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell ok">OK</td><td class="matrix-cell ok">OK</td><td class="matrix-cell no">NO</td><td class="matrix-cell no">Serial</td><td class="matrix-cell self">—</td><td class="matrix-cell ok">OK</td></tr><tr data-level="critical"><td><strong>Routing / Nav</strong></td><td class="matrix-cell no">NO</td><td class="matrix-cell no">NO</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell avoid">Careful</td><td class="matrix-cell avoid">Careful</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell avoid">Avoid</td><td class="matrix-cell ok">OK</td><td class="matrix-cell self">—</td></tr>
+    </tbody>
+  </table>
+  <h3>قواعد صلبة (الدستور)</h3>
+  <ol style="font-size:.8rem;padding-inline-start:1.2rem">
+    <li>لا تغيّر <strong>Security Rules</strong> و<strong>Maps</strong> في نفس الـ PR.</li>
+    <li>لا تغيّر <strong>Firestore Rules</strong> و<strong>Functions</strong> في نفس الـ PR.</li>
+    <li>لا تغيّر <strong>Routing</strong> و<strong>Authentication</strong> معاً.</li>
+    <li>لا تغيّر <strong>Theme</strong> أثناء إصلاح <strong>Security</strong>.</li>
+    <li>لا تغيّر <strong>Payment</strong> أثناء <strong>Production Hardening</strong>.</li>
+    <li>PRs قواعد الأمن <strong>تسلسلية</strong> مع نوافذ مراقبة (Blueprint / Master Plan).</li>
+  </ol>
+</section>
+
+<section class="card" id="s10">
+  <h2><span class="num">10</span> مسارات العمل المستقلة (A–H)</h2>
+  <div class="toolbar">
+    <label>المسار</label>
+    <select id="wsFilter" onchange="filterWS()">
+      <option value="all">الكل</option>
+      <option value="a">A · Safety</option>
+      <option value="b">B · Security</option>
+      <option value="c">C · Brand</option>
+      <option value="d">D · Ads</option>
+      <option value="e">E · Performance</option>
+      <option value="f">F · Architecture</option>
+      <option value="g">G · Reliability</option>
+      <option value="h">H · Future</option>
+    </select>
+  </div>
+<div class="ws-card" data-ws="a">
+  <h4><span class="badge active">WS-A</span> Production Safety</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Epic A/B · RK-001/002/003</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> —</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> مصداقية Conditional</div>
+  </div>
+</div><div class="ws-card" data-ws="b">
+  <h4><span class="badge active">WS-B</span> Security (قواعد CRM، Spotlight write، admin)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Epic C · RK-020/036/037</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> A soft (CI)</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> Conditional GO</div>
+  </div>
+</div><div class="ws-card" data-ws="c">
+  <h4><span class="badge active">WS-C</span> Brand / Theme (هوية خضراء، tokens موحّدة)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Investor</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> Conditional GO مفضّل</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> اتساق UX الإعلانات</div>
+  </div>
+</div><div class="ws-card" data-ws="d">
+  <h4><span class="badge active">WS-D</span> منصة الإعلانات</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Investor</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> C + سياسة مخزون</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> تجارب إيراد</div>
+  </div>
+</div><div class="ws-card" data-ws="e">
+  <h4><span class="badge active">WS-E</span> Smart Map Engine (خريطة ذكية · حدود · viewport · ترتيب · clutter)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Epic E · Smart Map Engine · RK-018/026</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> Security أولاً · ثم Reliability · قياس N (PR-004)</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> توسّع كثافة الخريطة / Full GO قياس</div>
+    <div><strong style="color:#fbbf24">الحالة:</strong> Planned · Not Started · Priority High</div>
+  </div>
+</div><div class="ws-card" data-ws="f">
+  <h4><span class="badge active">WS-F</span> المعمارية (repos، modularization)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> P7 Blueprint</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> بعد Conditional؛ تجنّب أثناء B</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> سرعة طويلة</div>
+  </div>
+</div><div class="ws-card" data-ws="g">
+  <h4><span class="badge active">WS-G</span> الموثوقية (RC، Crashlytics، Proxy)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Epic D · RK-011/012/015</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> A</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> الاستقرار</div>
+  </div>
+</div><div class="ws-card" data-ws="h">
+  <h4><span class="badge active">WS-H</span> توسّع مستقبلي (PSP، gov، marketplace، WA)</h4>
+  <div style="font-size:.72rem;color:var(--muted)">
+    <div><strong style="color:#a7f3d0">RK/Epic:</strong> Deferred register</div>
+    <div><strong style="color:#a7f3d0">يعتمد على:</strong> Commercial GO</div>
+    <div><strong style="color:#a7f3d0">يحجب:</strong> —</div>
+  </div>
+</div>
+  <div class="callout">
+    <strong>التوازي:</strong> A ∥ E(جزئي) ∥ G مسموح إذا كانت مصفوفة التعارض خضراء.
+    <strong>B تسلسلي.</strong> C/D بعد Conditional. F ليس أثناء B.
+  </div>
+</section>
+
+<section class="card" id="s11">
+  <h2><span class="num">11</span> متطلبات المستثمر</h2>
+  <table>
+    <thead><tr><th>المتطلب</th><th>التصنيف</th><th>متى يُنفَّذ</th></tr></thead>
+    <tbody>
+<tr><td>هوية العلامة الخضراء</td><td><span class="badge critical">Critical</span></td><td>بعد Conditional GO · Workstream C</td></tr><tr><td>نظام ثيم موحّد</td><td><span class="badge critical">Critical</span></td><td>مع / مباشرة بعد الهوية · C</td></tr><tr><td>Smart Map Engine — تقنية أساسية</td><td><span class="badge critical">Critical / Core Tech</span></td><td>Epic E · بعد Security · Planned · Not Started · لا قبل الأمن</td></tr><tr><td>منصة إعلانات</td><td><span class="badge important">Important</span></td><td>بعد C · Workstream D</td></tr><tr><td>تجربة متجر / صالة مميزة</td><td><span class="badge important">Important</span></td><td>صقل مستمر · بلا تعارض مع B</td></tr><tr><td>مساعد AI / تمييز Intent</td><td><span class="badge important">Future / Important</span></td><td>بعد التصلّب · مسار AI مضبوط</td></tr><tr><td>Marketplace / مدفوعات / حكومي</td><td><span class="badge future">Future</span></td><td>بعد Commercial GO</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">لا تصنّف بنود المستثمر المؤجّلة كعيوب إنتاج.</div>
+</section>
+
+<section class="card" id="s12">
+  <h2><span class="num">12</span> ترتيب التنفيذ (ترتيب فقط — بلا تنفيذ)</h2>
+  <div class="flow">Phase 0  Scope Freeze &amp; Execution Foundation  ← هذا الدستور
+    ↓
+Phase 1  Production Safety          (Epic A/B · PR-001…)
+    ↓
+Phase 2  Security (serial rules)    (Epic C)
+    ↓
+★ Conditional GO gate
+    ↓
+Phase 3  Reliability                 (Epic D)
+    ↓
+Phase 4  Smart Map Engine           (Epic E · Planned · Not Started · بعد Security)
+    ↓
+Investor Features                   (Brand / Theme)
+    ↓
+Advertisements                      (Workstream D)
+    ↓
+Architecture maintenance            (Workstream F / Blueprint P7)
+    ↓
+Future Expansion                    (PSP, Marketplace, Gov, WA)
+    ↓
+Commercial GO</div>
+  <p style="font-size:.78rem;margin-top:.6rem">التسلسل اليومي يُحاذى مع <a href="dar_car_master_execution_plan_portal.html" style="color:var(--p2)">Master Execution Plan PR-001…030</a>.</p>
+  <div class="callout dead">بين كل سهم ↓ أعلاه: <strong>تحليل خروج + Zero Exit Gate</strong> (§15) إلزامي. لا قفز مراحل.</div>
+</section>
+
+<section class="card" id="s15">
+  <h2><span class="num">15</span> Zero Exit Gate — قانون انتقال المراحل</h2>
+  <div class="callout dead">
+    <strong>غير قابل للتجاوز.</strong>
+    لا تُفتح المرحلة التالية (ولا يُعلن Conditional / Commercial GO) إلا بعد تحليل خروج المرحلة الحالية ونجاح هذه البوابة.
+    أي انتقال بدون تقرير خروج موقّع = انتهاك للدستور.
+  </div>
+
+  <h3>القاعدة الرسمية</h3>
+  <div class="flow">بعد إكمال مرحلة N:
+  1) تشغيل تحليل الخروج (حرج / تحذير / معلومات) على نطاق المرحلة
+  2) Critical (P0 / Errors / Blockers في النطاق)  = 0   ← مطلق
+  3) Warnings (P1 / تحذيرات النطاق)             = 0   ← أو Waiver موقّع
+  4) Info                                        = يُبلَّغ · لا يحجب
+  5) Deferred المعتمد في الدستور                 = ليس عيباً مفتوحاً
+  6) فقط عند PASS → فتح مرحلة N+1</div>
+
+  <h3>مستويات النتيجة</h3>
+  <table>
+    <thead><tr><th>المستوى</th><th>يشمل</th><th>يحجب الانتقال؟</th><th>الفعل المطلوب</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="badge critical">Critical</span></td>
+        <td>P0 · Analyzer errors · Merge blockers · عيوب أمن/سلامة داخل نطاق المرحلة · انحدار جديد بعد الدمج</td>
+        <td><strong style="color:var(--bad)">نعم — صفر مطلق</strong></td>
+        <td>أصلح ثم أعد التحليل. لا تنازل إلا بلجنة + توثيق استثنائي نادر جداً.</td>
+      </tr>
+      <tr>
+        <td><span class="badge important">Warning</span></td>
+        <td>P1 · Analyzer warnings داخل blast radius للمرحلة · ثغرات قبول غير مغلقة</td>
+        <td><strong style="color:var(--warn)">نعم — صفر أو Waiver</strong></td>
+        <td>أصلح، أو سجّل Waiver موقّع (مالك + مراجع + سبب + تاريخ مراجعة).</td>
+      </tr>
+      <tr>
+        <td><span class="badge ready">Info</span></td>
+        <td>ملاحظات أسلوب · hints · بنود مؤجّلة معتمدة · ديون خارج نطاق المرحلة</td>
+        <td><strong style="color:var(--ok)">لا</strong></td>
+        <td>يُذكر في تقرير الخروج. لا يُحسب حاجزاً. لا تُزيَّف الأصفار بقمع Info.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>محاكي البوابة (تفاعلي)</h3>
+  <p style="font-size:.78rem;color:var(--muted)">أدخل أعداد نتائج تحليل الخروج للمرحلة الحالية — يُحسب الحكم فوراً.</p>
+  <div class="gate-sim">
+    <div class="gate-field">
+      <label for="gateCritical">Critical</label>
+      <input type="number" id="gateCritical" min="0" value="0" oninput="evalExitGate()" />
+    </div>
+    <div class="gate-field">
+      <label for="gateWarnOpen">Warnings مفتوحة</label>
+      <input type="number" id="gateWarnOpen" min="0" value="0" oninput="evalExitGate()" />
+    </div>
+    <div class="gate-field">
+      <label for="gateWarnWaived">Warnings بـ Waiver</label>
+      <input type="number" id="gateWarnWaived" min="0" value="0" oninput="evalExitGate()" />
+    </div>
+    <div class="gate-field">
+      <label for="gateInfo">Info (لا يحجب)</label>
+      <input type="number" id="gateInfo" min="0" value="0" oninput="evalExitGate()" />
+    </div>
+  </div>
+  <div id="gateVerdict" class="gate-verdict fail" role="status">أدخل الأعداد…</div>
+
+  <h3>ما يدخل في «نطاق المرحلة»</h3>
+  <ul style="font-size:.8rem;padding-inline-start:1.2rem">
+    <li>ملفات نصف قطر الانفجار (blast radius) للـ PRs المكتملة في المرحلة</li>
+    <li>اختبارات المرحلة + <code>analyze_critical</code> / CI الخاص بالمرحلة</li>
+    <li>بنود RK/EV التي ملَكَتها المرحلة صراحةً</li>
+    <li><strong>لا يدخل:</strong> مؤجّل الدستور · خارج النطاق · ديون مراحل لاحقة · Info عالمي للمستودع كله</li>
+  </ul>
+
+  <h3>محتوى تقرير الخروج الإلزامي</h3>
+  <table>
+    <thead><tr><th>#</th><th>البند</th><th>إلزامي؟</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>اسم المرحلة + أرقام PRs / Epic</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>2</td><td>أعداد Critical / Warning / Info + أمر التحليل أو الرابط</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>3</td><td>قائمة Critical المغلقة (كان → أصبح 0)</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>4</td><td>قائمة Warnings المغلقة أو Waivers (مالك + سبب + تاريخ مراجعة)</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>5</td><td>انحدار جديد أثناء observe؟ (نعم/لا + دليل)</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>6</td><td>حكم البوابة: PASS / FAIL</td><td><span class="badge ok">نعم</span></td></tr>
+      <tr><td>7</td><td>توقيع المراجع / المالك</td><td><span class="badge ok">نعم</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>الأدلة الدستورية (لماذا هذه الصيغة)</h3>
+  <table>
+    <thead><tr><th>المصدر</th><th>الدليل</th></tr></thead>
+    <tbody>
+      <tr><td>Master Plan · PR-030</td><td><code>MERGE BLOCKERS = أي P0 مفتوح</code> — الحجب على الحرج</td></tr>
+      <tr><td>Master Plan · PR-001</td><td>البوابة <code>analyze_critical</code> — ليست صفر Info عالمي</td></tr>
+      <tr><td>Blueprint · Conditional</td><td>البوابة بعد أمن+سلامة P0 + نوافذ observe</td></tr>
+      <tr><td>EV-173 / تدقيق الإنتاج</td><td>NO-GO بسبب ≥14 حاجز P0</td></tr>
+      <tr><td>هذا الدستور §3</td><td>المؤجّل = قرار أعمال ≠ عيب مفتوح</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>ممنوع:</strong> قمع Info لادّعاء «الكل صفر» · احتساب Deferred كـ Warning · فتح المرحلة التالية «مؤقتاً» ثم الإصلاح لاحقاً · دمج Security مع قفز البوابة.
+  </div>
+  <div class="callout ok">
+    <strong>مسموح:</strong> Info مرتفع مع PASS · Waiver موقّع لتحذير واحد ضيق النطاق · استمرار عمل ميزات على مسارات غير متعارضة أثناء انتظار observe — دون إعلان اكتمال المرحلة.
+  </div>
+</section>
+
+<section class="card" id="s13">
+  <h2><span class="num">13</span> قائمة جاهزية التنفيذ</h2>
+<div class="check-item yes"><span class="box">✓</span><div><strong>تدقيق جاهزية الإنتاج مقبول</strong><div style="color:var(--muted);font-size:.7rem">Yes</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>Blueprint المعالجة مقبول</strong><div style="color:var(--muted);font-size:.7rem">Yes</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>سجلات EV / RK مقبولة</strong><div style="color:var(--muted);font-size:.7rem">Yes</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>Master Execution Plan موجود</strong><div style="color:var(--muted);font-size:.7rem">Yes</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>تجميد نطاق Phase 0 (هذا الدستور)</strong><div style="color:var(--muted);font-size:.7rem">Complete (planning)</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>سجلات Out-of-Scope + Deferred</strong><div style="color:var(--muted);font-size:.7rem">Complete (planning)</div></div></div><div class="check-item yes"><span class="box">✓</span><div><strong>مصفوفة تعارض + مسارات عمل</strong><div style="color:var(--muted);font-size:.7rem">Complete (planning)</div></div></div><div class="check-item warn"><span class="box">!</span><div><strong>CI موجود في المستودع</strong><div style="color:var(--muted);font-size:.7rem">PR-001 CREATED · READY_TO_REVIEW → <a href="#pr001" style="color:var(--p2)">#pr001</a></div></div></div><div class="check-item no"><span class="box">✗</span><div><strong>Runbook / README تشغيلي</strong><div style="color:var(--muted);font-size:.7rem">Missing → PR-002</div></div></div><div class="check-item no"><span class="box">✗</span><div><strong>CODEOWNERS / مسارات محمية</strong><div style="color:var(--muted);font-size:.7rem">Missing → PR-003</div></div></div><div class="check-item no"><span class="box">✗</span><div><strong>فصل Firebase staging</strong><div style="color:var(--muted);font-size:.7rem">Missing (RK-001) → لاحقاً</div></div></div><div class="check-item warn"><span class="box">!</span><div><strong>سياسة التراجع موثّقة</strong><div style="color:var(--muted);font-size:.7rem">في Blueprint — تُذكر في كل PR</div></div></div><div class="check-item warn"><span class="box">!</span><div><strong>سياسة الاختبار</strong><div style="color:var(--muted);font-size:.7rem">في Master Plan — تُفرض عند المراجعة</div></div></div><div class="check-item warn"><span class="box">!</span><div><strong>مصفوفة ملكية PRs</strong><div style="color:var(--muted);font-size:.7rem">في قسم الفريق — تأكيد قبل PR-001</div></div></div><div class="check-item warn"><span class="box">!</span><div><strong>جاهز لـ PR-001؟</strong><div style="color:var(--muted);font-size:.7rem">GO للبدء · NO-GO تجاري حتى Conditional</div></div></div>
+  <div class="callout cyan" style="margin-top:.8rem">
+    <strong>قبل PR-001:</strong> تأكيد من يدمج PRs الأمن، طول نافذة المراقبة، وأن فرق الميزات تعرف مصفوفة التعارض.
+  </div>
+</section>
+
+<section class="card" id="s14">
+  <h2><span class="num">14</span> تقرير اكتمال Phase 0</h2>
+  <table>
+    <thead><tr><th>المخرج</th><th>الحالة</th></tr></thead>
+    <tbody><tr><td>تصنيف تجميد النطاق</td><td><span class="badge ok">Yes</span></td></tr><tr><td>Deferred = قرارات أعمال</td><td><span class="badge ok">Yes</span></td></tr><tr><td>Out of scope للمعالجة</td><td><span class="badge ok">Yes</span></td></tr><tr><td>مكوّنات محمية</td><td><span class="badge ok">Yes</span></td></tr><tr><td>حدود التنفيذ</td><td><span class="badge ok">Yes</span></td></tr><tr><td>خط أساس المستودع</td><td><span class="badge ok">Yes (EV-aligned)</span></td></tr><tr><td>خريطة التبعيات</td><td><span class="badge ok">Yes</span></td></tr><tr><td>مصفوفة التعارض</td><td><span class="badge ok">Yes</span></td></tr><tr><td>مسارات العمل</td><td><span class="badge ok">Yes</span></td></tr><tr><td>توقيت متطلبات المستثمر</td><td><span class="badge ok">Yes</span></td></tr><tr><td>ترتيب التنفيذ</td><td><span class="badge ok">Yes</span></td></tr><tr><td>Zero Exit Gate (§15)</td><td><span class="badge ok">LAW · v1.1</span></td></tr><tr><td>قائمة الجاهزية</td><td><span class="badge ok">Yes</span></td></tr><tr><td>كود / patches / refactors</td><td><span class="badge ok">None (ممنوع)</span></td></tr></tbody>
+  </table>
+  <div class="callout ok">
+    <strong>القرار:</strong> تخطيط Phase 0 <strong>مكتمل</strong>.
+    يجوز دخول <strong>Phase 1 / PR-001</strong> وفق Master Execution Plan.
+    الإنتاج التجاري يبقى <strong>NO-GO</strong> حتى تمر بوابات Security + Safety Conditional.
+  </div>
+  <div class="callout">
+    <strong>Phase 0 مكتمل.</strong> لم يُنفَّذ أي كود.
+    هذا هو الدستور الرسمي لمعالجة وتوسّع دار كار.
+  </div>
+  <div class="callout dead">
+    <strong>v1.1:</strong> أُضيف قانون
+    <a href="#s15" style="color:#fecaca;font-weight:800">Zero Exit Gate (§15)</a>
+    كشرط انتقال إلزامي لكل مرحلة لاحقة.
+  </div>
+  <div class="callout ok">
+    <strong>v1.3:</strong> أصبح هذا الموقع SSOT لـ
+    <a href="#exec-hub" style="color:#a7f3d0;font-weight:800">سجل التنفيذ الحي</a>
+    (ماذا نُفّذ + النتائج). أول تنفيذ موثّق:
+    <a href="#pr001" style="color:#a7f3d0;font-weight:800">PR-001 Soft CI</a>.
+  </div>
+</section>
+
+<p class="footer-note">تطوير وتحسين دار كار · v1.3 · PR-001 VERIFY PASS · Merge READY · 2026-07-20</p>
+</div>
+</main>
+</div>
+<script src="dar_car_dev_improvement_portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="تدقيق جاهزية الإنتاج الشامل لدار كار — فهرس أجزاء، سجل أدلة، سجل مخاطر. اكتشاف وتخطيط فقط." />
+<title>دار كار · تدقيق جاهزية الإنتاج الشامل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="dar_car_production_readiness_portal.css" />
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+    </span>
+    <div>
+      <h1>تدقيق جاهزية الإنتاج</h1>
+      <p>دار كار · Production Readiness · v1.0</p>
+    </div>
+  </div>
+  <input class="nav-search" id="navSearch" type="search" placeholder="ابحث في الأقسام…" />
+
+  <a class="portal-switch rem-blueprint" href="dar_car_engineering_remediation_portal.html" title="مخطط المعالجة الهندسية — درع + محور">
+    <span class="portal-switch-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l7 3v5c0 5-3.2 8.2-7 9.5C8.2 19.2 5 16 5 11V6l7-3z"/>
+        <path d="M9.2 12.2h5.6"/><path d="M12 9.5v5.5"/><circle cx="12" cy="12.2" r="2.1"/>
+      </svg>
+    </span>
+    <span class="portal-switch-txt">
+      <strong>مخطط المعالجة الهندسية</strong>
+      <small>كيف نصلح بلا كسر · Blueprint</small>
+    </span>
+  </a>
+
+  <a class="portal-switch exec-plan" href="dar_car_master_execution_plan_portal.html" title="خطة التنفيذ الرئيسية — لوحة أوامر + قفل">
+    <span class="portal-switch-ico exec" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="3" width="16" height="18" rx="2"/>
+        <path d="M8 8h8"/><path d="M8 12h5"/><path d="M8 16h6"/>
+        <circle cx="17.2" cy="16" r="2.2"/><path d="M17.2 14.6v1.4"/>
+      </svg>
+    </span>
+    <span class="portal-switch-txt">
+      <strong>MASTER EXECUTION PLAN</strong>
+      <small>PR-001 → GO · صارم · غداً ماذا؟</small>
+    </span>
+  </a>
+
+  <a class="portal-switch" href="dar_car_dev_improvement_portal.html" title="تطوير وتحسين دار كار — دستور Phase 0" style="border-color:rgba(52,211,153,.35)">
+    <span class="portal-switch-ico" aria-hidden="true" style="background:linear-gradient(145deg,#34d399,#059669)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V7l8-4z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </span>
+    <span class="portal-switch-txt">
+      <strong>تطوير وتحسين دار كار</strong>
+      <small>دستور التنفيذ · Phase 0</small>
+    </span>
+  </a>
+
+  <a class="portal-switch" href="dar_car_phase05_portal.html" title="Phase 0.5 — حوكمة النطاق MEP v1.1" style="border-color:rgba(251,191,36,.4)">
+    <span class="portal-switch-ico" aria-hidden="true" style="background:linear-gradient(145deg,#fbbf24,#d97706)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1c1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16M4 12h10M4 18h14"/><circle cx="18" cy="12" r="2.2"/>
+      </svg>
+    </span>
+    <span class="portal-switch-txt">
+      <strong>Phase 0.5 · MEP v1.1</strong>
+      <small>حوكمة النطاق · Brand &amp; Ads · READY PR-001</small>
+    </span>
+  </a>
+
+  <a class="portal-switch" href="dar_car_mep_v12_portal.html" title="MEP v1.2 — نجاح وميزانية التغيير" style="border-color:rgba(165,180,252,.4)">
+    <span class="portal-switch-ico" aria-hidden="true" style="background:linear-gradient(145deg,#a5b4fc,#6366f1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0c1222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 14h10"/>
+      </svg>
+    </span>
+    <span class="portal-switch-txt">
+      <strong>MEP v1.2 · الحوكمة النهائية</strong>
+      <small>نجاح · ميزانية · Cursor Law</small>
+    </span>
+  </a>
+
+  <div class="sec-label">التحكم</div>
+  <a href="#idx">الفهرس الرئيسي <span class="st live">LIVE</span></a>
+  <a href="#evreg">سجل الأدلة <span class="st live">مشترك</span></a>
+  <a href="#riskreg">سجل المخاطر <span class="st live">مشترك</span></a>
+  <a href="#protocol">بروتوكول الأجزاء <span class="st done">ثابت</span></a>
+
+  <div class="sec-label">الأجزاء (10)</div>
+  <a href="#part1">1 · الجرد والمعمارية <span class="st done">مكتمل</span></a>
+  <a href="#part2">2 · الإقلاع والحالة <span class="st done">مكتمل</span></a>
+  <a href="#part3">3 · Firebase والاستعلامات <span class="st done">مكتمل</span></a>
+  <a href="#part4">4 · خريطة ووسائط <span class="st done">مكتمل</span></a>
+  <a href="#part5">5 · تكامل المنصات <span class="st done">مكتمل</span></a>
+  <a href="#part6">6 · موثوقية وشبكة <span class="st done">مكتمل</span></a>
+  <a href="#part7">7 · صيانة وتوسّع <span class="st done">مكتمل</span></a>
+  <a href="#part8">8 · اختبارات وإصدار <span class="st done">مكتمل</span></a>
+  <a href="#part9">9 · سيناريوهات وحمل <span class="st done">مكتمل</span></a>
+  <a href="#part10">10 · قرار نهائي <span class="st done">مكتمل</span></a>
+
+  <div class="sec-label">جزء 1 — تفاصيل</div>
+  <a href="#p1-apps">تطبيقات ومداخل</a>
+  <a href="#p1-features">وحدات الميزات</a>
+  <a href="#p1-firebase">Firebase و Backend</a>
+  <a href="#p1-state">Providers / Services</a>
+  <a href="#p1-arch">خريطة المعمارية</a>
+  <a href="#p1-gaps">فجوات الجرد</a>
+  <a href="#p1-handoff">تسليم للجزء 2</a>
+
+  <div class="sec-label">جزء 2 — تفاصيل</div>
+  <a href="#p2-boot">تتبع الإقلاع</a>
+  <a href="#p2-classify">تصنيف المهام</a>
+  <a href="#p2-providers">Providers و dispose</a>
+  <a href="#p2-proxy">ProxyProvider مخاطر</a>
+  <a href="#p2-rebuild">إعادة البناء</a>
+  <a href="#p2-handoff">تسليم للجزء 3</a>
+  <div class="sec-label">جزء 3 — تفاصيل</div>
+  <a href="#p3-queries">استعلامات خطرة</a>
+  <a href="#p3-good">أنماط جيدة</a>
+  <a href="#p3-security">أمن القواعد</a>
+  <a href="#p3-cost">صيغ التكلفة</a>
+  <a href="#p3-handoff">تسليم للجزء 4</a>
+  <div class="sec-label">جزء 4 — تفاصيل</div>
+  <a href="#p4-map">معمارية الخريطة</a>
+  <a href="#p4-cluster">تجميع وعلامات</a>
+  <a href="#p4-media">صور وفيديو</a>
+  <a href="#p4-handoff">تسليم للجزء 5</a>
+  <div class="sec-label">جزء 5 — تفاصيل</div>
+  <a href="#p5-matrix">مصفوفة العقود</a>
+  <a href="#p5-auth">مصادقة وهوية</a>
+  <a href="#p5-listings">قوائم ومعارض</a>
+  <a href="#p5-rules">قواعد متقاطعة</a>
+  <a href="#p5-handoff">تسليم للجزء 6</a>
+  <div class="sec-label">جزء 6 — تفاصيل</div>
+  <a href="#p6-timeouts">مهلات وإعادة محاولة</a>
+  <a href="#p6-offline">Offline واسترداد</a>
+  <a href="#p6-upload">رفع وidempotency</a>
+  <a href="#p6-handoff">تسليم للجزء 7</a>
+  <div class="sec-label">جزء 7 — تفاصيل</div>
+  <a href="#p7-hotspots">نقاط ساخنة</a>
+  <a href="#p7-boundaries">حدود معمارية</a>
+  <a href="#p7-onboard">Onboarding</a>
+  <a href="#p7-handoff">تسليم للجزء 8</a>
+  <div class="sec-label">جزء 8 — تفاصيل</div>
+  <a href="#p8-tests">تغطية الاختبارات</a>
+  <a href="#p8-cicd">CI/CD وإصدار</a>
+  <a href="#p8-monitor">مراقبة وDR</a>
+  <a href="#p8-handoff">تسليم للجزء 9</a>
+  <div class="sec-label">جزء 9 — تفاصيل</div>
+  <a href="#p9-scenarios">كتالوج السيناريوهات</a>
+  <a href="#p9-cost">صيغ التكلفة</a>
+  <a href="#p9-load">خطة الحمل</a>
+  <a href="#p9-handoff">تسليم للجزء 10</a>
+  <div class="sec-label">جزء 10 — تفاصيل</div>
+  <a href="#p10-verdict">القرار</a>
+  <a href="#p10-score">Scorecard</a>
+  <a href="#p10-blockers">حواجز P0</a>
+  <a href="#p10-roadmap">مسار Conditional → GO</a>
+</aside>
+
+<main>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="pill cyan">اكتشاف / تخطيط فقط</span>
+    <span class="pill ok">أجزاء 1–10 مكتملة</span>
+    <span class="pill warn">قرار نهائي: NO-GO</span>
+    <span class="pill bad">NO-GO · إنتاج عام</span>
+    <span class="pill cyan">التالي: مخطط المعالجة ← الشريط الجانبي</span>
+    <h2>تدقيق جاهزية الإنتاج الشامل — دار كار</h2>
+    <p style="max-width:820px;margin:0;opacity:.9">مرجع تفاعلي للأدلة من المستودع. التدقيق مكتمل (أجزاء 1–10). القرار: <strong>NO-GO</strong> لإطلاق إنتاج عام — مسار Conditional/GO أدناه.</p>
+    <div class="kpi-row" style="margin-top:1rem">
+      <span class="pill">Dart lib ≈ 793</span>
+      <span class="pill">Features ≈ 28 مجلد</span>
+      <span class="pill">Services ≈ 101</span>
+      <span class="pill">Providers ≈ 22–25</span>
+      <span class="pill">Functions JS ≈ 37</span>
+      <span class="pill">Tests ≈ 78 (6 ملفات · خريطة غالباً)</span>
+      <span class="pill">CI GitHub = 0</span>
+      <span class="pill">Firebase project = 1</span>
+      <span class="pill">RC timeout ≤ 1m</span>
+      <span class="pill">Proxy CRM recreate</span>
+      <span class="pill">Crashlytics≠main</span>
+      <span class="pill">Unbounded cars/properties</span>
+      <span class="pill">spotlight write=authed</span>
+      <span class="pill">indexes=30</span>
+      <span class="pill">No viewport filter</span>
+      <span class="pill">watchCars unused</span>
+      <span class="pill">Orphan media on delete</span>
+      <span class="pill">Firebase واحد للمنصات</span>
+      <span class="pill">AuthState غير تفاعلي</span>
+      <span class="pill">CRM rules واسعة</span>
+      <span class="pill">DNS storefront انتقالي</span>
+      <span class="pill">NetworkClient ميت</span>
+      <span class="pill">لا سياسة Firestore offline</span>
+      <span class="pill">رفع صور بلا timeout</span>
+      <span class="pill">WA processing عالق</span>
+      <span class="pill">README قالب 16 سطر</span>
+      <span class="pill">6 ملفات &gt;1300 LOC</span>
+      <span class="pill">لا Repository</span>
+      <span class="pill">لا ARB</span>
+      <span class="pill">docs HTML=16 بلا runbook</span>
+      <span class="pill">Android release=debug sign</span>
+      <span class="pill">لا CI</span>
+      <span class="pill">لا backup/DR موثّق</span>
+      <span class="pill">Maps key fallback في gradle</span>
+      <span class="pill">خريطة 1k/5k/10k TBD</span>
+      <span class="pill">Cost vars only</span>
+      <span class="pill">WA sync webhook</span>
+      <span class="pill">Daily views hotspot</span>
+      <span class="pill">Final = NO-GO</span>
+      <span class="pill">P0 blockers ≥14</span>
+      <span class="pill">EV=172+</span>
+      <span class="pill">RK=072</span>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- INDEX -->
+<section class="card" id="idx">
+  <h2><span class="num">0</span> فهرس التدقيق (Audit Index)</h2>
+  <div class="callout cyan">العمل مقسّم إلى <strong>10 أجزاء مرقّمة</strong>. يُنجَز جزء واحد في كل جولة. السجلات المشتركة تُحدَّث تراكمياً. <strong>لا يُصدر قرار Go/No-Go النهائي قبل الجزء 10.</strong></div>
+  <div class="grid">
+    <div class="stat part-card" onclick="jumpPart('part1')"><b>1</b><span>الجرد والمعمارية — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part2')"><b>2</b><span>الإقلاع · الحالة — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part3')"><b>3</b><span>Firebase · DB · أمن — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part4')"><b>4</b><span>خريطة · وسائط — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part5')"><b>5</b><span>تكامل المنصات — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part6')"><b>6</b><span>موثوقية · شبكة — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part7')"><b>7</b><span>صيانة · توسّع — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part8')"><b>8</b><span>اختبارات · إصدار · DR — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part9')"><b>9</b><span>سيناريوهات · حمل — مكتمل</span></div>
+    <div class="stat part-card" onclick="jumpPart('part10')"><b>10</b><span>قرار نهائي — NO-GO</span></div>
+  </div>
+  <table>
+    <tr><th>الجزء</th><th>الحالة</th><th>المخرجات المطلوبة</th><th>يعتمد على</th></tr>
+    <tr><td>1</td><td><span class="badge active">مكتمل</span></td><td>جرد كامل + خريطة معمارية أولية + سجلات</td><td>—</td></tr>
+    <tr><td>2</td><td><span class="badge active">مكتمل</span></td><td>تتبع main() · providers · disposal</td><td>1</td></tr>
+    <tr><td>3</td><td><span class="badge active">مكتمل</span></td><td>مجموعات · استعلامات · rules</td><td>1–2</td></tr>
+    <tr><td>4</td><td><span class="badge active">مكتمل</span></td><td>MapState · وسائط · clustering</td><td>1–3</td></tr>
+    <tr><td>5</td><td><span class="badge active">مكتمل</span></td><td>مصفوفة عقود المنصات</td><td>1,3</td></tr>
+    <tr><td>6</td><td><span class="badge active">مكتمل</span></td><td>timeout/retry/offline</td><td>2–5</td></tr>
+    <tr><td>7</td><td><span class="badge active">مكتمل</span></td><td>دين تقني · توسّع · onboarding</td><td>1,5–6</td></tr>
+    <tr><td>8</td><td><span class="badge active">مكتمل</span></td><td>tests · CI · إصدار · DR</td><td>1–7</td></tr>
+    <tr><td>9</td><td><span class="badge active">مكتمل</span></td><td>سيناريوهات · صيغ تكلفة · خطة حمل</td><td>3–4,8</td></tr>
+    <tr><td>10</td><td><span class="badge dead">مكتمل · NO-GO</span></td><td>Scorecard · قرار نهائي</td><td>1–9 كلها</td></tr>
+  </table>
+</section>
+
+<section class="card" id="protocol">
+  <h2><span class="num">⚙</span> بروتوكول التنفيذ</h2>
+  <ol class="compact">
+    <li>إنشاء فهرس (هذا القسم) — <strong>تم</strong>.</li>
+    <li>تقسيم العمل إلى أجزاء 1…10 — <strong>تم</strong>.</li>
+    <li>التدقيق مكتمل (1–10) — القرار النهائي: <strong>NO-GO</strong> لإنتاج عام.</li>
+    <li>سجل أدلة مشترك واحد — يُحدَّث تراكمياً.</li>
+    <li>سجل مخاطر مشترك واحد — يُحدَّث تراكمياً.</li>
+    <li>عدم تكرار ما سبق التحقق منه (يُشار لمعرّف الدليل EV-xxx).</li>
+    <li>قرار Go/No-Go النهائي — <strong>صدر: NO-GO</strong> (جزء 10).</li>
+  </ol>
+  <div class="callout warn">أي حكم جزئي في جزء 1 هو <em>مؤقت للجرد فقط</em> وليس حكم إطلاق.</div>
+</section>
+
+<!-- EVIDENCE REGISTER -->
+<section class="card" id="evreg">
+  <h2><span class="num">EV</span> سجل الأدلة المشترك</h2>
+  <div class="toolbar">
+    <label>تصفية الجزء:</label>
+    <select id="evFilter" onchange="filterTable('evTable','evFilter','part')">
+      <option value="all">الكل</option>
+      <option value="1">جزء 1</option>
+      <option value="2">جزء 2</option><option value="3">جزء 3</option><option value="4">جزء 4</option><option value="5">جزء 5</option><option value="6">جزء 6</option><option value="7">جزء 7</option><option value="8">جزء 8</option><option value="9">جزء 9</option><option value="10">جزء 10</option>
+    </select>
+  </div>
+  <table id="evTable">
+    <tr><th>ID</th><th>الجزء</th><th>الادعاء</th><th>الدليل</th><th>الحالة</th></tr>
+    <tr data-part="1"><td>EV-001</td><td>1</td><td>4 نقاط دخول Flutter</td><td><code>lib/main.dart</code> · <code>lib/web/web_main.dart</code> · <code>lib/car_web/car_web_main.dart</code> · <code>lib/admin_web/admin_main.dart</code> (grep void main)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-002</td><td>1</td><td>مشروع Firebase واحد</td><td><code>.firebaserc</code> default=<code>mastermax-2030-backend</code> · hosting targets: admin / realestate / car</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-003</td><td>1</td><td>~793 ملف Dart في lib</td><td><code>find lib -name '*.dart' | wc -l</code> → 793</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-004</td><td>1</td><td>لا حزم shared packages / لا melos</td><td>لا يوجد مجلد <code>packages/</code></td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-005</td><td>1</td><td>لا CI GitHub Actions</td><td>لا يوجد <code>.github/</code></td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-006</td><td>1</td><td>6 ملفات اختبار فقط</td><td><code>test/map_phase*.dart</code> + widget + owner_listing</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-007</td><td>1</td><td>~101 service · ~22 provider files</td><td>find *service*.dart / *provider*.dart</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-008</td><td>1</td><td>لا طبقة Repository منفصلة</td><td>find *repositor* → فارغ</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-009</td><td>1</td><td>Functions: Cloudflare + Assistant + WhatsApp + activation + hybrid auth</td><td><code>functions/index.js</code> exports + register* في L848–862</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-010</td><td>1</td><td>لا ASP.NET في الريبو</td><td>لا *.csproj / *.cs</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-011</td><td>1</td><td>State = provider package</td><td><code>pubspec.yaml</code> provider ^6.0.5 · MultiProvider في main</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-012</td><td>1</td><td>أكبر الملفات >1300 سطر</td><td>profile_screen 1797 · add_rental 1682 · business_analytics_provider 1568 · main_map_screen 1379</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-013</td><td>1</td><td>مجموعات Firestore كثيرة في rules</td><td><code>firestore.rules</code>: users, cars, properties, tenants, spotlight_videos, chatRooms, …</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-014</td><td>1</td><td>README غير تشغيلي</td><td><code>README.md</code> قالب Flutter الافتراضي فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-015</td><td>1</td><td>أعلام ميزات في AppConfig</td><td><code>lib/src/core/config/app_config.dart</code> enable* + MAP_HOME_SHEET_V2 dart-define</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-016</td><td>1</td><td>لا Android productFlavors</td><td>بحث productFlavors → لا نتائج</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-017</td><td>1</td><td>مجلدات ميزات فارغة/شبه ميتة</td><td>virtual_property_experience=0 · admin=0 · car=1 · video=1 · premium_ads=1 · companies=1</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-018</td><td>1</td><td>server/ فارغ تقريباً</td><td><code>server/src</code> موجود بلا محتوى يُذكر</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-019</td><td>1</td><td>AuthWebContext flavors للويب</td><td>car_web → AuthWebFlavor.car · web → realEstate</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="1"><td>EV-020</td><td>1</td><td>Hosting: 3 أهداف Flutter web builds</td><td><code>firebase.json</code> build/web-admin · web-realestate · web-car</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-021</td><td>2</td><td>إقلاع متسلسل قبل runApp</td><td><code>main.dart</code> L73–122: Maps await · Firebase await · APNs await · Performance await · RC fetchAndActivate await · Cloudflare prefs await</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-022</td><td>2</td><td>FCM غير حاجب (unawaited)</td><td><code>main.dart</code> L102–103 <code>unawaited(runFcmSafeBootstrap())</code></td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-023</td><td>2</td><td>RC فشل لا يوقف التطبيق</td><td><code>remote_config_service.dart</code> L43–45 catch + debugPrint؛ defaults L33–39</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-024</td><td>2</td><td>فشل إقلاع حرج → شاشة خطأ عربية</td><td><code>main.dart</code> L124–137</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-025</td><td>2</td><td>Auth.initialize بعد أول إطار من AppEntry</td><td><code>app_entry_screen.dart</code> L100–105 postFrameCallback → initialize()</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-026</td><td>2</td><td>CarProvider.loadCars عند إنشاء المزود</td><td><code>main.dart</code> L190–196 create: car.loadCars()</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-027</td><td>2</td><td>ProxyProvider يعيد إنشاء CRM providers</td><td><code>main.dart</code> L231–234, 241–244, 260–263, 270–273, 290–293 <code>update: (...) => CustomersProvider(...)</code> جديد</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-028</td><td>2</td><td>CarProvider يستخدم sync بدل recreate</td><td><code>car_provider.dart</code> syncAuthState + main L198–202</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-029</td><td>2</td><td>VideoProvider بلا dispose</td><td>grep dispose في video_provider.dart → 0</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-030</td><td>2</td><td>BusinessAnalyticsProvider بلا dispose</td><td>grep → 0 · ملف 1568 سطر</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-031</td><td>2</td><td>AuthState بلا dispose</td><td>grep → 0 (لا اشتراكات ظاهرة في الملف)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-032</td><td>2</td><td>Selector نادر جداً</td><td>Selector&lt; في 4 ملفات فقط مقابل Consumer واسع</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-033</td><td>2</td><td>Crashlytics غير موصول في main</td><td>ErrorTracker موجود · لا استدعاء من main.dart؛ FlutterError.onError فقط على web L85–87</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-034</td><td>2</td><td>SessionTelemetryHost يكتب app_sessions</td><td><code>session_telemetry_host.dart</code> lifecycle resumed/paused</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-035</td><td>2</td><td>RC fetchTimeout دقيقة واحدة</td><td><code>remote_config_service.dart</code> L28 Duration(minutes: 1)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-036</td><td>2</td><td>ChatProvider يلغي الاشتراكات في dispose</td><td><code>chat_provider.dart</code> L610–628</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="2"><td>EV-037</td><td>2</td><td>MapState.dispose يحرر mapController فقط</td><td><code>map_state.dart</code> L896–898</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-038</td><td>3</td><td>CarService.getCars بلا limit</td><td><code>car_service.dart</code> L15–17 where isActive + get() كامل</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-039</td><td>3</td><td>CarService.watchCars على المجموعة كاملة</td><td><code>car_service.dart</code> L110–115 snapshots() بدون where/limit</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-040</td><td>3</td><td>PropertyService.getProperties بلا limit + فلترة عميل</td><td><code>property_service.dart</code> L168–175 get ثم L216–242 where محلي</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-041</td><td>3</td><td>الخريطة تحمّل كل العقارات والسيارات</td><td><code>main_map_screen.dart</code> L193–196 loadProperties + loadCars</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-042</td><td>3</td><td>getFeaturesStatistics يحمّل كل properties</td><td><code>property_features_service.dart</code> L196 .get() بدون حد</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-043</td><td>3</td><td>VideoService يدعم pagination</td><td>startAfterDocument + limit في video_service L230–241, L374–384</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-044</td><td>3</td><td>Storefront inventory paginated</td><td>storefront_inventory_service startAfter + limit(pageSize)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-045</td><td>3</td><td>tenant_listings لها limits 40–100</td><td>tenant_listings_service.dart limit(80/100/40)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-046</td><td>3</td><td>cars/properties/spotlight قراءة عامة</td><td>firestore.rules L290–291, 301–302, 488–489 allow read: if true</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-047</td><td>3</td><td>spotlight_videos كتابة لأي مسجّل</td><td>rules L490 allow write: if authed() — بلا قيد ملكية على مستوى القاعدة</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-048</td><td>3</td><td>cars update مقيد بـ sellerId</td><td>rules L296–297</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-049</td><td>3</td><td>30 فهرس مركّب</td><td>firestore.indexes.json indexes length=30</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-050</td><td>3</td><td>لا Firebase App Check في Dart</td><td>rg FirebaseAppCheck lib → فارغ</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-051</td><td>3</td><td>مشاهدات فيديو: batch increment + مستند يومي ساخن</td><td>video_service incrementViewsCount L1277–1293 spotlight_daily_views/{dayKey}</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-052</td><td>3</td><td>Transactions محدودة الاستخدام</td><td>chat_prefs · chat_service · property_review · tenant_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-053</td><td>3</td><td>Admin tools قد تمسح مجموعات كاملة</td><td>check_videos_status / find_orphaned / admin_video_delete .get() بدون limit</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="3"><td>EV-054</td><td>3</td><td>Storage: مسارات وسائط تتطلب auth للقراءة غالباً</td><td>storage.rules images/videos/thumbnails read if auth</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-055</td><td>4</td><td>watchCars غير مستدعى من UI</td><td>تعريف car_service L110 · rg watchCars( → الملف نفسه فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-056</td><td>4</td><td>visible = كل القائمة بلا viewport bounds</td><td>map_state updateVisibleProperties L178–182 ينسخ _allProperties بالكامل</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-057</td><td>4</td><td>تجميع عميل O(n×clusters) Haversine</td><td>clustering_service.dart L8–34</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-058</td><td>4</td><td>onCameraIdle يعيد تجميع الكل بدون debounce Timer</td><td>main_map_screen L293–295 → updateMarkers → _updateClusters</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-059</td><td>4</td><td>onCameraMove خفيف (zoom فقط)</td><td>map_state L264–267</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-060</td><td>4</td><td>كاش أيقونات علامات حد 90 + prefetch دفعات 40</td><td>map_state _maxMarkerIconCache=90 · prefetch take(40)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-061</td><td>4</td><td>علامات من صور الشبكة</td><td>CustomMarkersService.fromNetworkImageUrl</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-062</td><td>4</td><td>OptimizedImage + CachedNetworkImage disk 800</td><td>optimized_image.dart</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-063</td><td>4</td><td>التقاط صور عقار بجودة عالية بلا maxWidth</td><td>property_image_service L17–21 imageQuality 95</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-064</td><td>4</td><td>رفع صور عبر Functions→Cloudflare</td><td>cloudflare_images_service createImagesDirectUpload</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-065</td><td>4</td><td>Stream حد 240ث / 200MB basic</td><td>video_upload_config spotlightMaxUploadSeconds=240</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-066</td><td>4</td><td>فيد: preload الحالي+التالي فقط</td><td>video_list L249 shouldPreload: index &lt;= current+1</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-067</td><td>4</td><td>CarVideoPlayer.dispose يحرر المتحكم</td><td>car_video_player L760–763</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-068</td><td>4</td><td>deleteCar لا يحذف وسائط Cloudflare</td><td>car_provider deleteCar L347–357 → car_service.delete فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-069</td><td>4</td><td>ImageOptimizer موجود (compress)</td><td>core/performance/image_optimizer.dart FlutterImageCompress</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="4"><td>EV-070</td><td>4</td><td>البحث/الفلاتر على بيانات محمّلة محلياً بعد الجلب الكامل</td><td>applyPropertyFilters / applyCarSearchResults على قوائم الذاكرة + EV-041</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-071</td><td>5</td><td>المداخل الأربعة على مشروع Firebase واحد</td><td>main/web/car_web/admin_main + firebase_options projectId=mastermax-2030-backend</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-072</td><td>5</td><td>الموبايل أوسع bootstrap (Maps/FCM/RC/Performance)</td><td>lib/main.dart L66–119 · 140–336</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-073</td><td>5</td><td>ويب عقار وويب سيارات يعيدان استخدام Auth + خدمات القوائم المشتركة</td><td>web_main PropertyService · car_web_main CarService</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-074</td><td>5</td><td>الأدمن سطح providers أصغر + AdminRouter</td><td>admin_main.dart L14–25</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-075</td><td>5</td><td>عقد User مشترك: type/userType + extraData</td><td>auth/models/user.dart L3–44 · 57–83</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-076</td><td>5</td><td>AuthService مشترك يقرأ users/{uid}</td><td>auth_service.dart · كل web_main يوفّر AuthService</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-077</td><td>5</td><td>Phone OTP أصلي فقط — معطّل على الويب</td><td>firebase_phone_auth_service L14–23 · register_screen L51–76</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-078</td><td>5</td><td>Phone resolver يبحث users.phone لمنع ملف مزدوج</td><td>phone_auth_flow_resolver L22–60</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-079</td><td>5</td><td>الأدمن يقرأ نفس مجموعة users</td><td>users_list_screen · user_detail_screen</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-080</td><td>5</td><td>car_web يعيد استخدام CarModel/CarService بلا نموذج موازٍ</td><td>car_web_main · car_web_router AddCarScreen</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-081</td><td>5</td><td>property web يعيد استخدام PropertyService بلا نموذج موازٍ</td><td>web_main · web_router</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-082</td><td>5</td><td>عقد cars: sellerId + حالة sold/active/tenant</td><td>car_model · car_service create</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-083</td><td>5</td><td>عقد properties: ownerId + status/tenant</td><td>property_model · property_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-084</td><td>5</td><td>tenants مركزية + مرآة tenantId على المستخدم</td><td>tenant_service create transaction L80–131</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-085</td><td>5</td><td>تحميل معروضات المعرض: tenantId + fallback seller/owner</td><td>tenant_listings_service L43–161</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-086</td><td>5</td><td>/store/{slug} على ويب عقار وسيارات؛ أدمن → wrong-host</td><td>web_router · car_web_router · admin_router L338–344</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-087</td><td>5</td><td>مسارات ويب مكررة كنصوص حرفية مقابل route_constants</td><td>web_router · car_web_router vs route_constants.dart</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-088</td><td>5</td><td>حارس عمودي: موبايل ListingVerticalGuard · car_web CarWebGuard فقط</td><td>app_router · listing_vertical_guard · car_web_router /cars/add</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-089</td><td>5</td><td>تغيير حالة tenant من الأدمن؛ المعرض العام يحمّل future مرة واحدة</td><td>admin_storefront_tenants · public_storefront_screen L35–52</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-090</td><td>5</td><td>AuthState بلا listener Firestore — refresh يدوي فقط</td><td>auth_state refreshUserFromFirestore L268+</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-091</td><td>5</td><td>URL عام darcar.app vs hosting فعّال mastermax-car-web.web.app</td><td>storefront_urls.dart L5–18 تعليقات انتقالية</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-092</td><td>5</td><td>قواعد cars update=بائع فقط؛ properties تسمح isAdmin</td><td>firestore.rules L289–314</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="5"><td>EV-093</td><td>5</td><td>مجموعات CRM كثيرة allow read,write if authed()</td><td>firestore.rules sales/rentals/…/businesses L499–573</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-094</td><td>6</td><td>RC يُنتظر عند الإقلاع بمهلة حتى 1 دقيقة</td><td>main.dart + remote_config_service L22–45 (يؤكد RK-011)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-095</td><td>6</td><td>NetworkClient: 30ث · 3 retries · بلا استدعاءات من lib/</td><td>network_client.dart فقط · rg NetworkClient → الملف نفسه</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-096</td><td>6</td><td>connectivity_plus موجود ومستعمل فقط داخل NetworkClient الميت</td><td>pubspec + network_client hasConnection</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-097</td><td>6</td><td>لا FirestoreSettings / persistence صريح</td><td>rg persistenceEnabled|FirestoreSettings → لا مطابقات</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-098</td><td>6</td><td>مهلات callable متباينة 45–120ث · WhatsApp بلا timeout عميل</td><td>cloudflare_gateway · assistant · wa_link_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-099</td><td>6</td><td>Functions: حدود Cloudflare 30–60ث · بعض WA بدون timeoutSeconds</td><td>functions/index.js · linkHandlers</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-100</td><td>6</td><td>رفع صور Cloudflare بلا timeout/resume عميل</td><td>cloudflare_images_service request.send() L96</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-101</td><td>6</td><td>رفع فيديو: basic 10د · TUS 15د + chunks</td><td>cloudflare_stream_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-102</td><td>6</td><td>رفع Storage (تحقق/هوية/بانوراما) بلا timeout صريح</td><td>document_verification · tenant_branding · walk_panorama</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-103</td><td>6</td><td>ErrorTracker/Crashlytics غير مهيأ من main</td><td>error_tracker.dart lazy · main بلا initialize</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-104</td><td>6</td><td>لا runZonedGuarded / PlatformDispatcher.onError</td><td>main.dart · ويب FlutterError.print فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-105</td><td>6</td><td>ErrorView + retry في معرض/فيديو — غير موحّد عالمياً</td><td>error_view · public_storefront · car_video_player</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-106</td><td>6</td><td>فشل استعادة ملف المستخدم: تهيئة تكتمل → شاشة رئيسية بلا retry دخول</td><td>auth_state L54–75 · app_entry_screen</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-107</td><td>6</td><td>AuthState بلا اشتراك auth/token/user doc (يوسّع EV-090)</td><td>auth_state refresh يدوي فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-108</td><td>6</td><td>AuthProvider تراثي يستمع authStateChanges وغير مسجّل في main</td><td>core/providers/auth_provider.dart · ليس في MultiProvider</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-109</td><td>6</td><td>إنشاء إعلان: رفع وسائط قبل كتابة Firestore → يتامى عند فشل الكتابة</td><td>add_property_screen L979+ · car_provider add</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-110</td><td>6</td><td>حذف listing يحذف المستند فقط لا وسائط Cloudflare</td><td>property_service · car_service delete (يؤكد RK-029)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-111</td><td>6</td><td>قبول رفع جزئي مع تحذير — بلا طابور استئناف</td><td>add_property_screen L989–1032 · car_provider</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-112</td><td>6</td><td>حراسة double-submit أثناء العملية فقط — لا idempotency عبر إعادة التشغيل</td><td>add_car_screen · car_provider _isLoading</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-113</td><td>6</td><td>WhatsApp idempotency عبر create(wamid) جيد</td><td>whatsapp/idempotency.js claimInboundMessage</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-114</td><td>6</td><td>رسالة WA عالقة processing تمنع إعادة المعالجة نهائياً</td><td>idempotency claim + webhook بلا lease/retry worker</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-115</td><td>6</td><td>معرض عام: get() مرة واحدة لحالة tenant + retry يدوي على فشل التحميل</td><td>public_storefront_screen L35–105</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-116</td><td>6</td><td>مخزون المعرض استعلامات one-shot بلا تسمية كاش/offline</td><td>tenant_listings_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-117</td><td>6</td><td>فشل جلب عقارات/سيارات غالباً → قائمة فارغة (يبدو «لا نتائج»)</td><td>property_service getProperties catch → [] · map_screen</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-118</td><td>6</td><td>صور علامات الخريطة بلا timeout صريح · fallback صامت</td><td>main_map_screen / map_state pin fetch</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-119</td><td>6</td><td>FCM bootstrap غير قاتل · فشل تسجيل التوكن بلا طابور لاحق</td><td>fcm_safe_bootstrap · fcm_registration_sync</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-120</td><td>6</td><td>خلفية FCM تهيّئ Firebase فقط — بلا مسار cold-start notification</td><td>firebase_messaging_background.dart</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="6"><td>EV-121</td><td>6</td><td>لا حزمة deep link / initialLink على طبقة Flutter الموبايل</td><td>main → AppRouter فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-122</td><td>7</td><td>6 ملفات Dart &gt;1300 سطر؛ الأكبر profile_screen=1797</td><td>wc: profile 1797 · add_rental 1682 · business_analytics 1568 · analytics_widgets 1476 · video_service 1436 · main_map 1379</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-123</td><td>7</td><td>main.dart سجل يدوي ~20 خدمة/مزوّد (337 سطر)</td><td>lib/main.dart imports + MultiProvider</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-124</td><td>7</td><td>أربعة جذور تركيب تكرر Firebase/Auth/Provider بلا وحدة مشتركة</td><td>main · web_main · car_web_main · admin_main</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-125</td><td>7</td><td>~60 ملفاً في features تستورد FirebaseFirestore.instance مباشرة</td><td>rg count ≈60 · أمثلة: register_screen · edit_profile · sales_viewmodel · business_analytics</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-126</td><td>7</td><td>لا طبقة Repository / لا class *Repository في lib</td><td>find/rg Repository → لا مطابقات معمارية</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-127</td><td>7</td><td>God-state: map_state 900 · video_provider 815</td><td>مسؤوليات مختلطة (فلاتر/كاش/كاميرا · فيد/رفع/إعجابات)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-128</td><td>7</td><td>مساحات ميتة: admin و virtual_property_experience و core/router بلا .dart</td><td>find *.dart = 0 في هذه المسارات (يؤكد EV-017)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-129</td><td>7</td><td>AuthProvider تراثي vs AuthState نشط — أسماء مضلّلة</td><td>core/providers/auth_provider غير مستهلك · features/auth/auth_state مستخدم</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-130</td><td>7</td><td>أربعة موجهات + تنقل MaterialPageRoute مباشر يكرر المسارات</td><td>app_router · web_router · car_web_router · admin_router (+ EV-087)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-131</td><td>7</td><td>لا ملفات .arb — توطين عبر locale عربي ثابت + نصوص مضمّنة</td><td>find *.arb=0 · main MaterialApp locale</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-132</td><td>7</td><td>README = قالب Flutter 16 سطراً · لا CONTRIBUTING/setup</td><td>README.md · لا .github workflows</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-133</td><td>7</td><td>launch.json عام بلا أهداف web_main/car_web/admin أو COMPANY_ID</td><td>.vscode/launch.json 3 configs افتراضية فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-134</td><td>7</td><td>docs/: 16 HTML بوابات/مواصفات بلا runbook تشغيل موحّد</td><td>ls docs/*.html ≈16</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-135</td><td>7</td><td>functions: index.js 868 · بلا scripts/test/lint في package.json</td><td>functions/package.json dependencies فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="7"><td>EV-136</td><td>7</td><td>ميت مؤكد: NetworkClient 288LOC · AuthProvider 127LOC</td><td>لا مستهلكين خارج التعريف (جزء 6)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-137</td><td>8</td><td>6 ملفات اختبار تحت test/ فقط · لا integration_test/</td><td>map_phase0/0.5/1/2 · owner_listing_popup_menu · widget_test قالب</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-138</td><td>8</td><td>~78 حالة اختبار (عدّ test/testWidgets) · تركيز خريطة</td><td>25+25+11+11+6 (+widget_test) · تغطية auth/CRUD/Functions ≈ صفر</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-139</td><td>8</td><td>dev_dependencies: flutter_test فقط · لا mockito/mocktail/golden</td><td>pubspec.yaml</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-140</td><td>8</td><td>لا .github / Fastlane / Codemagic / Bitrise / Makefile CI</td><td>find → 0</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-141</td><td>8</td><td>functions/package.json بلا scripts (test/lint/deploy)</td><td>package.json dependencies فقط (يؤكد EV-135)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-142</td><td>8</td><td>Hosting: 3 أهداف admin/realestate/car — نشر يدوي</td><td>firebase.json · .firebaserc targets · WEB_CRM_SETUP.md</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-143</td><td>8</td><td>مشروع Firebase واحد فقط: mastermax-2030-backend</td><td>.firebaserc default · firebase_options</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-144</td><td>8</td><td>Android release يوقّع بمفاتيح debug + مفتاح Maps ثابت كـ fallback في gradle</td><td>android/app/build.gradle.kts L49 · L54–57</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-145</td><td>8</td><td>لا ExportOptions.plist / أتمتة TestFlight/Play</td><td>بحث iOS export/fastlane → غائب</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-146</td><td>8</td><td>Cloudflare عبر defineSecret · إعدادات أخرى process.env — سياسة مختلطة</td><td>functions/index.js defineSecret CF_* · .gitignore .env*</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-147</td><td>8</td><td>Crashlytics/ErrorTracker غير مهيأ من main (إعادة تأكيد)</td><td>EV-103/104 · main بلا initialize</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-148</td><td>8</td><td>Firebase Performance مفعّل عند الإقلاع</td><td>main.dart Performance</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-149</td><td>8</td><td>MonitoringService أدمن: عينات محدودة 200–1500 من Firestore</td><td>admin_web/services/monitoring_service.dart</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-150</td><td>8</td><td>لا تنبيهات/SLO/uptime/on-call · لا جدول backup Firestore في الريبو</td><td>بحث terraform/backup/SLO → غائب</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-151</td><td>8</td><td>وسائط Cloudflare بلا إجراء استعادة/تصدير موثّق</td><td>لا runbook media DR</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-152</td><td>8</td><td>tool/analyze_critical.sh موجود يدوياً — بلا CI يستدعيه</td><td>tool/analyze_critical.sh</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="8"><td>EV-153</td><td>8</td><td>إصدار التطبيق pubspec 7.1.0+10</td><td>pubspec.yaml version</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-154</td><td>9</td><td>الخريطة تحمّل cars+properties بلا حد ثم تمرّر الكل لـ MapState</td><td>main_map_screen L190–225 · getCars/getProperties بلا limit (RK-018)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-155</td><td>9</td><td>تجميع عميل عند camera idle على كل العلامات المرئية</td><td>map_state _updateClusters · clustering_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-156</td><td>9</td><td>الخريطة بلا ترقيم صفحات؛ Spotlight بـ limit+startAfter</td><td>video_service L224–244 vs EV-154</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-157</td><td>9</td><td>إنشاء سيارة: رفع صور قبل كتابة Firestore</td><td>car_provider L77–123 (RK-045)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-158</td><td>9</td><td>إنشاء عقار: رفع صور متسلسل قبل addProperty</td><td>add_property_screen L970–1036</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-159</td><td>9</td><td>رفع الصور يعتمد callable → Cloudflare direct upload</td><td>functions/index.js · cloudflare_images_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-160</td><td>9</td><td>Phone OTP: verifyPhoneNumber مهلة 90ث + إعادة محاولة محدودة</td><td>firebase_phone_auth_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-161</td><td>9</td><td>بريد: Auth ثم قراءة users/{uid}</td><td>auth_service L117–158</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-162</td><td>9</td><td>ربط هاتف هجين: linkWithCredential</td><td>firebase_phone_auth_service L357–373</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-163</td><td>9</td><td>معرض عام: slug + gate + استعلامات محدودة + fallback تراثي</td><td>public_storefront · tenant_listings_service</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-164</td><td>9</td><td>تعليق tenant يحدّث status فقط؛ المعرض Future مرة واحدة</td><td>tenant_service setStatus · public_storefront _cached</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-165</td><td>9</td><td>لا مسار أدمن لتعطيل Auth عند تعليق tenant</td><td>admin_storefront_tenants_screen يكتب status فقط</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-166</td><td>9</td><td>WhatsApp webhook يعالج pipeline بالكامل قبل HTTP 200</td><td>whatsapp/webhook.js awaited pipeline</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-167</td><td>9</td><td>بحث WA يجلب حتى MAX_LISTINGS_FETCH=250 ثم يصفّي في الذاكرة</td><td>whatsapp/constants.js · searchListings.js</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-168</td><td>9</td><td>كل مشاهدة Spotlight: كتابة فيديو + merge spotlight_daily_views/{day}</td><td>video_service L1274–1302</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-169</td><td>9</td><td>spotlight_daily_views create/update لأي authed</td><td>firestore.rules حوالي L493–497</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-170</td><td>9</td><td>مشروع Firebase واحد = نصف قطر انفجار مشترك</td><td>firebase.json / firebase_options</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-171</td><td>9</td><td>Hosting 3 أهداف بلا أتمتة rollback/backup في الريبو</td><td>firebase.json · لا workflows</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="9"><td>EV-172</td><td>9</td><td>30 فهرساً معلناً — يجب التحقق من النشر على المشروع</td><td>firestore.indexes.json</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="10"><td>EV-173</td><td>10</td><td>تجميع P0 من الأجزاء 1–9 ≥14 حاجزاً حرجاً قبل إنتاج عام</td><td>سجل RK: 001,002,003,011,012,018,020,026,036,045,056,060,061,062 (+مرتبطات)</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="10"><td>EV-174</td><td>10</td><td>عقود بيانات مشتركة عبر 4 مداخل — أساس إيجابي مشروط</td><td>أجزاء 1+5: Firebase واحد · AuthService · Car/Property models</td><td><span class="badge active">مؤكد</span></td></tr>
+    <tr data-part="10"><td>EV-175</td><td>10</td><td>لا قياسات حمل 1k/5k/10k ولا تمرين DR في الأدلة — عتبات TBD</td><td>جزء 9 خطة فقط · جزء 8 بلا backup مُمارَس</td><td><span class="badge active">مؤكد</span></td></tr>
+
+
+
+
+
+  </table>
+</section>
+
+<!-- RISK REGISTER -->
+<section class="card" id="riskreg">
+  <h2><span class="num">RK</span> سجل المخاطر المشترك</h2>
+  <p style="font-size:.82rem;color:var(--muted)">مخاطر مكتشفة من الجرد. القرار النهائي في الجزء 10: <strong>NO-GO</strong> لإطلاق إنتاج عام غير مقيّد.</p>
+  <div class="toolbar">
+    <select id="rkFilter" onchange="filterTable('rkTable','rkFilter','sev')">
+      <option value="all">كل الخطورة</option>
+      <option value="p0">P0</option>
+      <option value="p1">P1</option>
+      <option value="p2">P2</option>
+    </select>
+  </div>
+  <table id="rkTable">
+    <tr><th>ID</th><th>العنوان</th><th>دليل</th><th>خطورة</th><th>جزء الاكتشاف</th><th>يحتاج جزء</th></tr>
+    <tr data-sev="p0"><td>RK-001</td><td>بيئة Firebase واحدة للإنتاج والتجارب</td><td>EV-002 · EV-016</td><td><span class="badge p0">P0</span></td><td>1</td><td>3,8,10</td></tr>
+    <tr data-sev="p0"><td>RK-002</td><td>غياب CI آلي للإصدارات</td><td>EV-005</td><td><span class="badge p0">P0</span></td><td>1</td><td>8,10</td></tr>
+    <tr data-sev="p0"><td>RK-003</td><td>تغطية اختبارات ضيقة جداً مقابل حجم النظام</td><td>EV-006 vs EV-003</td><td><span class="badge p0">P0</span></td><td>1</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-004</td><td>ملفات عملاقة (>1300 سطر) = خطر انحدار عالٍ</td><td>EV-012</td><td><span class="badge p1">P1</span></td><td>1</td><td>7</td></tr>
+    <tr data-sev="p1"><td>RK-005</td><td>لا طبقة Repository — خدمات تتصل بـ Firebase مباشرة</td><td>EV-008 · EV-007</td><td><span class="badge p1">P1</span></td><td>1</td><td>3,7</td></tr>
+    <tr data-sev="p1"><td>RK-006</td><td>أربعة مداخل تشترك بالكود دون حدود حزم</td><td>EV-001 · EV-004</td><td><span class="badge p1">P1</span></td><td>1</td><td>5,7</td></tr>
+    <tr data-sev="p1"><td>RK-007</td><td>README لا يدعم onboarding</td><td>EV-014</td><td><span class="badge p1">P1</span></td><td>1</td><td>7</td></tr>
+    <tr data-sev="p2"><td>RK-008</td><td>مجلدات ميزات فارغة/ميتة تضلّل المطورين</td><td>EV-017</td><td><span class="badge p2">P2</span></td><td>1</td><td>7</td></tr>
+    <tr data-sev="p2"><td>RK-009</td><td>ASP.NET غير موجود — تكامل مستقبلي بلا عقد في الريبو</td><td>EV-010</td><td><span class="badge p2">P2</span></td><td>1</td><td>5,9</td></tr>
+    <tr data-sev="p1"><td>RK-010</td><td>سطح Firestore واسع (عشرات المجموعات) بلا جرد استعلام بعد</td><td>EV-013</td><td><span class="badge p1">P1</span></td><td>1</td><td>3,9</td></tr>
+    <tr data-sev="p0"><td>RK-011</td><td>RC fetchAndActivate يحجب الإقلاع حتى دقيقة</td><td>EV-021 · EV-035</td><td><span class="badge p0">P0</span></td><td>2</td><td>6,8</td></tr>
+    <tr data-sev="p0"><td>RK-012</td><td>ProxyProvider يعيد إنشاء CRM providers عند كل تغيّر Auth</td><td>EV-027 vs EV-028</td><td><span class="badge p0">P0</span></td><td>2</td><td>7,10</td></tr>
+    <tr data-sev="p1"><td>RK-013</td><td>loadCars عند إنشاء التطبيق (شبكة مبكرة)</td><td>EV-026</td><td><span class="badge p1">P1</span></td><td>2</td><td>3,9</td></tr>
+    <tr data-sev="p1"><td>RK-014</td><td>VideoProvider / Analytics بلا dispose</td><td>EV-029 · EV-030</td><td><span class="badge p1">P1</span></td><td>2</td><td>4,7</td></tr>
+    <tr data-sev="p1"><td>RK-015</td><td>Crashlytics غير مُهيأ من مسار الإقلاع الرئيسي</td><td>EV-033</td><td><span class="badge p1">P1</span></td><td>2</td><td>8</td></tr>
+    <tr data-sev="p2"><td>RK-016</td><td>ندرة Selector → احتمال over-rebuild</td><td>EV-032</td><td><span class="badge p2">P2</span></td><td>2</td><td>4,7</td></tr>
+    <tr data-sev="p2"><td>RK-017</td><td>Maps initialize قبل Firebase (تسلسل)</td><td>EV-021</td><td><span class="badge p2">P2</span></td><td>2</td><td>6</td></tr>
+    <tr data-sev="p0"><td>RK-018</td><td>تحميل غير محدود لـ cars/properties على الخريطة</td><td>EV-038–041</td><td><span class="badge p0">P0</span></td><td>3</td><td>4,9,10</td></tr>
+    <tr data-sev="p1"><td>RK-019</td><td>watchCars API على كامل المجموعة — غير مُشترك في UI حالياً (كان يُعامل كـ P0 حي)</td><td>EV-039 · EV-055</td><td><span class="badge p1">P1</span></td><td>3</td><td>4,7</td></tr>
+    <tr data-sev="p0"><td>RK-020</td><td>spotlight_videos write لأي authed (IDOR محتمل)</td><td>EV-047</td><td><span class="badge p0">P0</span></td><td>3</td><td>5,8,10</td></tr>
+    <tr data-sev="p1"><td>RK-021</td><td>فلترة عقارات على العميل بعد جلب كامل</td><td>EV-040</td><td><span class="badge p1">P1</span></td><td>3</td><td>4,9</td></tr>
+    <tr data-sev="p1"><td>RK-022</td><td>مستند spotlight_daily_views/{today} نقطة ساخنة</td><td>EV-051</td><td><span class="badge p1">P1</span></td><td>3</td><td>9</td></tr>
+    <tr data-sev="p1"><td>RK-023</td><td>غياب App Check</td><td>EV-050</td><td><span class="badge p1">P1</span></td><td>3</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-024</td><td>أدوات أدمن تقرأ مجموعات كاملة</td><td>EV-053</td><td><span class="badge p1">P1</span></td><td>3</td><td>8</td></tr>
+    <tr data-sev="p2"><td>RK-025</td><td>قراءة عامة للإعلانات — سطح استخراج (قد يكون مقصوداً)</td><td>EV-046</td><td><span class="badge p2">P2</span></td><td>3</td><td>9</td></tr>
+    <tr data-sev="p0"><td>RK-026</td><td>لا فلترة viewport — تجميع على كل القوائم</td><td>EV-056–058</td><td><span class="badge p0">P0</span></td><td>4</td><td>9,10</td></tr>
+    <tr data-sev="p1"><td>RK-027</td><td>تجميع CPU يتصاعد مع N علامات</td><td>EV-057</td><td><span class="badge p1">P1</span></td><td>4</td><td>9</td></tr>
+    <tr data-sev="p1"><td>RK-028</td><td>prefetch صور علامات قد يضغط الشبكة/الذاكرة</td><td>EV-060–061</td><td><span class="badge p1">P1</span></td><td>4</td><td>9</td></tr>
+    <tr data-sev="p1"><td>RK-029</td><td>يتامى وسائط عند حذف سيارة</td><td>EV-068</td><td><span class="badge p1">P1</span></td><td>4</td><td>6,8</td></tr>
+    <tr data-sev="p1"><td>RK-030</td><td>رفع صور عالية الدقة بلا ضغط إلزامي في مسار العقار</td><td>EV-063 vs EV-069</td><td><span class="badge p1">P1</span></td><td>4</td><td>9</td></tr>
+    <tr data-sev="p2"><td>RK-031</td><td>watchCars ميت حالياً لكن قابل لإعادة التفعيل بالخطأ</td><td>EV-055 · EV-039</td><td><span class="badge p2">P2</span></td><td>4</td><td>7</td></tr>
+    <tr data-sev="p2"><td>RK-032</td><td>camera idle بلا debounce صريح (اعتماد على Google idle فقط)</td><td>EV-058</td><td><span class="badge p2">P2</span></td><td>4</td><td>9</td></tr>
+    <tr data-sev="p1"><td>RK-033</td><td>حالة المستخدم غير تفاعلية عبر العملاء بعد تعديل الأدمن</td><td>EV-089 · EV-090</td><td><span class="badge p1">P1</span></td><td>5</td><td>6,8</td></tr>
+    <tr data-sev="p1"><td>RK-034</td><td>عقد استضافة المعرض انتقالي (darcar.app vs car-web hosting)</td><td>EV-091</td><td><span class="badge p1">P1</span></td><td>5</td><td>6,8</td></tr>
+    <tr data-sev="p1"><td>RK-035</td><td>مخزون المعرض: tenantId + fallback مالك قد يسبب غموض</td><td>EV-085</td><td><span class="badge p1">P1</span></td><td>5</td><td>7,9</td></tr>
+    <tr data-sev="p0"><td>RK-036</td><td>قواعد CRM واسعة: أي authed يقرأ/يكتب مبيعات/عقود/فروع…</td><td>EV-093</td><td><span class="badge p0">P0</span></td><td>5</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-037</td><td>عدم تناسق صلاحية أدمن: properties نعم · cars لا</td><td>EV-092</td><td><span class="badge p1">P1</span></td><td>5</td><td>8</td></tr>
+    <tr data-sev="p2"><td>RK-038</td><td>فلتر أدمن على type فقط بينما النموذج يقبل userType</td><td>EV-075 · users_list</td><td><span class="badge p2">P2</span></td><td>5</td><td>7</td></tr>
+    <tr data-sev="p2"><td>RK-039</td><td>فجوة تكافؤ: FCM/RC/Performance على الموبايل فقط</td><td>EV-072</td><td><span class="badge p2">P2</span></td><td>5</td><td>6,8</td></tr>
+    <tr data-sev="p2"><td>RK-040</td><td>تكرار مسارات الويب كنصوص حرفية</td><td>EV-087</td><td><span class="badge p2">P2</span></td><td>5</td><td>7</td></tr>
+    <tr data-sev="p1"><td>RK-041</td><td>جعل RC غير حاجب للإقلاع (ميزانية قصيرة + قيم افتراضية)</td><td>EV-094 · RK-011</td><td><span class="badge p1">P1</span></td><td>6</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-042</td><td>تهيئة Crashlytics + FlutterError/zone قبل runApp</td><td>EV-103 · EV-104</td><td><span class="badge p1">P1</span></td><td>6</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-043</td><td>تعريف واختبار سياسة Firestore offline لكل منصة</td><td>EV-097</td><td><span class="badge p1">P1</span></td><td>6</td><td>8,9</td></tr>
+    <tr data-sev="p1"><td>RK-044</td><td>سياسة شبكة/callable موحّدة: مهلات · تصنيف retry · idempotency</td><td>EV-095 · EV-098 · EV-100</td><td><span class="badge p1">P1</span></td><td>6</td><td>7,8</td></tr>
+    <tr data-sev="p0"><td>RK-045</td><td>مسودة/outbox للرفع قبل Cloudflare — منع يتامى عند فشل كتابة listing</td><td>EV-109 · EV-100</td><td><span class="badge p0">P0</span></td><td>6</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-046</td><td>تنسيق حذف/مصالحة وسائط عند حذف أو فشل إعلان</td><td>EV-110 · RK-029</td><td><span class="badge p1">P1</span></td><td>6</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-047</td><td>اشتراك حي لحالة auth/tenant بعد تعليق أدمن</td><td>EV-107 · EV-115 · RK-033</td><td><span class="badge p1">P1</span></td><td>6</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-048</td><td>استرداد WhatsApp: lease/retry لـ processing العالق</td><td>EV-114</td><td><span class="badge p1">P1</span></td><td>6</td><td>8</td></tr>
+    <tr data-sev="p2"><td>RK-049</td><td>تمييز فارغ vs فشل تحميل في خريطة/معرض/قوائم</td><td>EV-117 · EV-105</td><td><span class="badge p2">P2</span></td><td>6</td><td>7</td></tr>
+    <tr data-sev="p2"><td>RK-050</td><td>طابور إعادة مزامنة FCM + معالجة فتح إشعار</td><td>EV-119 · EV-120</td><td><span class="badge p2">P2</span></td><td>6</td><td>8</td></tr>
+    <tr data-sev="p2"><td>RK-051</td><td>deep-link cold-start للموبايل إن لزم للمعارض/إشعارات</td><td>EV-121 · RK-034</td><td><span class="badge p2">P2</span></td><td>6</td><td>7,8</td></tr>
+    <tr data-sev="p1"><td>RK-052</td><td>ملفات عملاقة (&gt;1.3k) = انحدار ودمج عالٍ</td><td>EV-122 · EV-127</td><td><span class="badge p1">P1</span></td><td>7</td><td>8,10</td></tr>
+    <tr data-sev="p1"><td>RK-053</td><td>أربعة جذور تركيب يدوية → انحراف إعدادات بين المنصات</td><td>EV-123 · EV-124</td><td><span class="badge p1">P1</span></td><td>7</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-054</td><td>غياب Repository + Firestore من UI/providers يعيق الاختبار والهجرة</td><td>EV-125 · EV-126</td><td><span class="badge p1">P1</span></td><td>7</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-055</td><td>ملكية المسارات موزّعة — تغيير مسار يفوت منصة</td><td>EV-130</td><td><span class="badge p1">P1</span></td><td>7</td><td>8</td></tr>
+    <tr data-sev="p0"><td>RK-056</td><td>لا runbook/README تشغيلي — معرفة قبلية فقط لتشغيل 4 مداخل + Functions</td><td>EV-132 · EV-133 · EV-134</td><td><span class="badge p0">P0</span></td><td>7</td><td>8,10</td></tr>
+    <tr data-sev="p2"><td>RK-057</td><td>لا حدود ARB — نصوص عربية مضمّنة تعيق ثنائية اللغة</td><td>EV-131</td><td><span class="badge p2">P2</span></td><td>7</td><td>9</td></tr>
+    <tr data-sev="p2"><td>RK-058</td><td>مساحات ميتة + فئات تراثية تضلل المعمارية</td><td>EV-128 · EV-129 · EV-136</td><td><span class="badge p2">P2</span></td><td>7</td><td>8</td></tr>
+    <tr data-sev="p1"><td>RK-059</td><td>Functions بلا عقد اختبار/lint رغم نمو orchestration</td><td>EV-135</td><td><span class="badge p1">P1</span></td><td>7</td><td>8</td></tr>
+    <tr data-sev="p0"><td>RK-060</td><td>لا بوابة CI — تغييرات تصل الإنتاج بلا فرض اختبارات</td><td>EV-140 · EV-138</td><td><span class="badge p0">P0</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p0"><td>RK-061</td><td>لا backup/restore موثّق أو مُمارَس لـ Firestore/وسائط</td><td>EV-150 · EV-151</td><td><span class="badge p0">P0</span></td><td>8</td><td>9,10</td></tr>
+    <tr data-sev="p0"><td>RK-062</td><td>توقيع Android release بمفاتيح debug + مفتاح Maps في المصدر</td><td>EV-144</td><td><span class="badge p0">P0</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-063</td><td>اختبارات مركّزة على الخريطة — auth/CRUD/معرض/Functions شبه معدومة</td><td>EV-137 · EV-138</td><td><span class="badge p1">P1</span></td><td>8</td><td>9,10</td></tr>
+    <tr data-sev="p1"><td>RK-064</td><td>لا بيئة staging — الإنتاج = ساحة التكامل</td><td>EV-143 · RK-001</td><td><span class="badge p1">P1</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-065</td><td>Crashlytics غير موصول + لا تنبيهات/SLO</td><td>EV-147 · EV-150</td><td><span class="badge p1">P1</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-066</td><td>إصدار المتاجر/التراجع يدوي وغير موثّق</td><td>EV-142 · EV-145</td><td><span class="badge p1">P1</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-067</td><td>أسرار Functions مختلطة (Secret Manager vs env)</td><td>EV-146</td><td><span class="badge p1">P1</span></td><td>8</td><td>10</td></tr>
+    <tr data-sev="p2"><td>RK-068</td><td>لوحات الأدمن عينات محدودة — ليست telemetry أسطول كامل</td><td>EV-149</td><td><span class="badge p2">P2</span></td><td>8</td><td>9</td></tr>
+    <tr data-sev="p1"><td>RK-069</td><td>تجميع الخريطة CPU/UI حسّاس للحجم عند 1k/5k/10k</td><td>EV-155 · RK-026</td><td><span class="badge p1">P1</span></td><td>9</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-070</td><td>تعليق tenant بلا إلغاء جلسة Auth فوري ولا إخلاء عملاء أحياء</td><td>EV-164 · EV-165</td><td><span class="badge p1">P1</span></td><td>9</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-071</td><td>Webhook واتساب متزامن مع كل العمل downstream → ضغط زمن ACK</td><td>EV-166 · EV-167</td><td><span class="badge p1">P1</span></td><td>9</td><td>10</td></tr>
+    <tr data-sev="p1"><td>RK-072</td><td>spotlight_daily_views مستند يومي ساخن + كتابة authed</td><td>EV-168 · EV-169 · RK-022</td><td><span class="badge p1">P1</span></td><td>9</td><td>10</td></tr>
+    <tr data-sev="p0"><td>RK-073</td><td>قرار إطلاق: NO-GO لإنتاج عام غير مقيّد حتى إغلاق حواجز P0 الأمنية/الإصدارية/DR</td><td>EV-173 · Scorecard جزء 10</td><td><span class="badge p0">P0</span></td><td>10</td><td>—</td></tr>
+
+
+
+
+
+  </table>
+</section>
+
+<!-- PART 1 -->
+<section class="card" id="part1">
+  <h2><span class="num">1</span> الجزء 1 — جرد المستودع والمعمارية</h2>
+  <div class="callout ok"><strong>حالة الجزء:</strong> مكتمل للجرد المعماري. التعمق في الاستعلامات/الأداء/الأمن مؤجّل للأجزاء 2–4.</div>
+  <div class="tabs">
+    <button class="on" data-panel="inv" onclick="showPanel('inv')">الجرد</button>
+    <button data-panel="arch" onclick="showPanel('arch')">المعمارية</button>
+    <button data-panel="status" onclick="showPanel('status')">حالة المكوّنات</button>
+  </div>
+
+  <div class="panel on" data-panel="inv">
+    <h3 id="p1-apps">1.1 تطبيقات ومداخل التشغيل</h3>
+    <table>
+      <tr><th>المدخل</th><th>المسار</th><th>الدور</th><th>Firebase options</th><th>الحالة</th><th>خطر</th></tr>
+      <tr><td>Mobile app</td><td><code>lib/main.dart</code></td><td>تطبيق المستهلك/الوسيط الأساسي</td><td>currentPlatform</td><td><span class="badge active">active</span></td><td>P0 runtime</td></tr>
+      <tr><td>Real-estate web CRM</td><td><code>lib/web/web_main.dart</code></td><td>CRM عقاري · AuthWebFlavor.realEstate</td><td>web</td><td><span class="badge active">active</span></td><td>P0</td></tr>
+      <tr><td>Car web CRM</td><td><code>lib/car_web/car_web_main.dart</code></td><td>CRM سيارات · AuthWebFlavor.car</td><td>web</td><td><span class="badge active">active</span></td><td>P0</td></tr>
+      <tr><td>Admin panel</td><td><code>lib/admin_web/admin_main.dart</code></td><td>لوحة تحكم إدارية</td><td>web</td><td><span class="badge active">active</span></td><td>P0</td></tr>
+    </table>
+    <div class="ev">Hosting (firebase.json):
+admin → build/web-admin → target mastermax-2030-backend
+realestate → build/web-realestate → mastermax-re-web
+car → build/web-car → mastermax-car-web (+ /store/** rewrite)</div>
+
+    <h3 id="p1-features">1.2 وحدات الميزات (حسب عدد ملفات Dart)</h3>
+    <table>
+      <tr><th>الميزة</th><th>ملفات</th><th>الأهمية</th><th>الحالة</th></tr>
+      <tr><td>storefront</td><td>118</td><td>عالية — tenants/visit/walk</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>profile</td><td>103</td><td>عالية — CRM/analytics</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>spotlight</td><td>79</td><td>عالية — فيديو</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>map</td><td>72</td><td>حرجة — سطح الاستكشاف</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>auth</td><td>62</td><td>حرجة — هاتف/هجين</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>properties / dynamic_overlay</td><td>33 / 33</td><td>عالية</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>cars</td><td>21</td><td>عالية</td><td><span class="badge active">active</span></td></tr>
+      <tr><td>cinematic · legal · chat · whatsapp · assistant…</td><td>متفاوت</td><td>متوسطة–عالية</td><td><span class="badge active">active / partial</span></td></tr>
+      <tr><td>virtual_property_experience · features/admin</td><td>0</td><td>—</td><td><span class="badge dead">dead/empty</span></td></tr>
+      <tr><td>premium_ads · video · companies · car · main</td><td>1 لكل</td><td>منخفضة/غير واضحة</td><td><span class="badge partial">partial / unknown</span></td></tr>
+    </table>
+
+    <h3 id="p1-firebase">1.3 Firebase و Backend</h3>
+    <table>
+      <tr><th>المكوّن</th><th>المسار / الدليل</th><th>الحالة</th><th>خطر</th></tr>
+      <tr><td>Firebase project</td><td>mastermax-2030-backend</td><td>active وحيد</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>firestore.rules</td><td>جذر الريبو · عشرات المجموعات</td><td>active</td><td>P0</td></tr>
+      <tr><td>firestore.indexes.json</td><td>جذر</td><td>active</td><td>P1</td></tr>
+      <tr><td>storage.rules</td><td>جذر</td><td>active</td><td>P0</td></tr>
+      <tr><td>Cloud Functions</td><td>functions/ · region europe-west1</td><td>active</td><td>P0</td></tr>
+      <tr><td>CF Stream/Images proxies</td><td>createStreamDirectUpload, createImagesDirectUpload, delete…</td><td>active</td><td>P0 media</td></tr>
+      <tr><td>Assistant</td><td>functions/assistant/register.js</td><td>active/partial</td><td>P1</td></tr>
+      <tr><td>WhatsApp</td><td>functions/whatsapp/register.js</td><td>active/partial (أعلام العميل معطّلة جزئياً)</td><td>P1</td></tr>
+      <tr><td>Account activation</td><td>functions/account_activation/</td><td>active</td><td>P1</td></tr>
+      <tr><td>Admin hybrid auth</td><td>functions/admin_hybrid_auth.js</td><td>active</td><td>P0 admin</td></tr>
+      <tr><td>ASP.NET</td><td>—</td><td><span class="badge dead">absent</span></td><td>P2 future</td></tr>
+      <tr><td>server/</td><td>فارغ تقريباً</td><td>dead</td><td>P3</td></tr>
+    </table>
+
+    <h3 id="p1-state">1.4 Providers / Services / Models / Navigation</h3>
+    <div class="grid">
+      <div class="stat"><b>~22–25</b><span>ملفات provider*</span></div>
+      <div class="stat"><b>~101</b><span>ملفات *service*</span></div>
+      <div class="stat"><b>~29</b><span>ملفات *model*</span></div>
+      <div class="stat"><b>0</b><span>Repository layer</span></div>
+    </div>
+    <ul class="compact">
+      <li><strong>Navigation:</strong> <code>lib/src/navigation/app_router.dart</code> + web routers (admin/car/web).</li>
+      <li><strong>Theme:</strong> <code>lib/src/core/theme/*</code> (مُدقَّق سابقاً — لا يُعاد هنا).</li>
+      <li><strong>Config/flags:</strong> <code>AppConfig</code> + <code>RemoteConfigService</code>.</li>
+      <li><strong>Tests:</strong> 6 ملفات — أغلبها map phases.</li>
+      <li><strong>Tooling:</strong> <code>tool/analyze_critical.sh</code> · <code>run_phase1_qa.sh</code> — ليس CI كامل.</li>
+      <li><strong>Flavors:</strong> لا Android productFlavors؛ web flavors عبر AuthWebContext فقط.</li>
+    </ul>
+  </div>
+
+  <div class="panel" data-panel="arch">
+    <h3 id="p1-arch">1.5 خريطة المعمارية الفعلية (أولية)</h3>
+    <div class="flow">DAR CAR Monolith (mastermax_2030)
+├── Entry Points
+│   ├── lib/main.dart          → Mobile (Firebase + MultiProvider + AppRouter)
+│   ├── lib/web/web_main.dart  → RE CRM Web
+│   ├── lib/car_web/*_main.dart→ Car CRM Web
+│   └── lib/admin_web/*_main.dart → Admin
+├── Shared Domain Code
+│   └── lib/src/{core,features,navigation,shared,data,utils}
+├── Backend-in-repo
+│   ├── firestore.rules / indexes / storage.rules
+│   └── functions/ (CF media, assistant, whatsapp, activation, hybrid auth)
+└── Hosting targets → 3 Flutter web builds
+
+Typical Mobile Flow (inventory-level):
+User Action → Screen (features/*)
+  → Provider/ChangeNotifier (provider package)
+  → *Service (often direct Firestore/Storage/Functions)
+  → Firebase project mastermax-2030-backend
+  → Model parse → notifyListeners → UI
+
+Missing formal layers:
+  ❌ Repository / DataSource abstraction
+  ❌ Shared package boundary between apps
+  ❌ Separate staging Firebase project (config evidence)
+  ❌ CI pipeline (.github)</div>
+    <div class="callout">تفاصيل كل تدفق (auth/map/upload…) مع error/retry/cache ستُملأ في الأجزاء 2–4 — لا تُخمَّن هنا.</div>
+  </div>
+
+  <div class="panel" data-panel="status">
+    <h3>1.6 ملخص حالة المكوّنات</h3>
+    <table>
+      <tr><th>التصنيف</th><th>أمثلة</th><th>الحالة</th></tr>
+      <tr><td>Active critical</td><td>main, auth, map, cars, properties, storefront, spotlight, functions media</td><td>active</td></tr>
+      <tr><td>Active supporting</td><td>chat, favorites, legal, assistant, team, listing_comments</td><td>active</td></tr>
+      <tr><td>Partial / flagged</td><td>whatsapp (AppConfig flags false), camera screen flag</td><td>partial</td></tr>
+      <tr><td>Legacy / empty</td><td>virtual_property_experience, features/admin empty, server/</td><td>dead/legacy</td></tr>
+      <tr><td>Unknown thin</td><td>premium_ads, companies, video stub folders</td><td>unknown</td></tr>
+      <tr><td>External future</td><td>ASP.NET Content API / AdButler</td><td>absent in repo</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="card" id="p1-gaps">
+  <h2><span class="num">1</span> فجوات الجرد (ما لا يُعرف بعد)</h2>
+  <ul class="compact">
+    <li>عدد القراءات/الجلسة وتكلفة Firestore — يحتاج قياس (جزء 3/9).</li>
+    <li>هل App Check مفعّل في العميل — لا دليل Dart واضح (بناء iOS cache فقط).</li>
+    <li>سلوك timeout/retry لكل خدمة — جزء 2/6.</li>
+    <li>اتساق نماذج الموبايل/الويب/الأدمن حقلاً بحقل — جزء 5.</li>
+    <li>عتبات أداء الخريطة عند N علامات — يحتاج اختبار حمل (جزء 4/9).</li>
+  </ul>
+</section>
+
+<section class="card" id="p1-handoff">
+  <h2><span class="num">→</span> تسليم للجزء 2</h2>
+  <div class="callout cyan">
+    <strong>الجزء 2 القادم:</strong> Startup, state, and application lifecycle<br/>
+    نقاط الدخول الإلزامية للفحص:<br/>
+    • <code>lib/main.dart</code> من L60 حتى MultiProvider<br/>
+    • <code>RemoteConfigService</code> · FCM bootstrap · Phone Auth APNs<br/>
+    • كل ChangeNotifier في MultiProvider + dispose<br/>
+    • MapState (900 سطر) · VideoProvider (815) · BusinessAnalyticsProvider (1568)
+  </div>
+  <div class="callout danger"><strong>قرار الإطلاق النهائي (جزء 10):</strong> <span class="badge dead">NO-GO</span> لإطلاق إنتاج عام. انظر <a href="#part10">الجزء 10</a>.</div>
+</section>
+
+<!-- PLACEHOLDER PARTS -->
+<section class="card" id="part2">
+  <h2><span class="num">2</span> الجزء 2 — الإقلاع والحالة ودورة الحياة <span class="badge active">مكتمل</span></h2>
+  <div class="callout ok">لا يكرر جرد الجزء 1. يركّز على <code>main()</code> · MultiProvider · dispose · سباقات الحالة. <strong>قرار الإطلاق النهائي ما زال مقفولاً.</strong></div>
+
+  <h3 id="p2-boot">2.1 تتبع الإقلاع (mobile <code>lib/main.dart</code>)</h3>
+  <div class="flow">WidgetsFlutterBinding.ensureInitialized()
+→ Intl.defaultLocale = ar
+→ [BLOCK] MapService.initialize()          // native only
+→ [BLOCK] Firebase.initializeApp(...)
+→ [BLOCK] onBackgroundMessage register     // native
+→ [BLOCK] ensureIosPhoneAuthApnsReady()    // native
+→ [ASYNC] unawaited(runFcmSafeBootstrap()) // non-blocking
+→ [BLOCK] FirebasePerformance enabled
+→ [BLOCK] RemoteConfigService.initialize() // fetchAndActivate, timeout up to 1m
+→ [BLOCK] Video/Image Cloudflare prefs flags
+→ construct Auth/Car/Video/Property/... services
+→ runApp(MultiProvider → SessionTelemetryHost → MaterialApp)
+→ route '/' → AppEntryScreen
+→ onboarding storage read
+→ post-frame AuthState.initialize()        // session restore
+→ MainScreen</div>
+
+  <h3 id="p2-classify">2.2 تصنيف مهام الإقلاع</h3>
+  <table>
+    <tr><th>المهمة</th><th>الملف/الأسطر</th><th>التصنيف</th><th>ملاحظة</th></tr>
+    <tr><td>Firebase.initializeApp</td><td>main L79–93</td><td>mandatory before first frame</td><td>أساس كل الخدمات</td></tr>
+    <tr><td>MapService.initialize</td><td>main L72–75</td><td>can run after first frame (مقترح)</td><td>حالياً حاجب قبل Firebase</td></tr>
+    <tr><td>APNs phone auth ready</td><td>main L97–98</td><td>can be lazy until phone auth</td><td>يحجب الإقلاع لكل المستخدمين</td></tr>
+    <tr><td>FCM bootstrap</td><td>main L102–103 · fcm_safe_bootstrap.dart</td><td>can run after first frame</td><td>✅ unawaited فعلاً</td></tr>
+    <tr><td>Performance collection</td><td>main L106</td><td>can run after first frame</td><td>حاجب حالياً</td></tr>
+    <tr><td>Remote Config fetchAndActivate</td><td>RC L22–45 · timeout 1m</td><td>can run after first frame + defaults</td><td>أخطر حاجز محتمل (RK-011)</td></tr>
+    <tr><td>Cloudflare prefs flags</td><td>main L114–118</td><td>can be lazy until upload</td><td>حاجب حالياً</td></tr>
+    <tr><td>AuthState.initialize</td><td>app_entry L100–105</td><td>mandatory before authenticated UI</td><td>✅ بعد أول إطار — جيد</td></tr>
+    <tr><td>CarProvider.loadCars</td><td>main L195</td><td>should be lazy / after auth</td><td>شبكة عند إنشاء الشجرة (RK-013)</td></tr>
+    <tr><td>SessionTelemetryHost</td><td>session_telemetry_host.dart</td><td>after first frame</td><td>✅ post-frame</td></tr>
+    <tr><td>ErrorTracker/Crashlytics init</td><td>—</td><td>missing from boot</td><td>RK-015</td></tr>
+  </table>
+
+  <h3>2.3 سلوك الفشل عند الإقلاع</h3>
+  <ul class="compact">
+    <li>أي استثناء في كتلة try (L68–122) → شاشة خطأ عربية ثابتة ثم return (EV-024).</li>
+    <li>RC فشل داخلياً → يُبلع؛ التطبيق يكمل بـ defaults (EV-023) — جيد للتحمّل، سيئ للمراقبة.</li>
+    <li>FCM فشل → يُسجَّل ولا يوقف التطبيق (fcm_safe_bootstrap L100–101).</li>
+  </ul>
+
+  <h3 id="p2-providers">2.4 Providers في MultiProvider — dispose والسلامة</h3>
+  <table>
+    <tr><th>المزود</th><th>dispose؟</th><th>ملاحظة أدلة</th></tr>
+    <tr><td>AuthState</td><td>لا</td><td>لا اشتراكات ظاهرة؛ initialize لاحق من UI</td></tr>
+    <tr><td>MapState</td><td>نعم (mapController)</td><td>EV-037</td></tr>
+    <tr><td>CarProvider</td><td>نعم + _isDisposed + load dedupe</td><td>أفضل نمط حالياً</td></tr>
+    <tr><td>ChatProvider</td><td>نعم — يلغي كل الاشتراكات</td><td>EV-036</td></tr>
+    <tr><td>UserFeatures / LiveChat / CRM* </td><td>نعم غالباً</td><td>CRM* يُعاد إنشاؤها عبر Proxy (خطر)</td></tr>
+    <tr><td>VideoProvider</td><td><strong>لا</strong></td><td>EV-029 · notifyListeners كثير</td></tr>
+    <tr><td>BusinessAnalyticsProvider</td><td><strong>لا</strong></td><td>EV-030 · 1568 سطر</td></tr>
+    <tr><td>PropertyProvider / Favorites / Settings</td><td>لا واضح</td><td>يحتاج مراجعة جزء 4/7</td></tr>
+    <tr><td>MapService (Provider)</td><td>نعم عبر dispose: callback</td><td>main L301–304</td></tr>
+  </table>
+
+  <h3 id="p2-proxy">2.5 مخاطر ChangeNotifierProxyProvider (حرج)</h3>
+  <div class="callout danger">
+    <strong>EV-027:</strong> في <code>main.dart</code>، دوال <code>update</code> لـ CustomersProvider / SalesProvider / RealEstateCustomersProvider / BranchesProvider / RentalProvider تُنشئ <em>instances جديدة</em> عند كل تغيّر AuthState.<br/>
+    <strong>EV-028:</strong> CarProvider وحده يستخدم <code>syncAuthState</code> ويعيد استخدام نفس الـ instance — النمط الصحيح.<br/>
+    <strong>الأثر:</strong> فقدان حالة CRM محملة · استدعاء dispose على القديم · سباقات تحميل · ضغط ذاكرة عند تغيّر auth متكرر.
+  </div>
+
+  <h3 id="p2-rebuild">2.6 إعادة البناء والمستهلكون</h3>
+  <ul class="compact">
+    <li>Selector مستخدم في ~4 ملفات فقط (غالباً map) — Consumer/watch أوسع (EV-032).</li>
+    <li>AppEntry يلف MainScreen بـ <code>Consumer&lt;AuthState&gt;</code> — أي notify من Auth يعيد بناء المدخل.</li>
+    <li>VideoProvider يحتوي عشرات notifyListeners — خطر over-rebuild لشاشات الفيديو (تفصيل وسائط في الجزء 4).</li>
+    <li>لا دليل في هذا الجزء على إلغاء طلبات بحث متزامنة على مستوى عام — يُفحص في 3/4.</li>
+  </ul>
+
+  <h3>2.7 دورة حياة التطبيق</h3>
+  <ul class="compact">
+    <li>SessionTelemetryHost: resumed→كتابة app_sessions · paused→إنهاء (EV-034).</li>
+    <li>FCM foreground listener يُثبَّت مرة واحدة (_foregroundListenerAttached) — لا يُلغى عند dispose التطبيق (عملية طويلة العمر مقبولة نسبياً).</li>
+    <li>لا runZonedGuarded / لا ربط FlutterError→Crashlytics في مسار الموبايل الرئيسي (EV-033).</li>
+  </ul>
+
+  <h3 id="p2-handoff">2.8 تسليم للجزء 3</h3>
+  <div class="callout cyan">
+    <strong>الجزء 3:</strong> Firebase · استعلامات · أمن<br/>
+    ابدأ من مجموعات EV-013 + أنماط القراءة في PropertyService / CarService / MapState / VideoService.<br/>
+    اربط RK-013 (loadCars المبكر) بقياس حجم الاستعلام.
+  </div>
+</section>
+
+<section class="card" id="part3">
+  <h2><span class="num">3</span> الجزء 3 — Firebase · الاستعلامات · الأمن <span class="badge active">مكتمل</span></h2>
+  <div class="callout ok">يبني على EV-013 (قائمة المجموعات) و RK-013 (loadCars المبكر). <strong>لا أرقام تكلفة مالية مخترعة</strong> — صيغ فقط. قرار الإطلاق النهائي مقفول.</div>
+
+  <h3 id="p3-queries">3.1 استعلامات عالية الخطورة (أدلة)</h3>
+  <table>
+    <tr><th>الاستعلام</th><th>المسار</th><th>محدود؟</th><th>صفحات؟</th><th>مستمع؟</th><th>فلترة</th><th>خطر</th></tr>
+    <tr><td>getCars isActive</td><td>car_service L15–17</td><td>لا</td><td>لا</td><td>لا</td><td>خادم: isActive فقط</td><td><span class="badge p0">P0</span></td></tr>
+    <tr><td>watchCars</td><td>car_service L110–115</td><td>لا</td><td>لا</td><td>نعم كامل</td><td>لا</td><td><span class="badge p0">P0</span></td></tr>
+    <tr><td>getProperties</td><td>property_service L168–244</td><td>لا</td><td>لا</td><td>لا</td><td>خادم: ownerId اختياري · باقي العميل</td><td><span class="badge p0">P0</span></td></tr>
+    <tr><td>searchProperties</td><td>property_service L252+</td><td>لا</td><td>لا</td><td>لا</td><td>نص على العميل</td><td><span class="badge p0">P0</span></td></tr>
+    <tr><td>map initial load</td><td>main_map_screen L193–196</td><td>عبر الخدمات أعلاه</td><td>لا</td><td>لا</td><td>—</td><td><span class="badge p0">P0</span></td></tr>
+    <tr><td>getFeaturesStatistics</td><td>property_features_service L196</td><td>لا</td><td>لا</td><td>لا</td><td>عميل بالكامل</td><td><span class="badge p1">P1</span></td></tr>
+    <tr><td>admin video full scans</td><td>find_orphaned / check_status / admin_delete</td><td>لا</td><td>لا</td><td>لا</td><td>—</td><td><span class="badge p1">P1</span></td></tr>
+  </table>
+  <div class="ev">PropertyService.getProperties — بعد query.get():
+if (type/minPrice/maxPrice/minRooms/location/isAvailable) → List.where على الذاكرة
+→ كل مستند يُحسب قراءة فاتورة حتى لو استُبعد لاحقاً.</div>
+
+  <h3 id="p3-good">3.2 أنماط جيدة موجودة</h3>
+  <ul class="compact">
+    <li>VideoService: <code>limit</code> + <code>startAfterDocument</code> + ترتيب createdAt (EV-043).</li>
+    <li>Storefront inventory: صفحات حقيقية (EV-044).</li>
+    <li>tenant_listings: حدود صريحة 40–100 (EV-045).</li>
+    <li>PropertyProvider/CarProvider: دمج طلبات التحميل المتزامنة (_ongoingLoad*).</li>
+    <li>بعض العدادات: FieldValue.increment + batch للمشاهدات (EV-051).</li>
+    <li>30 فهرساً مركّباً في المستودع (EV-049) — لا يثبت أن كل استعلام مغطى.</li>
+  </ul>
+
+  <h3 id="p3-security">3.3 أمن القواعد (ما هو مُثبَت من الملفات)</h3>
+  <table>
+    <tr><th>المورد</th><th>قراءة</th><th>كتابة</th><th>الحكم</th></tr>
+    <tr><td>cars / properties</td><td>عامة (true)</td><td>مالك sellerId/ownerId + شروط حساب</td><td>UI ليست مصدر الأمن · القواعد تحمل الملكية</td></tr>
+    <tr><td>spotlight_videos</td><td>عامة</td><td><code>if authed()</code> فقط</td><td><span class="badge p0">فجوة</span> — أي مستخدم مسجّل قد يعدّل/يحذف إن عرف الـ id (ما لم تمنع طبقة أخرى غير مرئية هنا)</td></tr>
+    <tr><td>spotlight_daily_views</td><td>admin</td><td>أي authed create/update</td><td>تجميع يومي · مستند ساخن</td></tr>
+    <tr><td>Storage images/videos</td><td>غالباً auth</td><td>صاحب المسار userId</td><td>وسائط عامة تعتمد Cloudflare/URLs أكثر من Storage العام</td></tr>
+    <tr><td>App Check</td><td>—</td><td>—</td><td><span class="badge p1">غير موجود في العميل</span></td></tr>
+  </table>
+  <div class="callout warn">الأمن المُثبت = قواعد الملفات في الريبو. لا يُدّعى أمن من إعدادات Console غير المرئية.</div>
+
+  <h3>3.4 تكامل / سلامة بيانات (أولي)</h3>
+  <ul class="compact">
+    <li>Transactions: محدودة (دردشة، تفاعلات مراجعة، إنشاء tenant) — معظم تحديثات القوائم بدون version/etag.</li>
+    <li>لا دليل عام على idempotency keys لعمليات الإدراج من العميل.</li>
+    <li>حذف listing vs وسائط Cloudflare: جزء 4 يفصّل اليتامى.</li>
+  </ul>
+
+  <h3 id="p3-cost">3.5 صيغ التكلفة (بدون أرقام SAR)</h3>
+  <div class="flow">Map session listing reads ≈
+  N_active_cars (isActive query, no limit)
++ N_all_or_owner_properties (properties query, no limit)
++ (optional) re-fetch on filter via getProperties again
+
+Spotlight feed page ≈ page_size (e.g. 20) per page load
++ 1 write per view increment (video doc)
++ 1 write merge per view to spotlight_daily_views/{today}  ← contention risk
+
+Listener cost (if watchCars used) ≈
+  initial_docs + ongoing updates for entire cars collection
+
+Required measurement before forecasting:
+  - count(cars where isActive)
+  - count(properties)
+  - map sessions/day × loads per session
+  - spotlight views/day
+  - whether watchCars is actually subscribed in UI (code exists; usage audit in Part 4)</div>
+
+  <h3>3.6 تقديرات النمو — نوعية فقط</h3>
+  <table>
+    <tr><th>الحجم</th><th>أثر النمط الحالي (cars+properties unbounded)</th></tr>
+    <tr><td>1k listings</td><td>غالباً يعمل · ذاكرة/زمن مقبول على أجهزة حديثة</td></tr>
+    <tr><td>10k</td><td>بطء واضح متوقع · فاتورة قراءة لكل فتح خريطة</td></tr>
+    <tr><td>100k+</td><td>غير صالح مع النمط الحالي بدون viewport/pagination خادم</td></tr>
+  </table>
+  <div class="callout danger">هذه تقديرات معمارية من شكل الاستعلام — <strong>ليست نتائج حمل مقيسة</strong>. الجزء 9 يعرّف اختبارات القياس.</div>
+
+  <h3 id="p3-handoff">3.7 تسليم للجزء 4</h3>
+  <div class="callout cyan">
+    <strong>الجزء 4:</strong> خريطة · بحث · صور · فيديو<br/>
+    اربط EV-041 بالتجميع/العلامات · تحقق هل watchCars مُشترك فعلياً · دورة وسائط Cloudflare vs Storage · تخلص controllers.
+  </div>
+</section>
+
+<section class="card" id="part4">
+  <h2><span class="num">4</span> الجزء 4 — خريطة · بحث · صور · فيديو <span class="badge active">مكتمل</span></h2>
+  <div class="callout ok">يربط EV-041 (تحميل كامل للخريطة). يصحّح RK-019: <code>watchCars</code> <strong>موجود وغير مُشترك في UI حالياً</strong> (EV-055) — الخطر يبقى كرمز قابل لإعادة التفعيل.</div>
+
+  <h3 id="p4-map">4.1 تدفق الخريطة (أدلة)</h3>
+  <div class="flow">MainMapScreen init
+→ PropertyProvider.loadProperties() + CarProvider.loadCars()   // unbounded (Part 3)
+→ MapState holds _allProperties / cars baselines
+→ updateVisibleProperties() copies ALL into _visible*          // EV-056 NO viewport query
+→ ClusteringService.createClusters(all visible, zoom)          // EV-057 client CPU
+→ markers → GoogleMap
+→ onCameraMove: zoom only                                      // EV-059 good
+→ onCameraIdle: updateMarkers() → recluster all                // EV-058 no Timer debounce
+→ Search/filters: apply* on in-memory lists                    // EV-070</div>
+
+  <h3 id="p4-cluster">4.2 تجميع وعلامات</h3>
+  <table>
+    <tr><th>البند</th><th>الواقع</th><th>الأثر</th></tr>
+    <tr><td>مصدر العلامات</td><td>كل العناصر ذات إحداثيات غير صفرية في القائمة المرئية</td><td>يتصاعد مع حجم الكتالوج</td></tr>
+    <tr><td>خوارزمية</td><td>حلقات متداخلة + مسافة Haversine</td><td>CPU مع N كبير</td></tr>
+    <tr><td>Viewport server query</td><td>غير موجود</td><td>لا تقليل قراءات عند التحريك</td></tr>
+    <tr><td>كاش الأيقونات</td><td>حد 90 · prefetch ≤40 لكل جولة</td><td>يحمي الذاكرة جزئياً · شبكة عند أول ظهور</td></tr>
+    <tr><td>Selector</td><td>مستخدم في شريط البحث (filterType)</td><td>إيجابي محدود</td></tr>
+  </table>
+  <div class="callout warn">لا عتبة رقمية مثبتة لـ «كم علامة قبل التقطيع». الجزء 9 يجب أن يقيس FPS/ذاكرة عند 1k/5k/10k علامات.</div>
+
+  <h3 id="p4-media">4.3 دورة الوسائط</h3>
+  <table>
+    <tr><th>المرحلة</th><th>صور</th><th>فيديو Spotlight</th></tr>
+    <tr><td>التقاط/اختيار</td><td>imageQuality 95 · بلا maxWidth في مسار العقار (EV-063)</td><td>حد 240 ثانية مُوثّق مع Functions (EV-065)</td></tr>
+    <tr><td>ضغط</td><td>ImageOptimizer موجود لكن مسار العقار لا يفرضه (EV-069)</td><td>المعالجة على Cloudflare Stream</td></tr>
+    <tr><td>رفع</td><td>Direct upload عبر Cloud Functions → Cloudflare Images (EV-064)</td><td>createStreamDirectUpload عبر Functions</td></tr>
+    <tr><td>عرض</td><td>CachedNetworkImage في OptimizedImage (EV-062)</td><td>PageView + shouldPreload الحالي+1 (EV-066)</td></tr>
+    <tr><td>تخلص</td><td>—</td><td>VideoPlayerController.dispose في اللاعبين (EV-067)</td></tr>
+    <tr><td>حذف listing</td><td>deleteCar لا يحذف صور Cloudflare (EV-068)</td><td>أدوات orphan منفصلة (جزء 3 EV-053)</td></tr>
+  </table>
+
+  <h3>4.4 ما يعمل جيداً</h3>
+  <ul class="compact">
+    <li>فصل onCameraMove الخفيف عن idle لإعادة التجميع.</li>
+    <li>كاش أيقونات بحد أقصى وطرد الأقدم.</li>
+    <li>فيد الفيديو لا يحمّل كل المتحكمات مسبقاً.</li>
+    <li>أسرار Cloudflare على Functions وليس العميل (جزء 1/3).</li>
+    <li>ترقيم صفحات الفيديو من الجزء 3 ما زال صالحاً للفيد.</li>
+  </ul>
+
+  <h3>4.5 اختبارات مطلوبة قبل ادعاء العتبات</h3>
+  <ul class="compact">
+    <li>ملف بيانات: 1k / 5k / 10k listings مع إحداثيات.</li>
+    <li>قياس: زمن أول خريطة · FPS أثناء pan · ذاكرة بعد 5 دقائق · عدد BitmapDescriptor.</li>
+    <li>فيد: تمرير 50 فيديو · عدد controllers الحية · buffering.</li>
+    <li>رفع: صورة 12MP · فيديو 3–4 دقائق على شبكة بطيئة.</li>
+  </ul>
+
+  <h3 id="p4-handoff">4.6 تسليم للجزء 5</h3>
+  <div class="callout cyan">
+    <strong>الجزء 5:</strong> تكامل الموبايل · ويب العقار · ويب السيارات · الأدمن<br/>
+    مصفوفة عقود User/Car/Property/Tenant · هل الحقول/الحالات متطابقة عبر المداخل الأربعة.
+  </div>
+</section>
+
+<section class="card" id="part5">
+  <h2><span class="num">5</span> الجزء 5 — تكامل المنصات <span class="badge active">مكتمل</span></h2>
+  <div class="callout ok">المداخل الأربعة تشترك في <strong>مشروع Firebase واحد</strong> ونماذج/خدمات قوائم مركزية — لا صوامع بيانات موازية. المخاطر الرئيسية: <strong>قواعد CRM واسعة</strong>، <strong>حالة مستخدم غير تفاعلية</strong>، و<strong>DNS معرض انتقالي</strong>.</div>
+
+  <h3 id="p5-matrix">5.1 مصفوفة العقود (Platform × Domain)</h3>
+  <table>
+    <tr><th>المنصة</th><th>User</th><th>Car</th><th>Property</th><th>Tenant</th><th>Auth</th></tr>
+    <tr><td>موبايل</td><td><span class="badge active">متوافق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge partial">جزئي · هاتف+بريد</span></td></tr>
+    <tr><td>ويب عقار</td><td><span class="badge active">متوافق</span></td><td><span class="badge legacy">خارج النطاق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge partial">جزئي · بريد ويب</span></td></tr>
+    <tr><td>ويب سيارات</td><td><span class="badge active">متوافق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge legacy">خارج النطاق</span></td><td><span class="badge active">متوافق</span></td><td><span class="badge partial">جزئي · بريد ويب</span></td></tr>
+    <tr><td>أدمن</td><td><span class="badge partial">جزئي · تشغيلي</span></td><td><span class="badge partial">جزئي · بلا CRUD كامل</span></td><td><span class="badge partial">جزئي · تحقق/تحليلات</span></td><td><span class="badge active">متوافق · حالة</span></td><td><span class="badge legacy">مسار أدمن</span></td></tr>
+  </table>
+
+  <h3 id="p5-auth">5.2 مصادقة وهوية</h3>
+  <div class="flow">Firebase Auth (مشروع واحد)
+→ AuthService مشترك → users/{uid}
+→ User(type|userType, extraData: phone/tenant…)
+→ موبايل: Phone OTP + بريد
+→ ويب CRM: بريد/كلمة مرور (Phone معطّل)
+→ أدمن: نفس users + أدوات تحقق/ربط هاتف
+→ AuthState: تحميل/refresh يدوي — بلا snapshot حي (EV-090)</div>
+  <ul class="compact">
+    <li>منع الملف المزدوج عند الهاتف: بحث <code>users.phone</code> (EV-078).</li>
+    <li>حارس ويب السيارات: carDealer/carTrader فقط (CarWebGuard) — ليس ListingVerticalGuard الكامل (EV-088).</li>
+  </ul>
+
+  <h3 id="p5-listings">5.3 قوائم ومعارض</h3>
+  <table>
+    <tr><th>البند</th><th>الواقع</th><th>الأثر</th></tr>
+    <tr><td>نماذج القوائم</td><td>CarModel / PropertyModel مشتركة — لا نماذج موازية في web/admin</td><td>إيجابي قوي ضد صوامع البيانات</td></tr>
+    <tr><td>ملكية</td><td>cars.sellerId · properties.ownerId</td><td>متسق مع القواعد الأساسية</td></tr>
+    <tr><td>Tenant</td><td>tenants/{id} + مرآة على المستخدم عند الإنشاء</td><td>هوية مركزية جيدة</td></tr>
+    <tr><td>مخزون المعرض</td><td>tenantId ثم fallback seller/owner</td><td>توافق تراثي · غموض محتمل (RK-035)</td></tr>
+    <tr><td>Deep link /store</td><td>ويب عقار + سيارات · أدمن wrong-host</td><td>عقد مضيف واضح للأدمن</td></tr>
+    <tr><td>URL عام</td><td>darcar.app معلن · car-web.web.app «يعمل فوراً»</td><td>انتقال DNS (RK-034)</td></tr>
+    <tr><td>مسارات</td><td>route_constants للموبايل · حروف مكررة في web routers</td><td>انحراف صيانة (RK-040)</td></tr>
+  </table>
+
+  <h3 id="p5-rules">5.4 قواعد متقاطعة (اكتشاف جديد فوق جزء 3)</h3>
+  <div class="callout danger"><strong>RK-036 / P0:</strong> مجموعات CRM عديدة (<code>sales</code>, <code>rentals</code>, <code>property_sales</code>, عقود، فروع، <code>businesses</code>…) تسمح <code>read, write if authed()</code> بلا قيد مالك/مستأجر — أي عميل مصادَق من أي منصة يمكنه نظرياً لمس بيانات عملاء آخرين.</div>
+  <div class="callout warn"><strong>RK-037:</strong> تحديث/حذف عقار يسمح <code>isAdmin()</code>؛ تحديث/حذف سيارة يقتصر على <code>sellerId</code> — مسار إصلاح أدمن غير متكافئ.</div>
+
+  <h3>5.5 ما يعمل جيداً</h3>
+  <ul class="compact">
+    <li>مشروع Firebase واحد + AuthService + نماذج قوائم مشتركة = لا صوامع.</li>
+    <li>إنشاء tenant يحدّث المستخدم ذرياً.</li>
+    <li>ويب السيارات والعقار يعيدان استخدام شاشات/خدمات الإضافة والتعديل المشتركة.</li>
+    <li>customers (سيارات) أكثر تشدداً من بقية CRM (قيد sellerId) — نمط جيد للتوسيع.</li>
+  </ul>
+
+  <h3>5.6 فجوات تكافؤ مقصودة (ليست بالضرورة عيوباً)</h3>
+  <ul class="compact">
+    <li>الموبايل يملك FCM/APNs/Performance/RC؛ الويب لا.</li>
+    <li>كل ويب CRM عمودي (عقار أو سيارات) وليس سوبر-أب كامل.</li>
+    <li>الأدمن تشغيلي أكثر من CRUD إعلانات كامل.</li>
+  </ul>
+
+  <h3 id="p5-handoff">5.7 تسليم للجزء 6</h3>
+  <div class="callout cyan">
+    <strong>الجزء 6:</strong> موثوقية · شبكة · offline · استرداد<br/>
+    ركّز على: timeouts/retry · سلوك الشبكة الضعيفة · استمرارية الجلسة بعد تعليق tenant · DNS/storefront · انتشار حالة المستخدم بعد تعديل أدمن.
+  </div>
+</section>
+
+<section class="card" id="part6">
+  <h2><span class="num">6</span> الجزء 6 — موثوقية · شبكة · Offline · استرداد <span class="badge active">مكتمل</span></h2>
+  <div class="callout warn">لا طبقة مرونة موحّدة فعّالة: <code>NetworkClient</code> موجود لكن <strong>ميت</strong> (EV-095). المهلات/إعادة المحاولة متفرقة حسب الميزة. قرار Go/No-Go ما زال مقفولاً.</div>
+
+  <h3 id="p6-timeouts">6.1 مهلات وإعادة محاولة</h3>
+  <table>
+    <tr><th>المسار</th><th>الواقع</th><th>مخاطرة</th></tr>
+    <tr><td>Remote Config عند الإقلاع</td><td>await حتى ~60ث</td><td>تجميد إقلاع (RK-011/041)</td></tr>
+    <tr><td>NetworkClient</td><td>30ث + 3 retries — بلا مستهلكين</td><td>سياسة وهمية</td></tr>
+    <tr><td>Callables</td><td>45–120ث متباينة · WA بلا timeout عميل</td><td>سلوك غير متوقع</td></tr>
+    <tr><td>صور Cloudflare</td><td>بلا timeout/resume</td><td>تعليق رفع غير محدد</td></tr>
+    <tr><td>فيديو Stream</td><td>10–15د + TUS</td><td>أفضل نسبياً</td></tr>
+    <tr><td>Firebase Storage</td><td>بلا مهلة صريحة (تحقق/هوية)</td><td>تعليق محتمل</td></tr>
+    <tr><td>التقاط أعطال</td><td>Crashlytics غير موصول من main · لا zone</td><td>فقدان أعطال (RK-042)</td></tr>
+  </table>
+
+  <h3 id="p6-offline">6.2 Offline · جلسة · واجهة فشل</h3>
+  <div class="flow">Firestore: إعدادات افتراضية SDK فقط (EV-097)
+→ لا تسمية «كاش vs حي» في UI
+→ فشل جلب قوائم غالباً → [] يبدو كفراغ (EV-117)
+→ Auth: استعادة Firebase + get ملف · فشل الملف لا يمنع الدخول (EV-106)
+→ AuthState / tenant: بلا اشتراك حي (EV-107 · EV-115)
+→ FCM: فشل غير قاتل · بلا طابور مزامنة (EV-119)
+→ Deep links موبايل: غير منفّذة على طبقة Flutter (EV-121)</div>
+  <div class="callout cyan">قياس مطلوب لاحقاً (جزء 8/9): سلوك persistence فعلي Android/iOS/Web · معدل timeout RC · عمر رسائل WA processing.</div>
+
+  <h3 id="p6-upload">6.3 رفع · Idempotency · استرداد جزئي</h3>
+  <table>
+    <tr><th>السيناريو</th><th>السلوك الحالي</th><th>النتيجة</th></tr>
+    <tr><td>إنشاء إعلان</td><td>رفع وسائط ← ثم كتابة Firestore</td><td>يتامى إن فشلت الكتابة (RK-045 P0)</td></tr>
+    <tr><td>رفع جزئي</td><td>يُكمَل مع تحذير</td><td>UX مقبول · بلا استئناف عناصر فاشلة</td></tr>
+    <tr><td>حذف إعلان</td><td>حذف مستند فقط</td><td>يتامى Cloudflare (RK-046)</td></tr>
+    <tr><td>Double-submit</td><td>حراسة أثناء الجلسة فقط</td><td>تكرار محتمل بعد timeout غامض</td></tr>
+    <tr><td>WhatsApp inbound</td><td>create(wamid) جيد</td><td>processing عالق يمنع إعادة المحاولة (RK-048)</td></tr>
+  </table>
+
+  <h3>6.4 ما يعمل جيداً</h3>
+  <ul class="compact">
+    <li>فيديو: مهلات طويلة + TUS + retry مرئي في المشغّل.</li>
+    <li>FCM bootstrap معزول عن فشل الإقلاع.</li>
+    <li>معرض عام يفحص التعليق قبل العرض الأولي + زر إعادة.</li>
+    <li>WhatsApp يمنع تكرار التسليم الناجح عبر claim.</li>
+    <li>حراسة تحميل أثناء عمليات الإضافة الحية.</li>
+  </ul>
+
+  <h3>6.5 ما لا يُخترع هنا</h3>
+  <ul class="compact">
+    <li>لا نسب timeout/% نجاح/% orphan بدون قياس تشغيل.</li>
+    <li>لا افتراض أن Firestore offline «يعمل» على الويب دون اختبار صريح.</li>
+  </ul>
+
+  <h3 id="p6-handoff">6.6 تسليم للجزء 7</h3>
+  <div class="callout cyan">
+    <strong>الجزء 7:</strong> صيانة · توسّع · onboarding<br/>
+    ركّز على: ملفات عملاقة · غياب Repository · NetworkClient/AuthProvider ميتين · README · حدود الحزم بين المداخل الأربعة · توحيد طبقات المرونة المكتشفة هنا.
+  </div>
+</section>
+
+<section class="card" id="part7">
+  <h2><span class="num">7</span> الجزء 7 — صيانة · توسّع · Onboarding <span class="badge active">مكتمل</span></h2>
+  <div class="callout danger"><strong>RK-056 / P0:</strong> README قالب Flutter (16 سطراً) · launch.json بلا أهداف الويب الثلاثة · docs كثيرة بلا runbook تشغيل. إضافة مطوّر جديد تعتمد معرفة قبلية.</div>
+
+  <h3 id="p7-hotspots">7.1 نقاط ساخنة (LOC)</h3>
+  <table>
+    <tr><th>الملف</th><th>LOC</th><th>لماذا خطر</th></tr>
+    <tr><td>profile_screen.dart</td><td>1797</td><td>تنقل + أدوار + UI في شاشة واحدة</td></tr>
+    <tr><td>add_rental_screen.dart</td><td>1682</td><td>نموذج ضخم + تحقق مربوط بالواجهة</td></tr>
+    <tr><td>business_analytics_provider.dart</td><td>1568</td><td>تجميع + Firestore مباشر</td></tr>
+    <tr><td>analytics_widgets.dart</td><td>1476</td><td>حزمة UI يصعب مراجعتها</td></tr>
+    <tr><td>video_service.dart</td><td>1436</td><td>وسائط + استمرارية + تشغيل</td></tr>
+    <tr><td>main_map_screen.dart</td><td>1379</td><td>God screen خريطة</td></tr>
+    <tr><td>map_state.dart / video_provider.dart</td><td>900 / 815</td><td>God-state متعدد المسؤوليات</td></tr>
+    <tr><td>functions/index.js</td><td>868</td><td>نقطة تسجيل مشتركة = تعارض دمج</td></tr>
+  </table>
+
+  <h3 id="p7-boundaries">7.2 حدود معمارية</h3>
+  <div class="flow">ميزة جديدة عبر المنصات؟
+→ غالباً تعديل main.dart + أحد web_*_main + router(ات)
+→ خدمات تتصل بـ Firebase مباشرة (لا Repository)
+→ ~60 ملفاً في features تستورد FirebaseFirestore.instance
+→ مسارات مكررة في 4 routers
+→ NetworkClient + AuthProvider ميتان يضلّلان «من المصدر الحقيقي»</div>
+  <ul class="compact">
+    <li>إيجابي: بعض الخدمات تقبل حقن Firestore عبر المنشئ — بذرة للاختبار.</li>
+    <li>إيجابي: MultiProvider صريح يُظهر التبعيات (لكن يدوي وهش).</li>
+    <li>مساحات فارغة: <code>features/admin</code> · <code>virtual_property_experience</code> · <code>core/router</code>.</li>
+  </ul>
+
+  <h3 id="p7-onboard">7.3 Onboarding — فجوات</h3>
+  <table>
+    <tr><th>البند</th><th>الحالة</th></tr>
+    <tr><td>README تشغيلي</td><td><span class="badge dead">قالب فقط</span></td></tr>
+    <tr><td>CONTRIBUTING / setup</td><td><span class="badge dead">غائب</span></td></tr>
+    <tr><td>VS Code launch لأربع مداخل</td><td><span class="badge dead">غائب</span></td></tr>
+    <tr><td>أمثلة env آمنة لـ Functions</td><td><span class="badge dead">غائب</span></td></tr>
+    <tr><td>فهرس docs: منتج vs تشغيل</td><td><span class="badge partial">16 HTML بلا فصل</span></td></tr>
+    <tr><td>ARB / ترجمة</td><td><span class="badge dead">لا ملفات</span></td></tr>
+    <tr><td>Functions test/lint scripts</td><td><span class="badge dead">لا في package.json</span></td></tr>
+  </table>
+
+  <h3>7.4 ما يعمل جيداً</h3>
+  <ul class="compact">
+    <li>تقسيم features تحت <code>lib/src/features</code> في المناطق الناضجة.</li>
+    <li>حقن اختياري لـ Firestore في بعض الخدمات.</li>
+    <li>بوابة التدقيق نفسها تفصل الأجزاء وتراكم الأدلة.</li>
+  </ul>
+
+  <h3>7.5 دين تقني — أولوية صيانة (ليست قرار إطلاق)</h3>
+  <ol class="compact">
+    <li>Runbook + launch configs + README (يفتح RK-056).</li>
+    <li>استخراج حدود بيانات قابلة للوهم حول القوائم/auth قبل تفكيك الشاشات العملاقة.</li>
+    <li>وحدة تركيب مشتركة تقلل انحراف المداخل الأربعة.</li>
+    <li>حذف/عزل NetworkClient و AuthProvider والمساحات الفارغة.</li>
+    <li>عقد اختبار/lint لـ Functions.</li>
+  </ol>
+
+  <h3 id="p7-handoff">7.6 تسليم للجزء 8</h3>
+  <div class="callout cyan">
+    <strong>الجزء 8:</strong> اختبارات · CI · إصدار · DR<br/>
+    صنّف الـ 6 اختبارات الحالية · غياب CI · مصفوفة بناء 4 مداخل + Functions · أدوات mock · أسرار/rollback · ربط قابلية الاختبار بغياب Repository.
+  </div>
+</section>
+
+<section class="card" id="part8">
+  <h2><span class="num">8</span> الجزء 8 — اختبارات · CI · إصدار · مراقبة · DR <span class="badge active">مكتمل</span></h2>
+  <div class="callout danger">ثلاث مخاطر P0 هندسية للإصدار: <strong>لا CI</strong> (RK-060) · <strong>لا backup/restore موثّق</strong> (RK-061) · <strong>Android release بمفاتيح debug + مفتاح Maps في gradle</strong> (RK-062). أُدمجت في قرار الجزء 10: <span class="badge dead">NO-GO</span>.</div>
+
+  <h3 id="p8-tests">8.1 تغطية الاختبارات</h3>
+  <table>
+    <tr><th>المجال</th><th>الحالة</th><th>ملاحظة</th></tr>
+    <tr><td>خريطة</td><td><span class="badge partial">جزئي قوي</span></td><td>~78 حالة في 4 ملفات map_phase* · بلا Google Map حقيقي</td></tr>
+    <tr><td>قائمة مالك</td><td><span class="badge partial">جزئي</span></td><td>owner_listing_popup_menu فقط</td></tr>
+    <tr><td>Auth / OTP</td><td><span class="badge dead">لا شيء</span></td><td>—</td></tr>
+    <tr><td>CRUD سيارات/عقارات</td><td><span class="badge dead">لا شيء</span></td><td>—</td></tr>
+    <tr><td>معرض / tenant</td><td><span class="badge dead">لا شيء</span></td><td>—</td></tr>
+    <tr><td>Functions / webhooks</td><td><span class="badge dead">لا شيء</span></td><td>لا scripts اختبار</td></tr>
+    <tr><td>Golden / integration</td><td><span class="badge dead">لا شيء</span></td><td>لا مجلد integration_test</td></tr>
+    <tr><td>widget_test.dart</td><td><span class="badge legacy">قالب</span></td><td>عداد Flutter غير ذي صلة</td></tr>
+  </table>
+  <div class="callout ok">الجناح الحالي أخضر محلياً حسب عدّ الحالات (~78). المشكلة ليست «فشل الاختبارات» بل <strong>ضيق النطاق وغياب البوابة الآلية</strong>.</div>
+
+  <h3 id="p8-cicd">8.2 CI/CD وإصدار</h3>
+  <table>
+    <tr><th>القدرة</th><th>الحالة</th><th>تقييم</th></tr>
+    <tr><td>بوابة PR (flutter test / analyze)</td><td><span class="badge dead">غائبة</span></td><td>analyze_critical.sh يدوي فقط (EV-152)</td></tr>
+    <tr><td>Functions lint/test</td><td><span class="badge dead">غائبة</span></td><td>EV-141</td></tr>
+    <tr><td>Hosting 3 أهداف</td><td><span class="badge partial">يدوي</span></td><td>admin · realestate · car</td></tr>
+    <tr><td>توقيع Android release</td><td><span class="badge dead">debug</span></td><td>RK-062</td></tr>
+    <tr><td>TestFlight / Play أتمتة</td><td><span class="badge dead">غائبة</span></td><td>EV-145</td></tr>
+    <tr><td>Staging / ترقية</td><td><span class="badge dead">غائبة</span></td><td>مشروع واحد (EV-143)</td></tr>
+    <tr><td>إصدار التطبيق</td><td><span class="badge active">7.1.0+10</span></td><td>pubspec</td></tr>
+  </table>
+
+  <h3 id="p8-monitor">8.3 مراقبة · أسرار · DR</h3>
+  <div class="flow">Performance: مفعّل عند الإقلاع (EV-148)
+→ Crashlytics: موجود كوداً · غير موصول (EV-147)
+→ أدمن monitoring: عينات Firestore محدودة (EV-149)
+→ تنبيهات/SLO/on-call: غائبة (EV-150)
+→ أسرار Cloudflare: Secret Manager جيد · بقية env مختلطة (EV-146)
+→ Firestore/وسائط backup+restore: بلا دليل في الريبو (EV-150/151)
+→ نصف قطر الانفجار: مشروع Firebase واحد لكل شيء</div>
+
+  <h3>8.4 ما يعمل جيداً</h3>
+  <ul class="compact">
+    <li>اختبارات الخريطة ذات معنى (وحدات/ويدجت/RTL/حدود rebuild).</li>
+    <li>فصل Hosting لثلاثة أهداف.</li>
+    <li>أسرار Cloudflare عبر defineSecret.</li>
+    <li>شاشات مراقبة أدمن مفيدة كنقطة بداية تشغيلية.</li>
+  </ul>
+
+  <h3>8.5 ما لا يُخترع هنا</h3>
+  <ul class="compact">
+    <li>لا RTO/RPO بلا تمرين استعادة فعلي.</li>
+    <li>لا تكلفة مالية — صيغ ومتغيرات فقط في الجزء 9.</li>
+  </ul>
+
+  <h3 id="p8-handoff">8.6 تسليم للجزء 9</h3>
+  <div class="callout cyan">
+    <strong>الجزء 9:</strong> سيناريوهات · صيغ تكلفة · خطة حمل<br/>
+    سيناريوهات: auth · CRUD · معرض · فشل وسائط · انقطاع Firebase/Cloudflare · rollback · restore.<br/>
+    تكلفة: قراءات/كتابات Firestore · Functions · تخزين/egress · Cloudflare · Maps — متغيرات فقط بلا أرقام مالية مخترعة.<br/>
+    حمل: خط أساس → ثابت → ذروة → soak → حقن فشل → تمرين DR.
+  </div>
+</section>
+
+<section class="card" id="part9">
+  <h2><span class="num">9</span> الجزء 9 — سيناريوهات · صيغ تكلفة · خطة حمل <span class="badge active">مكتمل</span></h2>
+  <div class="callout warn"><strong>لا أرقام مالية ولا عتبات أداء مخترعة.</strong> كل الحدود = TBD بعد قياس خط الأساس. الأدلة الثابتة تُعرّف أين يتصاعد الحمل؛ القرار النهائي في الجزء 10.</div>
+
+  <h3 id="p9-scenarios">9.1 كتالوج السيناريوهات (SC)</h3>
+  <table>
+    <tr><th>ID</th><th>المسار</th><th>أنظمة</th><th>فشل متوقّع من الأدلة</th><th>ماذا يُقاس</th></tr>
+    <tr><td>SC-01</td><td>Phone OTP</td><td>Auth · APNs/Play · SMS</td><td>مهلة 90ث · جاهزية جهاز · حصص</td><td>نجاح مراحل · p95 زمن · أكواد فشل</td></tr>
+    <tr><td>SC-02</td><td>بريد / ربط هجين</td><td>Auth · users/{uid}</td><td>Auth ينجح وملف Firestore يفشل</td><td>تقسيم أخطاء · تعارض credential</td></tr>
+    <tr><td>SC-03</td><td>إنشاء سيارة+صور</td><td>Callable · CF Images · Firestore</td><td>يتامى وسائط (RK-045)</td><td>زمن رفع · orphans · فشل الكتابة</td></tr>
+    <tr><td>SC-04</td><td>إنشاء عقار+صور</td><td>نفسه</td><td>رفع متسلسل بطيء · orphans</td><td>لكل صورة + التدفق الكامل</td></tr>
+    <tr><td>SC-05</td><td>فتح خريطة عند N</td><td>Firestore · Maps · CDN · تجميع</td><td>قراءات غير محدودة · CPU عميل (RK-018/026/069)</td><td>TTI · jank · heap · R عند 1k/5k/10k</td></tr>
+    <tr><td>SC-06</td><td>تمرير Spotlight</td><td>Firestore صفحات · Stream</td><td>مستند يومي ساخن (RK-072)</td><td>صفحات/جلسة · buffering · W_daily</td></tr>
+    <tr><td>SC-07</td><td>/store/{slug}</td><td>Hosting · Firestore · CDN</td><td>fallback يضاعف R · تعليق غير حي</td><td>عدد استعلامات · زمن · حالة معلقة</td></tr>
+    <tr><td>SC-08</td><td>واتساب وارد</td><td>Meta · Functions · Firestore</td><td>pipeline متزامن (RK-071) · حد 250</td><td>ACK · مدة · تكرار · cold start</td></tr>
+    <tr><td>SC-09</td><td>أدمن يعلّق tenant حي</td><td>Admin · tenants · عملاء</td><td>لا إلغاء Auth · صفحة محمّلة تبقى (RK-070)</td><td>زمن الفرض · جلسة قديمة vs جديدة</td></tr>
+    <tr><td>SC-10</td><td>انقطاع Firebase أو Cloudflare</td><td>كل المنصات</td><td>نصف قطر مشروع واحد (EV-170)</td><td>تصنيف أخطاء · حالة متدهورة</td></tr>
+    <tr><td>SC-11</td><td>نشر سيء → rollback</td><td>Hosting · Functions · rules</td><td>لا أتمتة في الريبو (EV-171)</td><td>زمن التراجع · توافق عميل</td></tr>
+    <tr><td>SC-12</td><td>تمرين restore Firestore</td><td>نسخ احتياطي · فهارس</td><td>لا دليل backup (RK-061)</td><td>RPO/RTO محقّق · سلامة عيّنة</td></tr>
+    <tr><td>SC-13</td><td>ذروة تصفّح قراءة</td><td>خريطة+معرض+Spotlight</td><td>يضخّم EV-154/168</td><td>R/s · أخطاء · jank · egress</td></tr>
+  </table>
+
+  <h3 id="p9-cost">9.2 صيغ التكلفة (رموز فقط)</h3>
+  <div class="callout cyan">
+    <code>Cost_total = P_R·R + P_W·W + P_D·D + P_S·S_gb + P_E·E_gb + P_Fi·F_inv + P_Fg·F_gb_s + P_M·M_maps + P_CFi·CF_img + P_CFv·CF_vid + P_H·Host_gb</code><br/>
+    أضف رموزاً منفصلة عند الحاجة: <code>A_phone</code> (SMS/OTP) · <code>WA_msg</code> · <code>AI_tok</code>. أسعار الوحدة <code>P_*</code> من فاتورة الحساب الحي فقط.
+  </div>
+  <table>
+    <tr><th>الرحلة</th><th>ما يتصاعد</th></tr>
+    <tr><td>OTP / بريد</td><td>A_phone · R_users · W_telemetry</td></tr>
+    <tr><td>إعلان+صور</td><td>F_inv (direct upload) · CF_img · W_listing · S_gb (يشمل orphans)</td></tr>
+    <tr><td>فتح خريطة</td><td>R ≈ حجم المجموعة كلها · M_maps · CF_img للعلامات · E_gb حمولة كاملة</td></tr>
+    <tr><td>Spotlight</td><td>R صفحات محدودة · W_view + W_dailyAggregate · CF_vid</td></tr>
+    <tr><td>معرض عام</td><td>R_slug + R_listings + R_legacyFallback · Host_gb · CF_*</td></tr>
+    <tr><td>واتساب</td><td>F_inv (+retries) · F_gb_s مدة متزامنة · R_search≤250 · WA_msg · AI_tok</td></tr>
+    <tr><td>ذروة تصفّح</td><td>Σ رحلات الجلسات · تركيز W_dailyAggregate منفصل</td></tr>
+  </table>
+
+  <h3 id="p9-load">9.3 خطة الحمل (قياس أولاً)</h3>
+  <table>
+    <tr><th>المرحلة</th><th>ماذا</th><th>قياسات</th><th>معيار النجاح</th></tr>
+    <tr><td>1 خط أساس</td><td>SC-01…09 مستخدم مضبوط</td><td>زمن · R/W · أخطاء · CDN</td><td>تغطية أدوات · خط أساس قابل للتكرار</td></tr>
+    <tr><td>2 ثابت</td><td>مزيج تصفّح مستدام</td><td>p50/p95/p99 · jank · ذاكرة</td><td>ضمن ميزانيات TBD منتجية</td></tr>
+    <tr><td>3 ذروة</td><td>اندفاع خريطة/معرض/Spotlight + WA</td><td>ACK · cold start · retries</td><td>لا عاصفة إعادة محاولة · عودة TBD</td></tr>
+    <tr><td>4 Soak</td><td>ساعات متعددة + تحديثات</td><td>تسرب ذاكرة · انحدار أخطاء · ميل التكلفة</td><td>لا تدهور أحادي · استقرار TBD</td></tr>
+    <tr><td>5 حقن فشل</td><td>حرمان Auth/Firestore/CF/Meta</td><td>حالة متدهورة · orphans · تكرار WA</td><td>فشل آمن صريح · سياسة retry TBD</td></tr>
+    <tr><td>6 DR/rollback</td><td>نشر سيء + restore معزول</td><td>زمن تراجع/استعادة · سلامة</td><td>runbook قابل للتنفيذ · RTO/RPO TBD</td></tr>
+  </table>
+  <div class="callout ok"><strong>مصفوفة خريطة إلزامية:</strong> N = 1k / 5k / 10k · زوم منخفض/متوسط/عالٍ · كثافة مدينة · pan/zoom burst · كاش بارد/دافئ. قياس العميل (FPS/heap) لا يقل أهمية عن قراءات Firestore.</div>
+
+  <h3>9.4 معروف ثابتاً vs يجب قياسه</h3>
+  <ul class="compact">
+    <li><strong>معروف:</strong> قراءات خريطة غير محدودة · تجميع عميل · مشروع واحد · orphans وسائط · WA متزامن · daily views ساخن · لا CI/DR أتمتة · 30 فهرساً معلناً · قواعد CRM واسعة (RK-036).</li>
+    <li><strong>يُقاس:</strong> أحجام المجموعات الفعلية · payload · أداء أجهزة · حصص Auth/SMS · نسب CF · cold start · وجود backup حقيقي · أسعار P_* من الفاتورة.</li>
+  </ul>
+
+  <h3 id="p9-handoff">9.5 تسليم للجزء 10 — مدخلات القرار</h3>
+  <ol class="compact">
+    <li>بوابة قابلية خريطة 1k/5k/10k (أو قبول Conditional مع خطة).</li>
+    <li>سلامة وسائط/orphans.</li>
+    <li>موثوقية Auth OTP/بريد.</li>
+    <li>فرض تعليق tenant على الجلسات الحية.</li>
+    <li>موثوقية واتساب (ACK/تكرار).</li>
+    <li>مستند Spotlight اليومي (سعة + سلامة كتابة).</li>
+    <li>نصف قطر Firebase/Cloudflare + مراقبة.</li>
+    <li>CI + rollback + restore مُمارَس.</li>
+    <li>رؤية تكلفة برموز مقيسة (لا تخمين سعر).</li>
+    <li>أمن القواعد (خصوصاً RK-036 وغيرها من P0 أمنية) مستقل عن الحمل.</li>
+  </ol>
+</section>
+
+<section class="card" id="part10">
+  <h2><span class="num">10</span> الجزء 10 — القرار النهائي <span class="badge dead">NO-GO</span></h2>
+
+  <div class="callout danger" id="p10-verdict">
+    <strong>القرار:</strong> <span class="badge dead">NO-GO</span> لإطلاق إنتاج عام / متاجر غير مقيّد / مستخدمين غير موثوقين على نطاق واسع.<br/><br/>
+    السبب الجذري ليس «المنتج غير موجود»، بل تراكم حواجز P0 في <strong>الأمن · سلامة البيانات · الإصدار · الاستعادة · سعة الخريطة</strong> بلا قياس حمل مغلق وبدون بوابة CI.<br/><br/>
+    <strong>ما ليس القرار:</strong> هذا ليس حكماً بأن الكود بلا قيمة. العقود المشتركة عبر المداخل الأربعة والفيد المرقّم وفصل Hosting وأسرار Cloudflare هي أسس يمكن البناء عليها بعد إغلاق الحواجز.
+  </div>
+
+  <h3 id="p10-score">10.1 Scorecard (0–5) — أعلى = أكثر جاهزية</h3>
+  <table>
+    <tr><th>البُعد</th><th>درجة</th><th>مبرر موجز</th></tr>
+    <tr><td>معمارية وعقود منصات</td><td><strong>3.0</strong></td><td>Firebase/نماذج مشتركة جيدة · حدود حزم ضعيفة · 4 جذور تركيب</td></tr>
+    <tr><td>إقلاع وحالة</td><td><strong>2.0</strong></td><td>RC حاجب · Proxy CRM recreate · Crashlytics غير موصول</td></tr>
+    <tr><td>بيانات وأمن قواعد</td><td><strong>1.0</strong></td><td>CRM authed كامل · spotlight write · لا App Check</td></tr>
+    <tr><td>خريطة ووسائط</td><td><strong>1.5</strong></td><td>قراءات بلا حد · تجميع عميل · orphans · فيد فيديو أفضل نسبياً</td></tr>
+    <tr><td>تكامل المنصات</td><td><strong>3.5</strong></td><td>لا صوامع · DNS انتقالي · حالة غير حيّة</td></tr>
+    <tr><td>موثوقية/شبكة</td><td><strong>2.0</strong></td><td>NetworkClient ميت · رفع بلا timeout · WA processing عالق</td></tr>
+    <tr><td>صيانة/Onboarding</td><td><strong>1.5</strong></td><td>ملفات عملاقة · README قالب · لا runbook</td></tr>
+    <tr><td>اختبار/CI/إصدار/DR</td><td><strong>1.0</strong></td><td>~78 اختبار خريطة · لا CI · debug sign · لا backup مُمارَس</td></tr>
+    <tr><td>سعة/تكلفة مقيسة</td><td><strong>1.0</strong></td><td>خطة جزء 9 موجودة · لا خط أساس مقيس · لا أسعار فاتورة</td></tr>
+    <tr><td><strong>الجاهزية الإجمالية</strong></td><td><strong>≈ 1.8 / 5</strong></td><td>تحت عتبة Conditional للإطلاق العام</td></tr>
+  </table>
+  <div class="callout cyan">تفسير الدرجات: 4–5 = GO · 3 = Conditional ضيق · ≤2 = NO-GO للإطلاق العام. الدرجة الحالية ≈1.8.</div>
+
+  <h3 id="p10-blockers">10.2 حواجز P0 يجب إغلاقها قبل أي ترقية للقرار</h3>
+  <table>
+    <tr><th>الحاجز</th><th>RK</th><th>لماذا يمنع إنتاجاً عاماً</th></tr>
+    <tr><td>قواعد CRM واسعة (أي authed يقرأ/يكتب)</td><td>036</td><td>تسريب/تلاعب بيانات أعمال عبر أي حساب</td></tr>
+    <tr><td>spotlight_videos write لأي authed</td><td>020</td><td>IDOR / عبث بمحتوى عام</td></tr>
+    <tr><td>Android release بمفاتيح debug + مفتاح Maps في المصدر</td><td>062</td><td>سلامة متجر + حوكمة مفاتيح</td></tr>
+    <tr><td>لا CI / لا بوابة اختبار</td><td>002 · 060 · 003</td><td>انحدار يصل مشروع الإنتاج الوحيد</td></tr>
+    <tr><td>لا backup/restore مُمارَس</td><td>061</td><td>RPO/RTO مجهولان — نصف قطر مشروع واحد</td></tr>
+    <tr><td>تحميل خريطة غير محدود + بلا viewport</td><td>018 · 026</td><td>انهيار تكلفة/أداء مع نمو الكتالوج (بلا قياس مغلق)</td></tr>
+    <tr><td>يتامى وسائط عند فشل كتابة listing</td><td>045</td><td>تكلفة + فوضى مخزون وسائط</td></tr>
+    <tr><td>بيئة Firebase واحدة بلا staging</td><td>001 · 064</td><td>تجارب = إنتاج</td></tr>
+    <tr><td>RC يحجب الإقلاع حتى ~60ث</td><td>011</td><td>تجميد إقلاع على شبكة ضعيفة</td></tr>
+    <tr><td>ProxyProvider يعيد إنشاء CRM</td><td>012</td><td>فقدان حالة/سباقات عند تغيّر Auth</td></tr>
+    <tr><td>لا runbook تشغيل</td><td>056</td><td>تشغيل 4 مداخل + Functions معرفة قبلية</td></tr>
+  </table>
+
+  <h3>10.3 ما يعمل ويستحق الحفاظ عليه</h3>
+  <ul class="compact">
+    <li>مشروع/نماذج/خدمات قوائم مشتركة عبر الموبايل وويب العقار وويب السيارات والأدمن.</li>
+    <li>Spotlight و inventory المعرض بترقيم صفحات — نمط صحيح يجب توسيعه للخريطة.</li>
+    <li>أسرار Cloudflare عبر Secret Manager · Hosting بثلاثة أهداف.</li>
+    <li>اختبارات خريطة ذات معنى (~78) كنواة بوابة CI.</li>
+    <li>WhatsApp claim(wamid) · فيد فيديو preload محدود · Performance مفعّل.</li>
+  </ul>
+
+  <h3 id="p10-roadmap">10.4 مسار الترقية: NO-GO → Conditional GO → GO</h3>
+  <table>
+    <tr><th>المرحلة</th><th>الشروط الدنيا</th><th>النطاق المسموح</th></tr>
+    <tr>
+      <td><span class="badge dead">الآن · NO-GO</span></td>
+      <td>—</td>
+      <td>تطوير داخلي فقط · لا طرح متاجر عام · لا دعوة جماهيرية</td>
+    </tr>
+    <tr>
+      <td><span class="badge partial">Conditional GO</span></td>
+      <td>
+        1) تشديد قواعد CRM + spotlight write بملكية<br/>
+        2) توقيع Android إنتاجي + إزالة مفتاح Maps من المصدر<br/>
+        3) CI: analyze + flutter test على PR<br/>
+        4) backup Firestore مجدول + تمرين restore واحد موثّق<br/>
+        5) حد/ترقيم أو viewport للخريطة أو إثبات قياس عند N الفعلي ≪ 1k<br/>
+        6) RC غير حاجب (ميزانية قصيرة)<br/>
+        7) runbook تشغيل المداخل الأربعة<br/>
+        <br/><strong>PR-030 تقييم 2026-07-21:</strong> <span class="badge dead">NOT READY</span>
+        — على git HEAD: (1)(3 جزئي workflow)(5)(6) PASS · (2)(4)(7) FAIL/ناقص · تفاصيل
+        <a href="conditional_go_gate_pr030.md">conditional_go_gate_pr030.md</a>
+      </td>
+      <td>Pilot مغلق / دعوة محدودة · كتالوج صغير معلوم · مراقبة يدوية يومية — <strong>غير مفعّل حتى إغلاق الحواجز</strong></td>
+    </tr>
+    <tr>
+      <td><span class="badge active">GO</span></td>
+      <td>
+        كل شروط Conditional +<br/>
+        · قياس خريطة 1k/5k/10k ضمن ميزانية<br/>
+        · outbox/مصالحة وسائط<br/>
+        · Crashlytics + تنبيه أساسي<br/>
+        · staging أو مشروع منفصل للتجارب<br/>
+        · فرض تعليق tenant على الجلسات<br/>
+        · إصلاح Proxy CRM recreate<br/>
+        · تغطية اختبارات auth/CRUD/Functions دنيا<br/>
+        · رؤية تكلفة برموز مقيسة من الفاتورة
+      </td>
+      <td>إطلاق متاجر / نمو عام مع SLO</td>
+    </tr>
+  </table>
+
+  <h3>10.5 أولويات إصلاح (ترتيب مقترح — أسبوع 0–2)</h3>
+  <ol class="compact">
+    <li><strong>أمن فوري:</strong> RK-036 · RK-020 (rules).</li>
+    <li><strong>إصدار:</strong> RK-062 توقيع + مفاتيح.</li>
+    <li><strong>سلامة تشغيل:</strong> RK-060 CI · RK-061 backup/restore drill.</li>
+    <li><strong>سعة:</strong> RK-018/026 حد أو viewport للخريطة · قياس N الحالي.</li>
+    <li><strong>إقلاع:</strong> RK-011 RC غير حاجب · RK-012 sync CRM بدل recreate.</li>
+    <li><strong>وسائط:</strong> RK-045 outbox/تعويض حذف.</li>
+    <li><strong>معرفة:</strong> RK-056 runbook + launch configs.</li>
+  </ol>
+
+  <h3>10.6 إخلاء مسؤولية التدقيق</h3>
+  <ul class="compact">
+    <li>اكتشاف ثابت من المستودع + عدّ اختبارات · ليس تدقيق اختراق حي ولا قياس حمل منفّذ.</li>
+    <li>لا أسعار مالية مخترعة · لا RTO/RPO بلا تمرين.</li>
+    <li>إعادة تقييم القرار تتطلب إغلاق حواجز P0 أعلاه ثم تحديث هذا القسم.</li>
+  </ul>
+
+  <div class="callout ok">
+    <strong>الخلاصة التنفيذية (محدّثة PR-030 · 2026-07-21):</strong> قطار Foundation <strong>PR-009…029 ملتزم</strong> على الفرع. القرار الرسمي لإطلاق إنتاج عام يبقى <strong>NO-GO</strong>.
+    <strong>Conditional GO = NOT READY</strong> حتى إغلاق حواجز Protect/Safety على HEAD (Maps key · release signing · DR drill · required CI · Protect docs).
+    راجع <a href="conditional_go_gate_pr030.md">conditional_go_gate_pr030.md</a>.
+  </div>
+  <div class="callout cyan">
+    <strong>الخطوة التالية (تخطيط فقط):</strong>
+    <a href="dar_car_engineering_remediation_portal.html" style="color:#5eead4;font-weight:700">مخطط المعالجة</a>
+    ·
+    <a href="dar_car_master_execution_plan_portal.html" style="color:#fb7185;font-weight:700">MASTER EXECUTION PLAN</a>
+    — أيقونة لوحة الأوامر+قفل · PR-001 غداً.
+  </div>
+</section>
+
+
+
+<footer>
+  دار كار · تدقيق جاهزية الإنتاج الشامل · <strong>v1.0</strong> · أجزاء 1–10/10 مكتملة · 2026-07-18 · اكتشاف وتخطيط فقط
+</footer>
+</div>
+</main>
+</div>
+<script src="dar_car_production_readiness_portal.js"></script>
+</body>
+</html>
