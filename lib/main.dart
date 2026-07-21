@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +43,7 @@ import 'src/core/utils/logger.dart';
 import 'src/core/constants/app_brand.dart';
 import 'src/core/session/session_telemetry_host.dart';
 import 'src/core/services/remote_config_service.dart';
+import 'src/core/monitoring/error_tracker.dart';
 import 'src/features/map/services/location_service.dart';
 import 'src/features/map/services/clustering_service.dart';
 import 'package:flutter/foundation.dart';
@@ -52,7 +55,8 @@ import 'src/features/images/config/image_upload_config.dart';
 // App Constants
 const String companyId = String.fromEnvironment('COMPANY_ID', defaultValue: 'DEFAULT_COMPANY_ID');
 
-void main() async {
+void main() {
+  runZonedGuarded(() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // تهيئة إعدادات اللغة العربية
@@ -75,17 +79,20 @@ void main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.web,
       );
-      
-      // تهيئة خاصة للويب
-      FlutterError.onError = (FlutterErrorDetails details) {
-        FlutterError.presentError(details);
-      };
     } else {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
     logInfo('Firebase initialized successfully');
+
+    // PR-015: global error tracking (after Firebase; safe if Crashlytics unavailable)
+    try {
+      await ErrorTracker().initialize();
+      logInfo('ErrorTracker initialized successfully');
+    } catch (e, stackTrace) {
+      logError('ErrorTracker initialization failed', e, stackTrace);
+    }
 
     await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     logInfo('Firebase Performance Monitoring enabled');
@@ -314,4 +321,12 @@ void main() async {
       ),
     ),
   );
+  }, (Object error, StackTrace stack) {
+    // Uncaught async errors — never throw from the zone handler.
+    try {
+      unawaited(ErrorTracker().recordError(error, stack));
+    } catch (_) {
+      debugPrint('Uncaught zone error: $error');
+    }
+  });
 }
