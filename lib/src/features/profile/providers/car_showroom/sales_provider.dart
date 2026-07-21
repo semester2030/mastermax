@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../models/car_showroom/sale_model.dart';
 import '../../services/car_showroom/sales_service.dart';
@@ -9,8 +11,19 @@ import '../../../../core/utils/logger.dart';
 /// يدير قائمة المبيعات والعمليات CRUD
 class SalesProvider extends ChangeNotifier {
   final SalesService _salesService;
-  final AuthState _authState;
-  
+  AuthState _authState;
+
+  /// يُستدعى من [ChangeNotifierProxyProvider] عند تغيّر [AuthState] دون إعادة إنشاء المزود.
+  /// نفس نمط [CustomersProvider.syncAuthState] / [CarProvider.syncAuthState].
+  void syncAuthState(AuthState authState) {
+    final oldUid = _authState.user?.id;
+    _authState = authState;
+    final newUid = authState.user?.id;
+    if (oldUid != newUid) {
+      unawaited(loadSales());
+    }
+  }
+
   SalesProvider(this._salesService, this._authState) {
     logDebug('SalesProvider initialized');
   }
@@ -52,27 +65,33 @@ class SalesProvider extends ChangeNotifier {
   /// تحميل قائمة المبيعات
   Future<void> loadSales() async {
     if (_isLoading) return;
-    
+
+    final user = _authState.user;
+    if (user == null) {
+      // Logout / no session: reset without throwing (syncAuthState on uid clear).
+      _safeSetState(() {
+        _sales = [];
+        _selectedSale = null;
+        _error = null;
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
       _safeSetState(() {
         _isLoading = true;
         _error = null;
       });
 
-      final user = _authState.user;
-      if (user == null) {
-        throw 'يجب تسجيل الدخول';
-      }
-
       logInfo('Loading sales for seller: ${user.id}');
       final sales = await _salesService.getSales(user.id);
-      
+
       _safeSetState(() {
         _sales = sales;
       });
-      
-      logInfo('Loaded ${sales.length} sales successfully');
 
+      logInfo('Loaded ${sales.length} sales successfully');
     } catch (e, stackTrace) {
       logError('Error loading sales', e, stackTrace);
       _safeSetState(() {

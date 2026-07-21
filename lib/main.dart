@@ -224,10 +224,11 @@ void main() {
             salesService,
             context.read<AuthState>(),
           ),
-          update: (context, authState, previous) => SalesProvider(
-            salesService,
-            authState,
-          ),
+          update: (context, authState, previous) {
+            final sales = previous!;
+            sales.syncAuthState(authState);
+            return sales;
+          },
         ),
         Provider<TeamService>(create: (_) => teamService),
         
