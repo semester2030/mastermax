@@ -48,6 +48,11 @@ class _MainMapScreenState extends State<MainMapScreen> {
   
   /// حالة تهيئة البيانات
   bool _isInitialized = false;
+
+  /// PR-024: تمييز فشل التحميل عن نجاح بلا نتائج (الـ providers تبتلع الاستثناءات في `.error`).
+  bool _initialLoadFailed = false;
+  bool _initialLoadEmpty = false;
+  String? _initialLoadErrorMessage;
   
   /// ✅ Markers للعرض على الخريطة
   final Set<Marker> _markers = {};
@@ -123,7 +128,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
 
   Future<void> _loadInitialData() async {
     if (_isInitialized) return;
-    
+
     try {
       final propertyProvider = context.read<PropertyProvider>();
       final carProvider = context.read<CarProvider>();
@@ -135,8 +140,19 @@ class _MainMapScreenState extends State<MainMapScreen> {
 
       if (!mounted) return;
 
+      // Providers catch internally and expose `.error` — do not treat empty lists as failure.
+      final carErr = carProvider.error;
+      final propErr = propertyProvider.error;
+      final loadFailed = carErr != null || propErr != null;
+      final resultCount =
+          propertyProvider.properties.length + carProvider.cars.length;
+
       setState(() {
         _isInitialized = true;
+        _initialLoadFailed = loadFailed;
+        _initialLoadEmpty = !loadFailed && resultCount == 0;
+        _initialLoadErrorMessage =
+            loadFailed ? _composeInitialLoadError(carErr, propErr) : null;
       });
 
       _updateMapData(propertyProvider.properties, carProvider.cars);
@@ -144,9 +160,31 @@ class _MainMapScreenState extends State<MainMapScreen> {
       if (!mounted) return;
       setState(() {
         _isInitialized = true;
+        _initialLoadFailed = true;
+        _initialLoadEmpty = false;
+        _initialLoadErrorMessage = 'حدث خطأ أثناء تحميل البيانات';
       });
-      _showErrorMessage('حدث خطأ أثناء تحميل البيانات: $e');
     }
+  }
+
+  String _composeInitialLoadError(String? carErr, String? propErr) {
+    if (carErr != null && propErr != null) {
+      return 'تعذر تحميل السيارات والعقارات';
+    }
+    if (carErr != null) return 'تعذر تحميل السيارات';
+    if (propErr != null) return 'تعذر تحميل العقارات';
+    return 'تعذر تحميل البيانات';
+  }
+
+  Future<void> _retryInitialLoad() async {
+    if (!mounted) return;
+    setState(() {
+      _isInitialized = false;
+      _initialLoadFailed = false;
+      _initialLoadEmpty = false;
+      _initialLoadErrorMessage = null;
+    });
+    await _loadInitialData();
   }
 
   void _updateMapData(List<PropertyModel> properties, List<CarModel> cars) {
@@ -170,6 +208,109 @@ class _MainMapScreenState extends State<MainMapScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  /// PR-024: رسالة نتائج فارغة — ليست خطأ تحميل.
+  void _showEmptyResultsMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.onSurfaceMuted,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Widget _buildInitialLoadStatusOverlay() {
+    if (_initialLoadFailed) {
+      return Positioned(
+        left: 16,
+        right: 16,
+        top: 72,
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(12),
+          color: AppColors.white,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off_outlined, color: AppColors.error, size: 28),
+                const SizedBox(height: 8),
+                const Text(
+                  'فشل تحميل البيانات',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _initialLoadErrorMessage ?? 'تعذر تحميل البيانات',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.onSurfaceMuted,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton.icon(
+                  onPressed: _retryInitialLoad,
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text('إعادة المحاولة'),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    if (_initialLoadEmpty) {
+      return Positioned(
+        left: 16,
+        right: 16,
+        top: 72,
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(12),
+          color: AppColors.white,
+          child: const Padding(
+            padding: EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.inbox_outlined, color: AppColors.onSurfaceMuted, size: 28),
+                SizedBox(height: 8),
+                Text(
+                  'لا توجد نتائج',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'تم التحميل بنجاح، لكن لا توجد عقارات أو سيارات للعرض حالياً.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.onSurfaceMuted,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   // ✅ تم نقل _launchPhoneCall إلى MapHelpers.launchPhoneCall
@@ -243,6 +384,8 @@ class _MainMapScreenState extends State<MainMapScreen> {
                         backgroundColor: Colors.transparent,
                       ),
                     ),
+                  if (_isInitialized && (_initialLoadFailed || _initialLoadEmpty))
+                    _buildInitialLoadStatusOverlay(),
                   MapSearchBar(
                     searchController: _searchController,
                     selectedFilterType: _selectedFilterType,
@@ -942,7 +1085,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
           _mapState.updateVisibleProperties();
           _showSuccessMessage('تم العثور على ${properties.length} عقار');
         } else {
-          _showErrorMessage('لم يتم العثور على عقارات');
+          _showEmptyResultsMessage('لم يتم العثور على عقارات');
         }
       } else {
         final carProvider = context.read<CarProvider>();
@@ -951,7 +1094,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
           _mapState.updateVisibleCars(cars);
           _showSuccessMessage('تم العثور على ${cars.length} سيارة');
         } else {
-          _showErrorMessage('لم يتم العثور على سيارات');
+          _showEmptyResultsMessage('لم يتم العثور على سيارات');
         }
       }
     } catch (e) {
