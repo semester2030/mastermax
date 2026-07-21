@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import '../models/property_model.dart';
 import '../models/property_type.dart';
+import '../../../../admin_web/services/monitoring_service.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/geo/saudi_region_parser.dart';
 import '../../../core/utils/logger.dart';
@@ -157,6 +160,7 @@ class PropertyService {
     bool? isAvailable,
     String? ownerId, // إضافة ownerId لفلترة العقارات حسب المالك
   }) async {
+    unawaited(MonitoringService.recordMapFetch('getProperties'));
     try {
       // جلب البيانات من Firestore
       Query query = _firestore.collection('properties');
@@ -242,6 +246,12 @@ class PropertyService {
 
       return properties;
     } catch (e) {
+      unawaited(
+        MonitoringService.recordPermissionDeniedIfApplicable(
+          e,
+          'getProperties',
+        ),
+      );
       logError('Error getting properties', e);
       return [];
     }

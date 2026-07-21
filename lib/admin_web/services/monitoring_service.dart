@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// تجميعات وقراءات لوحة المراقبة (أدمن فقط — حسب قواعد Firestore).
 class MonitoringService {
@@ -11,6 +12,61 @@ class MonitoringService {
   static const String _failures = 'media_upload_failures';
   static const String _verification = 'verification_requests';
   static const String _sessions = 'app_sessions';
+  static const String _securityLogs = 'security_logs';
+  static const String _mapFetchEvent = 'telemetry.map_fetch';
+  static const String _permissionDeniedEvent = 'telemetry.permission_denied';
+
+  /// Emits one best-effort, non-blocking telemetry event per map fetch call.
+  static Future<void> recordMapFetch(String source) {
+    return _recordRuntimeEvent(_mapFetchEvent, source);
+  }
+
+  /// Emits only for an actual Firestore permission-denied exception.
+  static Future<void> recordPermissionDeniedIfApplicable(
+    Object error,
+    String source,
+  ) async {
+    if (error is! FirebaseException || error.code != 'permission-denied') {
+      return;
+    }
+    await _recordRuntimeEvent(_permissionDeniedEvent, source);
+  }
+
+  static Future<void> _recordRuntimeEvent(
+    String eventType,
+    String source,
+  ) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return;
+    try {
+      await FirebaseFirestore.instance.collection(_securityLogs).add({
+        'userId': uid,
+        'eventType': eventType,
+        'details': source,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (_) {
+      // Telemetry must never alter or delay the business operation.
+    }
+  }
+
+  Future<int> countPermissionDeniedEvents() async {
+    final snap = await _db
+        .collection(_securityLogs)
+        .where('eventType', isEqualTo: _permissionDeniedEvent)
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  Future<int> countMapFetchEvents() async {
+    final snap = await _db
+        .collection(_securityLogs)
+        .where('eventType', isEqualTo: _mapFetchEvent)
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
 
   Future<int> countCollection(String name) async {
     final snap = await _db.collection(name).count().get();

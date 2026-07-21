@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../admin_web/services/monitoring_service.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/geo/saudi_region_parser.dart';
 import '../models/car_model.dart';
@@ -10,6 +13,7 @@ class CarService {
   final String _collection = 'cars';
 
   Future<List<CarModel>> getCars() async {
+    unawaited(MonitoringService.recordMapFetch('getCars'));
     try {
       debugPrint('Starting to fetch cars from Firestore');
       // بدون Source.server على الويب حتى يُسمح للـ cache بالعمل وتقليل زمن الظهور.
@@ -41,6 +45,9 @@ class CarService {
       debugPrint('Successfully processed ${cars.length} cars');
       return cars;
     } catch (e) {
+      unawaited(
+        MonitoringService.recordPermissionDeniedIfApplicable(e, 'getCars'),
+      );
       debugPrint('Error getting cars: $e');
       _logError('Error getting cars', e);
       throw 'فشل في تحميل السيارات. الرجاء المحاولة مرة أخرى';

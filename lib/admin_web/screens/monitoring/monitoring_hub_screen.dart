@@ -21,6 +21,8 @@ class _MonitoringHubScreenState extends State<MonitoringHubScreen> {
   int _failures24h = 0;
   int _sessions24h = 0;
   int _avgSessionSec = 0;
+  int _permissionDeniedCount = 0;
+  int _mapFetchCount = 0;
 
   @override
   void initState() {
@@ -36,6 +38,8 @@ class _MonitoringHubScreenState extends State<MonitoringHubScreen> {
         _svc.countCollection('users'),
         _svc.countPendingVerification(),
         _svc.countFailuresLast24Hours(),
+        _svc.countPermissionDeniedEvents(),
+        _svc.countMapFetchEvents(),
       ]);
       final sessions = await _svc.recentSessions(limit: 200);
       if (!mounted) return;
@@ -44,6 +48,8 @@ class _MonitoringHubScreenState extends State<MonitoringHubScreen> {
         _users = results[1];
         _pendingVerification = results[2];
         _failures24h = results[3];
+        _permissionDeniedCount = results[4];
+        _mapFetchCount = results[5];
         _sessions24h = _svc.countSessionsStartedLast24Hours(sessions);
         _avgSessionSec = _svc.averageForegroundSeconds(sessions);
         _loading = false;
@@ -161,6 +167,22 @@ class _MonitoringHubScreenState extends State<MonitoringHubScreen> {
                               label: 'متوسط مدة الجلسة',
                               value: _formatDurationShort(_avgSessionSec),
                               tint: AppColors.textSecondary,
+                            ),
+                            _KpiTile(
+                              width: tileW,
+                              icon: Icons.gpp_bad_outlined,
+                              label: 'رفض الصلاحيات',
+                              value: '$_permissionDeniedCount',
+                              tint: _permissionDeniedCount > 0
+                                  ? AppColors.error
+                                  : AppColors.success,
+                            ),
+                            _KpiTile(
+                              width: tileW,
+                              icon: Icons.map_outlined,
+                              label: 'مرات جلب بيانات الخريطة',
+                              value: '$_mapFetchCount',
+                              tint: AppColors.primary,
                             ),
                           ],
                         );
