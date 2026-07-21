@@ -203,6 +203,94 @@ service cloud.firestore {
       allow update: if false;
     }
 
+
+    // --- PR-025A: مسودات رفع وسائط (upload_drafts) — expand rules only ---
+    // Lifecycle: pending → uploading → completed|failed ; failed → uploading (retry).
+    // No admin update. Client delete denied. Admin delete allowed.
+    function uploadDraftAllowedStatuses() {
+      return ['pending', 'uploading', 'completed', 'failed'];
+    }
+
+    function uploadDraftStatusTransitionOk() {
+      let from = resource.data.status;
+      let to = request.resource.data.status;
+      return from == to
+        || (from == 'pending' && to == 'uploading')
+        || (from == 'uploading' && (to == 'completed' || to == 'failed'))
+        || (from == 'failed' && to == 'uploading');
+    }
+
+    function validUploadDraftShape(d) {
+      return d.keys().hasOnly([
+          'ownerId',
+          'entityType',
+          'entityId',
+          'status',
+          'createdAt',
+          'updatedAt',
+          'attemptCount',
+          'uploadedImageIds',
+          'lastError'
+        ])
+        && d.keys().hasAll([
+          'ownerId',
+          'entityType',
+          'status',
+          'createdAt',
+          'updatedAt',
+          'attemptCount',
+          'uploadedImageIds',
+          'lastError'
+        ])
+        && d.ownerId is string
+        && d.ownerId.size() > 0
+        && d.ownerId.size() <= 128
+        && d.entityType is string
+        && d.entityType.size() > 0
+        && d.entityType.size() <= 64
+        && (!d.keys().hasAny(['entityId'])
+          || (d.entityId is string && d.entityId.size() <= 128))
+        && d.status is string
+        && d.status in uploadDraftAllowedStatuses()
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp
+        && d.attemptCount is int
+        && d.attemptCount >= 0
+        && d.attemptCount <= 1000
+        && d.uploadedImageIds is list
+        && d.uploadedImageIds.size() <= 50
+        && d.lastError is string
+        && d.lastError.size() <= 800;
+    }
+
+    function validUploadDraftCreate() {
+      let d = request.resource.data;
+      return validUploadDraftShape(d)
+        && d.ownerId == request.auth.uid
+        && d.status == 'pending';
+    }
+
+    function validUploadDraftUpdate() {
+      let before = resource.data;
+      let after = request.resource.data;
+      return validUploadDraftShape(after)
+        && after.ownerId == before.ownerId
+        && after.createdAt == before.createdAt
+        && after.attemptCount >= before.attemptCount
+        && uploadDraftStatusTransitionOk();
+    }
+
+    match /upload_drafts/{draftId} {
+      allow create: if authed() && validUploadDraftCreate();
+      allow read: if authed()
+        && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow update: if authed()
+        && resource.data.ownerId == request.auth.uid
+        && validUploadDraftUpdate();
+      allow delete: if isAdmin();
+    }
+
+
     // --- جلسات التطبيق (المستخدم يكتب جلسته؛ الأدمن يقرأ في المراقبة) ---
     match /app_sessions/{sessionId} {
       allow create: if authed()
