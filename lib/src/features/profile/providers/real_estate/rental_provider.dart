@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../models/real_estate/rental_model.dart';
 import '../../services/real_estate/rental_service.dart';
@@ -9,8 +11,19 @@ import '../../../../core/utils/logger.dart';
 /// يدير قائمة عقود الإيجار والعمليات CRUD
 class RentalProvider extends ChangeNotifier {
   final RentalService _rentalService;
-  final AuthState _authState;
-  
+  AuthState _authState;
+
+  /// يُستدعى من [ChangeNotifierProxyProvider] عند تغيّر [AuthState] دون إعادة إنشاء المزود.
+  /// نفس نمط PR-016…PR-018b.
+  void syncAuthState(AuthState authState) {
+    final oldUid = _authState.user?.id;
+    _authState = authState;
+    final newUid = authState.user?.id;
+    if (oldUid != newUid) {
+      unawaited(loadRentals());
+    }
+  }
+
   RentalProvider(this._rentalService, this._authState) {
     logDebug('RentalProvider initialized');
   }
@@ -54,27 +67,33 @@ class RentalProvider extends ChangeNotifier {
   /// تحميل قائمة عقود الإيجار
   Future<void> loadRentals() async {
     if (_isLoading) return;
-    
+
+    final user = _authState.user;
+    if (user == null) {
+      // Logout / no session: reset without throwing (syncAuthState on uid clear).
+      _safeSetState(() {
+        _rentals = [];
+        _selectedRental = null;
+        _error = null;
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
       _safeSetState(() {
         _isLoading = true;
         _error = null;
       });
 
-      final user = _authState.user;
-      if (user == null) {
-        throw 'يجب تسجيل الدخول';
-      }
-
       logInfo('Loading rentals for owner: ${user.id}');
       final rentals = await _rentalService.getRentals(user.id);
-      
+
       _safeSetState(() {
         _rentals = rentals;
       });
-      
-      logInfo('Loaded ${rentals.length} rentals successfully');
 
+      logInfo('Loaded ${rentals.length} rentals successfully');
     } catch (e, stackTrace) {
       logError('Error loading rentals', e, stackTrace);
       _safeSetState(() {

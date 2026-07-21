@@ -278,10 +278,11 @@ void main() {
             rentalService,
             context.read<AuthState>(),
           ),
-          update: (context, authState, previous) => RentalProvider(
-            rentalService,
-            authState,
-          ),
+          update: (context, authState, previous) {
+            final rentals = previous!;
+            rentals.syncAuthState(authState);
+            return rentals;
+          },
         ),
         ChangeNotifierProvider(
           create: (_) => RentalPaymentProvider(rentalPaymentService),
