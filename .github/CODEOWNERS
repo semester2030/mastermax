@@ -1,0 +1,68 @@
+# DAR CAR — Repository ownership (PR-003 · Epic A · RK-036/020 process · EV-173)
+# GitHub requires real handles. Domains below map to the current primary maintainer.
+# Last matching pattern wins. Paths must exist in this repository.
+#
+# Role aliases (process — not GitHub teams):
+#   Security Lead     → firestore.rules / storage.rules / firebase config
+#   Flutter Lead      → lib/ shared app code
+#   Maps Owner        → map / geo
+#   Functions Owner   → functions/
+#   Admin Owner       → lib/admin_web/
+#   Storefront Owner  → car_web + storefront feature
+#   Docs / TPM        → docs/
+#   Infra Owner       → .github / tool / platform runners
+
+# Default
+*       @FAYEZ2030
+
+# Infrastructure / CI
+/.github/                               @FAYEZ2030
+/tool/                                  @FAYEZ2030
+
+# Documentation & governance portals
+/docs/                                  @FAYEZ2030
+/README.md                              @FAYEZ2030
+
+# Firebase configuration & security rules (Security Lead — serial queue)
+/firebase.json                          @FAYEZ2030
+/.firebaserc                            @FAYEZ2030
+/firestore.rules                        @FAYEZ2030
+/firestore.indexes.json                 @FAYEZ2030
+/storage.rules                          @FAYEZ2030
+/lib/firebase_options.dart              @FAYEZ2030
+
+# Cloud Functions
+/functions/                             @FAYEZ2030
+
+# Flutter — shared core & features
+/lib/                                   @FAYEZ2030
+/lib/src/                               @FAYEZ2030
+/lib/src/core/                          @FAYEZ2030
+/lib/src/core/theme/                    @FAYEZ2030
+/lib/src/core/geo/                      @FAYEZ2030
+/lib/src/core/security/                 @FAYEZ2030
+/lib/src/features/auth/                 @FAYEZ2030
+/lib/src/features/map/                  @FAYEZ2030
+/lib/src/features/premium_ads/          @FAYEZ2030
+/lib/src/features/spotlight/            @FAYEZ2030
+/lib/src/features/storefront/           @FAYEZ2030
+
+# Entry surfaces
+/lib/main.dart                          @FAYEZ2030
+/lib/web/                               @FAYEZ2030
+/lib/car_web/                           @FAYEZ2030
+/lib/admin_web/                         @FAYEZ2030
+
+# Platform runners
+/android/                               @FAYEZ2030
+/ios/                                   @FAYEZ2030
+/web/                                   @FAYEZ2030
+/macos/                                 @FAYEZ2030
+/linux/                                 @FAYEZ2030
+/windows/                               @FAYEZ2030
+
+# Tests & package manifest
+/test/                                  @FAYEZ2030
+/pubspec.yaml                           @FAYEZ2030
+/pubspec.lock                           @FAYEZ2030
+/analysis_options.yaml                  @FAYEZ2030
