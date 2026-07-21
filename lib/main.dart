@@ -257,10 +257,11 @@ void main() {
             branchesService,
             context.read<AuthState>(),
           ),
-          update: (context, authState, previous) => BranchesProvider(
-            branchesService,
-            authState,
-          ),
+          update: (context, authState, previous) {
+            final branches = previous!;
+            branches.syncAuthState(authState);
+            return branches;
+          },
         ),
         
         // Rental Providers

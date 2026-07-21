@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../models/real_estate/branch_model.dart';
 import '../../services/real_estate/branches_service.dart';
@@ -9,8 +11,19 @@ import '../../../../core/utils/logger.dart';
 /// يدير قائمة الفروع والعمليات CRUD
 class BranchesProvider extends ChangeNotifier {
   final BranchesService _branchesService;
-  final AuthState _authState;
-  
+  AuthState _authState;
+
+  /// يُستدعى من [ChangeNotifierProxyProvider] عند تغيّر [AuthState] دون إعادة إنشاء المزود.
+  /// نفس نمط PR-016 / PR-017 / PR-018a.
+  void syncAuthState(AuthState authState) {
+    final oldUid = _authState.user?.id;
+    _authState = authState;
+    final newUid = authState.user?.id;
+    if (oldUid != newUid) {
+      unawaited(loadBranches());
+    }
+  }
+
   BranchesProvider(this._branchesService, this._authState) {
     logDebug('BranchesProvider initialized');
   }
@@ -46,27 +59,33 @@ class BranchesProvider extends ChangeNotifier {
   /// تحميل قائمة الفروع
   Future<void> loadBranches() async {
     if (_isLoading) return;
-    
+
+    final user = _authState.user;
+    if (user == null) {
+      // Logout / no session: reset without throwing (syncAuthState on uid clear).
+      _safeSetState(() {
+        _branches = [];
+        _selectedBranch = null;
+        _error = null;
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
       _safeSetState(() {
         _isLoading = true;
         _error = null;
       });
 
-      final user = _authState.user;
-      if (user == null) {
-        throw 'يجب تسجيل الدخول';
-      }
-
       logInfo('Loading branches for company: ${user.id}');
       final branches = await _branchesService.getBranches(user.id);
-      
+
       _safeSetState(() {
         _branches = branches;
       });
-      
-      logInfo('Loaded ${branches.length} branches successfully');
 
+      logInfo('Loaded ${branches.length} branches successfully');
     } catch (e, stackTrace) {
       logError('Error loading branches', e, stackTrace);
       _safeSetState(() {
