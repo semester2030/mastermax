@@ -45,6 +45,19 @@ class AppConfig {
   static const bool enable360Feature = true;
   static const bool enableChatFeature = true;
   static const bool enableNotifications = true;
+
+  /// PR-022 — bounded fetch for map car listings (`CarService.getCars`).
+  ///
+  /// Feature flag dart-define name: `MAP_BOUNDED_FETCH` (default **false**).
+  /// Production stays unbounded unless built with:
+  /// `flutter run --dart-define=MAP_BOUNDED_FETCH=true`
+  /// When true, `getCars` applies `.limit(mapBoundedFetchCarsLimit)` (500).
+  /// Basis: N2 = 32 active cars (2026-07-21T01:13:33 UTC, mastermax-2030-backend).
+  static const bool mapBoundedFetch =
+      bool.fromEnvironment('MAP_BOUNDED_FETCH', defaultValue: false);
+
+  /// Approved initial ceiling when [mapBoundedFetch] is on (N2=32 → ~15× headroom).
+  static const int mapBoundedFetchCarsLimit = 500;
   
   // Support
   static const String supportEmail = 'support@reca.com';

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/geo/saudi_region_parser.dart';
 import '../models/car_model.dart';
 import 'package:flutter/foundation.dart';
@@ -12,9 +13,14 @@ class CarService {
     try {
       debugPrint('Starting to fetch cars from Firestore');
       // بدون Source.server على الويب حتى يُسمح للـ cache بالعمل وتقليل زمن الظهور.
-      final snapshot = await _db.collection(_collection)
-          .where('isActive', isEqualTo: true)
-          .get();
+      Query<Map<String, dynamic>> query = _db
+          .collection(_collection)
+          .where('isActive', isEqualTo: true);
+      // PR-022: optional ceiling. Default OFF → identical unbounded behavior.
+      if (AppConfig.mapBoundedFetch) {
+        query = query.limit(AppConfig.mapBoundedFetchCarsLimit);
+      }
+      final snapshot = await query.get();
 
       debugPrint(
         '${kIsWeb ? 'Web' : 'Mobile'}: Fetched ${snapshot.docs.length} cars',
