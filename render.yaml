@@ -120,7 +120,7 @@ projects:
             healthCheckPath: /login
             domains:
               - providers.darcar.sa
-            buildCommand: npm ci --include=dev && npm run build
+            buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
             startCommand: npm start
             buildFilter:
               paths:
