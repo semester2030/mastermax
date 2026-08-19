@@ -76,8 +76,8 @@ projects:
             healthCheckPath: /healthz
             domains:
               - places-api.darcar.sa
-            buildCommand: npm ci && npm run build
-            startCommand: node dist/main.js
+            buildCommand: npm ci --include=dev && npm run build
+            startCommand: npm run start:prod
             buildFilter:
               paths:
                 - services/places-core/**
@@ -97,8 +97,8 @@ projects:
             rootDir: services/places-core
             autoDeployTrigger: off
             maxShutdownDelaySeconds: 60
-            buildCommand: npm ci && npm run build
-            startCommand: node dist/workers/main.js
+            buildCommand: npm ci --include=dev && npm run build
+            startCommand: npm run start:worker
             buildFilter:
               paths:
                 - services/places-core/**
@@ -120,7 +120,7 @@ projects:
             healthCheckPath: /login
             domains:
               - providers.darcar.sa
-            buildCommand: npm ci && npm run build
+            buildCommand: npm ci --include=dev && npm run build
             startCommand: npm start
             buildFilter:
               paths:
