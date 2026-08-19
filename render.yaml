@@ -116,7 +116,7 @@ projects:
             region: frankfurt
             branch: master
             rootDir: apps/places-provider-web
-            autoDeployTrigger: off
+            autoDeployTrigger: commit
             healthCheckPath: /login
             domains:
               - providers.darcar.sa
