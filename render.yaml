@@ -1,0 +1,138 @@
+# DAR Places — paid Render only (Frankfurt). Do not use free web or free Postgres.
+# Firebase remains Auth + FCM only. Cloudflare remains Images + Stream.
+# Restore the current PostgreSQL 14 dump into places-postgres; do not DROP/TRUNCATE.
+# https://dashboard.render.com/blueprint/new?repo=https://github.com/semester2030/mastermax
+
+previews:
+  generation: off
+
+envVarGroups:
+  - name: places-core-runtime
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: AUTH_MODE
+        value: firebase
+      - key: PAYMENT_PROVIDER
+        value: pav_only
+      - key: HOLD_TTL_SECONDS
+        value: "720"
+      - key: QUOTE_TTL_SECONDS
+        value: "900"
+      - key: DEFAULT_COMMISSION_BPS
+        value: "1000"
+      - key: LOG_LEVEL
+        value: info
+      - key: PLACES_CORS_ORIGINS
+        value: https://providers.darcar.sa
+      - key: PLACES_PAY_AT_VENUE_ENABLED
+        value: "false"
+      - key: PLACES_EVENT_SLOT_ENABLED
+        value: "true"
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: CF_ACCOUNT_ID
+        sync: false
+      - key: CF_IMAGES_TOKEN
+        sync: false
+      - key: CF_IMAGES_HASH
+        sync: false
+      - key: CF_STREAM_TOKEN
+        sync: false
+      - key: CF_STREAM_SUBDOMAIN
+        sync: false
+      - key: PLACES_PAY_AT_VENUE_PROD_APPROVED
+        sync: false
+      - key: PLACES_INTERNAL_OPERATOR_PROVIDER_ID
+        sync: false
+      - key: PLACES_PAY_AT_VENUE_PROVIDER_ALLOWLIST
+        sync: false
+
+projects:
+  - name: dar-places
+    environments:
+      - name: production
+        databases:
+          - name: places-postgres
+            databaseName: places_core
+            user: places
+            plan: basic-1gb
+            region: frankfurt
+            postgresMajorVersion: 14
+
+        services:
+          - type: web
+            name: places-core
+            runtime: node
+            plan: starter
+            region: frankfurt
+            branch: master
+            rootDir: services/places-core
+            autoDeployTrigger: off
+            healthCheckPath: /healthz
+            domains:
+              - places-api.darcar.sa
+            buildCommand: npm ci && npm run build
+            startCommand: node dist/main.js
+            buildFilter:
+              paths:
+                - services/places-core/**
+            envVars:
+              - fromGroup: places-core-runtime
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: places-postgres
+                  property: connectionString
+
+          - type: worker
+            name: places-worker
+            runtime: node
+            plan: starter
+            region: frankfurt
+            branch: master
+            rootDir: services/places-core
+            autoDeployTrigger: off
+            maxShutdownDelaySeconds: 60
+            buildCommand: npm ci && npm run build
+            startCommand: node dist/workers/main.js
+            buildFilter:
+              paths:
+                - services/places-core/**
+            envVars:
+              - fromGroup: places-core-runtime
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: places-postgres
+                  property: connectionString
+
+          - type: web
+            name: places-provider-web
+            runtime: node
+            plan: starter
+            region: frankfurt
+            branch: master
+            rootDir: apps/places-provider-web
+            autoDeployTrigger: off
+            healthCheckPath: /login
+            domains:
+              - providers.darcar.sa
+            buildCommand: npm ci && npm run build
+            startCommand: npm start
+            buildFilter:
+              paths:
+                - apps/places-provider-web/**
+            envVars:
+              - key: NODE_ENV
+                value: production
+              - key: NODE_VERSION
+                value: "22"
+              - key: PLACES_API_BASE_URL
+                value: https://places-api.darcar.sa
+              - key: PLACES_PROVIDER_WEB_ORIGIN
+                value: https://providers.darcar.sa
+              - key: NEXT_PUBLIC_APP_NAME
+                value: دار كار — مقدم الخدمة

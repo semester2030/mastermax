@@ -25,6 +25,17 @@ migrate_working_dir/
 
 # Firebase local (cache / emulator — لا تُرفع)
 .firebase/
+functions/.env
+functions/.env.*
+!functions/.env.*.example
+
+# DAR CAR Next.js website secrets / build (website/)
+website/.env
+website/.env.*
+!website/.env.example
+website/.next/
+website/node_modules/
+website/out/
 
 # مخرجات بناء ويب/آيواس داخل lib (لا تُرفع)
 lib/web/build/
@@ -55,3 +66,23 @@ android/key.properties
 *.jks
 *.keystore
 !android/key.properties.example
+functions_promotions/node_modules/
+
+# Places Core
+services/places-core/node_modules/
+services/places-core/dist/
+services/places-core/.env
+services/places-core/.env.*
+!services/places-core/.env.example
+services/places-core/coverage/
+
+# Places Provider Web
+apps/places-provider-web/node_modules/
+apps/places-provider-web/.next/
+apps/places-provider-web/.env
+apps/places-provider-web/.env.*
+!apps/places-provider-web/.env.example
+
+
+# Local audit package outputs (ZIP/SHA sidecars)
+.audit_packages/
