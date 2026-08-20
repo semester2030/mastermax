@@ -190,6 +190,10 @@ export class OperatorAuthService {
       }
     }
 
+    const operatorPhone = this.envFallbackPhone();
+    const isInternalOperator =
+      Boolean(operatorPhone) && input.phoneE164 === operatorPhone;
+
     const fixed =
       process.env.PLACES_OTP_FIXED_CODE_ENABLED === 'true' ||
       this.env.otpFixedCodeEnabled;
@@ -201,11 +205,20 @@ export class OperatorAuthService {
         true,
       );
     }
-    const code = fixed
-      ? (process.env.PLACES_OTP_FIXED_CODE_SECRET ?? '000000').slice(0, 6)
-      : String(randomInt(100000, 999999));
+    const operatorDevCode =
+      this.env.nodeEnv === 'production' && isInternalOperator
+        ? (process.env.PLACES_OTP_FIXED_CODE_SECRET ?? '').trim().slice(0, 6)
+        : '';
+    const code =
+      operatorDevCode.length >= 4
+        ? operatorDevCode
+        : fixed
+          ? (process.env.PLACES_OTP_FIXED_CODE_SECRET ?? '000000').slice(0, 6)
+          : String(randomInt(100000, 999999));
     const challengeId = newId();
     const expiresAt = new Date(Date.now() + CHALLENGE_TTL_SEC * 1000);
+    const skipSms =
+      this.env.nodeEnv === 'production' && isInternalOperator;
     await this.pg.tx(async (c: PoolClient) => {
       await c.query(
         `INSERT INTO auth_otp_challenges
@@ -219,20 +232,26 @@ export class OperatorAuthService {
           actorRole: 'placesInternalOperator',
           entityType: 'auth_otp_challenge',
           entityId: challengeId,
-          after: { sent: true, providerId, smsProvider: this.sms.providerName },
+          after: {
+            sent: true,
+            providerId,
+            smsProvider: skipSms ? 'internal_skip' : this.sms.providerName,
+          },
           correlationId: input.correlationId,
         },
         c,
       );
     });
 
-    // Always deliver via SMS port (stub in test; HTTP webhook in production).
-    await this.sms.sendOtpSms({
-      phoneE164: input.phoneE164,
-      code,
-      correlationId: input.correlationId,
-      challengeId,
-    });
+    // Production HTTP SMS for everyone except the env-bound developer operator.
+    if (!skipSms) {
+      await this.sms.sendOtpSms({
+        phoneE164: input.phoneE164,
+        code,
+        correlationId: input.correlationId,
+        challengeId,
+      });
+    }
 
     if (this.env.nodeEnv === 'test' || fixed) {
       (globalThis as { __placesTestOtp?: string }).__placesTestOtp = code;
