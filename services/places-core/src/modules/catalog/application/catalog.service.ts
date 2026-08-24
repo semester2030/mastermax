@@ -230,7 +230,7 @@ export class CatalogService {
         const video = typeMedia.find((m) => m.kind === "video");
         return {
           id: t.id,
-          name: t.name,
+          name: (t.label_ar && String(t.label_ar).trim()) || t.name,
           code: t.name,
           labelAr: t.label_ar,
           label_ar: t.label_ar,

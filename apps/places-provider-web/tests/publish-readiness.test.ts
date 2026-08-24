@@ -118,6 +118,18 @@ test("Core publish rejection is explained in Arabic", () => {
   assert.ok(message.includes(PUBLISH_REQUIRES_IMAGE_AR));
 });
 
+test("physical type without an active unit is explained in Arabic", () => {
+  const message = describeVenuePublishError({
+    code: "VALIDATION_ERROR",
+    message: "Publish requires an active independent unit on each physical type",
+    details: { reason: "physical_unit_required_for_publish" },
+  });
+  assert.equal(
+    message,
+    "تعذّر النشر — الوحدات المستقلة تحتاج اسم وحدة نشطة واحدة على الأقل.",
+  );
+});
+
 test("unrelated validation errors keep their original message", () => {
   assert.equal(
     describeVenuePublishError({

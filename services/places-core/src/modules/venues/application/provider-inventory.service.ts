@@ -171,6 +171,8 @@ export class ProviderInventoryService {
     if (body.maxOccupancy < body.baseOccupancy) {
       throw new AppError(ErrorCodes.VALIDATION_ERROR, 'maxOccupancy < baseOccupancy');
     }
+    const quantityTotal =
+      body.inventoryModel === 'physical' ? 0 : body.quantityTotal;
     const m = await this.tenancy.require(user, body.providerId, 'venue.crud');
     const venue = await this.pg.query<{ provider_id: string }>(
       `SELECT provider_id FROM venues WHERE id = $1`,
@@ -207,7 +209,7 @@ export class ProviderInventoryService {
             body.code,
             body.labelAr,
             body.inventoryModel,
-            body.quantityTotal,
+            quantityTotal,
             body.baseOccupancy,
             body.maxOccupancy,
             body.sortOrder ?? 0,

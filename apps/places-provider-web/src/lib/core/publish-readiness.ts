@@ -89,11 +89,18 @@ export function canPublishFromEvidence(e: PublishUiEvidence): boolean {
 
 export function describeVenuePublishError(body: unknown): string | null {
   if (!body || typeof body !== "object") return null;
-  const envelope = body as { code?: string; message?: string };
+  const envelope = body as {
+    code?: string;
+    message?: string;
+    details?: { reason?: string };
+  };
   if (envelope.code !== "VALIDATION_ERROR") return null;
+  if (envelope.details?.reason === "physical_unit_required_for_publish") {
+    return "تعذّر النشر — الوحدات المستقلة تحتاج اسم وحدة نشطة واحدة على الأقل.";
+  }
   const msg = envelope.message ?? "";
   if (
-    /cityId|districtId|street|cover image|hero video|price|availability|unit type/i.test(
+    /cityId|districtId|street|cover image|hero video|price|availability|unit type|independent unit|physical type/i.test(
       msg,
     ) ||
     /approved venue-level image/i.test(msg)

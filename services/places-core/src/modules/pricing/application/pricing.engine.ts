@@ -439,7 +439,9 @@ export class PricingEngine {
       [typeId],
     );
     if (!plan.rowCount) {
-      throw new AppError(ErrorCodes.VALIDATION_ERROR, "No rate plan");
+      throw new AppError(ErrorCodes.VALIDATION_ERROR, "No rate plan", {
+        reason: "rate_plan_missing",
+      });
     }
     const rules = await this.pg.query<RateRule>(
       `SELECT kind, amount::text, date_from::text, date_to::text, priority
@@ -472,7 +474,9 @@ export class PricingEngine {
     }
     const base = ranked.find((r) => r.kind === "base");
     if (!base) {
-      throw new AppError(ErrorCodes.VALIDATION_ERROR, "Missing base rate");
+      throw new AppError(ErrorCodes.VALIDATION_ERROR, "Missing base rate", {
+        reason: "rate_plan_missing",
+      });
     }
     return money(base.amount);
   }

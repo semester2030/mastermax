@@ -56,7 +56,8 @@ export default async function VenueUnitsPage({
       <div>
         <h1 className="text-2xl font-bold">الوحدات</h1>
         <p className="mt-1 text-sm text-[var(--color-on-surface-muted)]">
-          الوحدات التي تُعرض للحجز في هذا المكان.
+          الافتراضي نوع بعدد: اسم عربي + عدد وحدات متشابهة. الوحدات المستقلة
+          اختيارية فقط للأسماء الحقيقية المختلفة.
         </p>
       </div>
       {evidence ? (
@@ -74,11 +75,12 @@ export default async function VenueUnitsPage({
         <ul className="divide-y divide-[var(--color-border)] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white/80">
           {units.map((u, i) => (
             <li key={u.id} className="px-4 py-3 text-sm">
-              <p className="font-semibold">{u.labelAr ?? `وحدة ${i + 1}`}</p>
+              <p className="font-semibold">{u.labelAr ?? `نوع ${i + 1}`}</p>
               <p className="text-xs text-[var(--color-on-surface-muted)]">
-                {u.inventoryModel === "physical" ? "مستقلة" : "مشتركة"} · الكمية{" "}
-                {u.quantityTotal ?? "—"} ·{" "}
-                {u.status === "active" || !u.status ? "نشطة" : "غير نشطة"}
+                {u.inventoryModel === "physical"
+                  ? "وحدات مستقلة"
+                  : `نوع بعدد ×${u.quantityTotal ?? 0}`}{" "}
+                · {u.status === "active" || !u.status ? "نشطة" : "غير نشطة"}
               </p>
               {u.inventoryModel === "physical" && u.id ? (
                 <div className="mt-3 space-y-2">

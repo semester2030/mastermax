@@ -131,6 +131,24 @@ export class VenuePublicationService {
           "Publish requires availability on an active unit type",
         );
       }
+      const orphanPhysical = await c.query(
+        `SELECT 1 FROM inventory_types t
+         WHERE t.venue_id = $1 AND t.status = 'active'
+           AND t.inventory_model = 'physical'
+           AND NOT EXISTS (
+             SELECT 1 FROM inventory_units u
+             WHERE u.inventory_type_id = t.id AND u.status = 'active'
+           )
+         LIMIT 1`,
+        [input.venueId],
+      );
+      if (orphanPhysical.rowCount) {
+        throw new AppError(
+          ErrorCodes.VALIDATION_ERROR,
+          "Publish requires an active independent unit on each physical type",
+          { reason: "physical_unit_required_for_publish" },
+        );
+      }
       const units = await c.query<{ id: string }>(
         `SELECT id FROM inventory_types WHERE venue_id = $1 AND status = 'active'`,
         [input.venueId],

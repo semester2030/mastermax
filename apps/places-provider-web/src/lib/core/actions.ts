@@ -147,18 +147,41 @@ export async function createUnitAction(
 ): Promise<ActionResult> {
   try {
     const providerId = await requireProviderId();
-    await createInventoryType({
+    const inventoryModel = (String(formData.get("inventoryModel") ?? "pooled") ===
+    "physical"
+      ? "physical"
+      : "pooled") as "pooled" | "physical";
+    const created = (await createInventoryType({
       providerId,
       venueId,
       code: String(formData.get("code") ?? "").trim(),
       labelAr: String(formData.get("labelAr") ?? "").trim(),
-      inventoryModel: String(formData.get("inventoryModel") ?? "pooled") as
-        | "pooled"
-        | "physical",
-      quantityTotal: Number(formData.get("quantityTotal") ?? 1),
+      inventoryModel,
+      quantityTotal:
+        inventoryModel === "physical"
+          ? 0
+          : Number(formData.get("quantityTotal") ?? 1),
       baseOccupancy: Number(formData.get("baseOccupancy") ?? 2),
       maxOccupancy: Number(formData.get("maxOccupancy") ?? 2),
-    });
+    })) as { id?: string };
+    const amount = String(formData.get("nightlyAmount") ?? "").trim();
+    if (created?.id && amount && Number(amount) > 0) {
+      const plan = (await createRatePlan({
+        providerId,
+        venueId,
+        inventoryTypeId: created.id,
+        name: "افتراضي",
+        currency: "SAR",
+        isDefault: true,
+      })) as { id?: string };
+      if (plan?.id) {
+        await putPricing({
+          ratePlanId: plan.id,
+          kind: "base",
+          amount,
+        });
+      }
+    }
     revalidatePath(`/venues/${venueId}/units`);
     return { ok: true };
   } catch (e) {
