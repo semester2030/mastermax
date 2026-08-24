@@ -16,6 +16,10 @@ import { VenueTypeCapabilityPolicy } from "../../filters/application/venue-type-
 import { BookingStateMachine } from "../domain/booking-state.machine";
 import { BookingLockOrder } from "./booking-lock-order";
 import { holdBarrierArrive } from "./hold-barrier";
+import {
+  ConsumerPaymentOptions,
+  resolveConsumerPaymentOptions,
+} from "./consumer-payment-options";
 
 @Injectable()
 export class HoldService {
@@ -44,6 +48,8 @@ export class HoldService {
     status: string;
     bookingId: string;
     slotCode: string | null;
+    inventoryUnitId?: string | null;
+    paymentOptions: ConsumerPaymentOptions;
   }> {
     const run = async (c: PoolClient) => {
       // F-V3-010 lock-order fix: acquire parent venue locks BEFORE any hold/quote
@@ -56,8 +62,11 @@ export class HoldService {
       // Includes the incoming quote's venue AND (if a reused idempotency key
       // points at an existing hold) that hold's quote venue, so both parents are
       // locked in one deterministic id-ordered pass.
-      const quotePeek = await c.query<{ venue_id: string }>(
-        `SELECT venue_id FROM quotes WHERE id = $1`,
+      const quotePeek = await c.query<{
+        venue_id: string;
+        inventory_type_id: string;
+      }>(
+        `SELECT venue_id, inventory_type_id FROM quotes WHERE id = $1`,
         [input.quoteId],
       );
       if (!quotePeek.rowCount) {
@@ -79,6 +88,12 @@ export class HoldService {
       await holdBarrierArrive();
       // Step 2 — lock all involved venues FOR UPDATE in fixed id order.
       await BookingLockOrder.lockVenues(c, venueIdsToLock);
+      // Physical: lock inventory_units after venue and before hold / occupancy,
+      // matching cancel / expiry / PAV (BookingLockOrder).
+      await BookingLockOrder.lockUnitsForType(
+        c,
+        quotePeek.rows[0].inventory_type_id,
+      );
 
       // Step 3 — only now take the hold (idempotency) row lock, then the quote.
       // F-REV4-01/02: scoped by consumer+key; expired HTTP + new quote → new hold.
@@ -106,12 +121,19 @@ export class HoldService {
             `SELECT slot_code FROM booking_holds WHERE id = $1`,
             [existing.id],
           );
+          const provider = await c.query<{ provider_id: string }>(
+            `SELECT provider_id FROM venues WHERE id = $1`,
+            [quotePeek.rows[0].venue_id],
+          );
           return {
             holdId: existing.id,
             expiresAt: new Date(existing.expires_at).toISOString(),
             status: existing.status,
             bookingId: booking.rows[0]?.id ?? "",
             slotCode: slot.rows[0]?.slot_code ?? null,
+            paymentOptions: resolveConsumerPaymentOptions(
+              provider.rows[0]?.provider_id,
+            ),
           };
         }
         // Different quote under same key (HTTP TTL expired → new operation): vacate key.
@@ -137,11 +159,12 @@ export class HoldService {
         commission_amount: string;
         provider_net: string;
         slot_code: string | null;
+        inventory_unit_id: string | null;
       }>(
         `SELECT q.id, q.status, q.expires_at, q.venue_id, q.inventory_type_id,
                 q.check_in::text, q.check_out::text, q.quantity, q.consumer_firebase_uid,
                 q.gross_total::text, q.commission_bps, q.commission_amount::text, q.provider_net::text,
-                q.slot_code
+                q.slot_code, q.inventory_unit_id
          FROM quotes q WHERE q.id = $1 FOR UPDATE`,
         [input.quoteId],
       );
@@ -228,11 +251,29 @@ export class HoldService {
           "Inventory type is not active",
         );
       }
-      if (inv.rows[0].inventory_model !== "pooled") {
-        throw new AppError(
-          ErrorCodes.VALIDATION_ERROR,
-          "Physical inventory model is not bookable in this phase",
-        );
+      const isPhysical = inv.rows[0].inventory_model === "physical";
+      if (isPhysical) {
+        if (venueFresh.rows[0].booking_mode === "event_slot") {
+          throw new AppError(
+            ErrorCodes.VALIDATION_ERROR,
+            "Physical inventory is not valid for event_slot",
+            { reason: "physical_event_slot" },
+          );
+        }
+        if (input.quantity !== 1 || q.quantity !== 1) {
+          throw new AppError(
+            ErrorCodes.VALIDATION_ERROR,
+            "Physical inventory quantity must be 1",
+            { reason: "physical_quantity" },
+          );
+        }
+        if (!q.inventory_unit_id) {
+          throw new AppError(
+            ErrorCodes.VALIDATION_ERROR,
+            "Physical unit required",
+            { reason: "physical_unit_required" },
+          );
+        }
       }
       // Use locked venue row fields for the rest of the transaction.
       venue.rows[0] = {
@@ -333,6 +374,23 @@ export class HoldService {
             "Dates closed under availability rules",
           );
         }
+        if (isPhysical) {
+          await BookingLockOrder.lockInventoryType(c, q.inventory_type_id);
+          const free = await this.capacity.listAvailablePhysicalUnits(
+            q.inventory_type_id,
+            q.check_in,
+            q.check_out,
+            dates,
+            c,
+          );
+          if (!free.some((u) => u.id === q.inventory_unit_id)) {
+            metrics.inc("hold_conflict");
+            throw new AppError(
+              ErrorCodes.AVAILABILITY_CHANGED,
+              "Inventory no longer available",
+            );
+          }
+        }
         try {
           await this.capacity.lockAndHold(
             q.inventory_type_id,
@@ -355,8 +413,9 @@ export class HoldService {
       await c.query(
         `INSERT INTO booking_holds (
            id, quote_id, inventory_type_id, consumer_firebase_uid, quantity,
-           check_in, check_out, status, expires_at, extensions, idempotency_key, slot_code
-         ) VALUES ($1,$2,$3,$4,$5,$6::date,$7::date,'ACTIVE',$8,0,$9,$10)`,
+           check_in, check_out, status, expires_at, extensions, idempotency_key, slot_code,
+           inventory_unit_id
+         ) VALUES ($1,$2,$3,$4,$5,$6::date,$7::date,'ACTIVE',$8,0,$9,$10,$11)`,
         [
           holdId,
           q.id,
@@ -368,6 +427,7 @@ export class HoldService {
           expiresAt.toISOString(),
           input.idempotencyKey,
           q.slot_code,
+          q.inventory_unit_id,
         ],
       );
       const slotInventoryId = (q as { _slotInventoryId?: string })._slotInventoryId;
@@ -393,9 +453,10 @@ export class HoldService {
            id, hold_id, quote_id, venue_id, provider_id, inventory_type_id,
            consumer_firebase_uid, human_code, status, quantity, check_in, check_out,
            gross_total, commission_bps, commission_amount, provider_net,
-           cancellation_policy_snapshot_json, slot_code, slot_start_time, slot_timezone
+           cancellation_policy_snapshot_json, slot_code, slot_start_time, slot_timezone,
+           inventory_unit_id
          ) VALUES (
-           $1,$2,$3,$4,$5,$6,$7,$8,'HOLDING',$9,$10::date,$11::date,$12,$13,$14,$15,$16::jsonb,$17,$18::time,$19
+           $1,$2,$3,$4,$5,$6,$7,$8,'HOLDING',$9,$10::date,$11::date,$12,$13,$14,$15,$16::jsonb,$17,$18::time,$19,$20
          )`,
         [
           bookingId,
@@ -417,6 +478,7 @@ export class HoldService {
           q.slot_code,
           (q as { _slotStartTime?: string })._slotStartTime ?? null,
           (q as { _slotTimezone?: string })._slotTimezone ?? null,
+          q.inventory_unit_id,
         ],
       );
       const nightItems = await c.query<{
@@ -432,6 +494,18 @@ export class HoldService {
           `INSERT INTO booking_items (id, booking_id, inventory_type_id, date, quantity, night_amount)
            VALUES ($1,$2,$3,$4::date,$5,$6)`,
           [newId(), bookingId, q.inventory_type_id, ni.date, ni.qty, ni.amount],
+        );
+      }
+      if (isPhysical && q.inventory_unit_id) {
+        await this.capacity.occupyPhysicalUnit(
+          {
+            unitId: q.inventory_unit_id,
+            holdId,
+            bookingId,
+            checkIn: q.check_in,
+            checkOut: q.check_out,
+          },
+          c,
         );
       }
       await this.sm.transition(c, {
@@ -451,6 +525,8 @@ export class HoldService {
         status: "ACTIVE",
         bookingId,
         slotCode: q.slot_code,
+        inventoryUnitId: q.inventory_unit_id,
+        paymentOptions: resolveConsumerPaymentOptions(venue.rows[0].provider_id),
       };
     };
     if (client) {
@@ -505,6 +581,7 @@ export class HoldService {
       }
       const p = peek.rows[0];
       await BookingLockOrder.lockVenue(c, p.venue_id);
+      await BookingLockOrder.lockUnitsForType(c, p.inventory_type_id);
       if (p.booking_mode === "event_slot") {
         await BookingLockOrder.lockTemplatesForVenue(c, p.venue_id);
         await BookingLockOrder.lockSlotInventoryForVenueDate(
@@ -558,6 +635,7 @@ export class HoldService {
           h.quantity,
           c,
         );
+        await this.capacity.releasePhysicalOccupancy(holdId, c);
       }
       const booking = await c.query<{ id: string; status: string }>(
         `SELECT id, status FROM bookings WHERE hold_id = $1`,

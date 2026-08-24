@@ -112,7 +112,8 @@ export class CatalogService {
     );
     const amenities = await this.pg.query(
       `SELECT l.amenity_code AS code, l.state, l.value, l.scope,
-              l.inventory_type_id, ac.label_ar, ac.label_en, ac.icon_key
+              l.inventory_type_id, ac.label_ar, ac.label_en, ac.icon_key,
+              ac.sort_order, ac.applicable_venue_types
        FROM venue_amenity_links l
        JOIN amenity_catalog ac ON ac.code = l.amenity_code
        WHERE l.venue_id = $1
@@ -138,6 +139,25 @@ export class CatalogService {
          )`,
       [id],
     );
+    const unitRows = await this.pg.query<{
+      id: string;
+      inventory_type_id: string;
+      label: string;
+      status: string;
+    }>(
+      `SELECT u.id, u.inventory_type_id, u.label, u.status
+       FROM inventory_units u
+       JOIN inventory_types t ON t.id = u.inventory_type_id
+       WHERE t.venue_id = $1 AND u.status = 'active'
+       ORDER BY u.label ASC, u.id ASC`,
+      [id],
+    );
+    const unitsByType = new Map<string, Array<{ id: string; label: string }>>();
+    for (const u of unitRows.rows) {
+      const list = unitsByType.get(u.inventory_type_id) ?? [];
+      list.push({ id: u.id, label: u.label });
+      unitsByType.set(u.inventory_type_id, list);
+    }
     const priceByType = new Map(prices.rows.map((p) => [p.id, p.starting]));
     const availIds = new Set(avail.rows.map((r) => r.id));
     const primaryImage = media.rows.find((m) => m.kind === "image") ?? null;
@@ -230,6 +250,7 @@ export class CatalogService {
           startingPriceHint: priceByType.get(t.id) ?? null,
           starting_price_hint: priceByType.get(t.id) ?? null,
           available: availIds.has(t.id),
+          units: unitsByType.get(t.id) ?? [],
           videoUrl: video?.url ?? null,
           video_url: video?.url ?? null,
           images,
@@ -243,6 +264,8 @@ export class CatalogService {
             label_ar: a.label_ar,
             labelAr: a.label_ar,
             icon_key: a.icon_key,
+            sort_order: a.sort_order,
+            sortOrder: a.sort_order,
           })),
         };
       }),
@@ -288,6 +311,10 @@ export class CatalogService {
         labelAr: a.label_ar,
         label_en: a.label_en,
         icon_key: a.icon_key,
+        sort_order: a.sort_order,
+        sortOrder: a.sort_order,
+        applicable_venue_types: a.applicable_venue_types,
+        applicableVenueTypes: a.applicable_venue_types,
       })),
       policies: {
         checkInFrom: attrs["check_in_from"] ?? null,

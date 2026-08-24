@@ -151,6 +151,7 @@ export class ConsumerController {
       extraIds: body.extraIds ?? [],
       promoCode: body.promoCode,
       slotCode: body.slotCode,
+      inventoryUnitId: body.inventoryUnitId,
     });
   }
 
@@ -234,6 +235,17 @@ export class ConsumerController {
   @Get('bookings/:id')
   one(@CurrentUser() user: AuthUser, @Param('id') id: string) {
     return this.bookings.getForConsumer(user.uid, id);
+  }
+
+  @Get('bookings/:id/document')
+  async document(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const booking = (await this.bookings.getForConsumer(user.uid, id)) as {
+      document?: unknown;
+    };
+    if (!booking.document) {
+      throw new AppError(ErrorCodes.NOT_FOUND, 'Booking document not issued');
+    }
+    return booking.document;
   }
 
   @Post('bookings/:id/cancel')

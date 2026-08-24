@@ -34,6 +34,8 @@ export interface QuoteInput {
   promoCode?: string;
   /** Required when venue.booking_mode = event_slot. */
   slotCode?: string;
+  /** Required when inventory_model = physical. */
+  inventoryUnitId?: string;
 }
 
 export interface QuoteComputation {
@@ -194,11 +196,41 @@ export class PricingEngine {
         "Inventory type is not active",
       );
     }
-    if (type.rows[0].inventory_model !== "pooled") {
-      throw new AppError(
-        ErrorCodes.VALIDATION_ERROR,
-        "Physical inventory model is not bookable in this phase",
+    if (type.rows[0].inventory_model === "physical") {
+      if (venue.rows[0].booking_mode === "event_slot") {
+        throw new AppError(
+          ErrorCodes.VALIDATION_ERROR,
+          "Physical inventory is not valid for event_slot",
+        );
+      }
+      if (input.quantity !== 1) {
+        throw new AppError(
+          ErrorCodes.VALIDATION_ERROR,
+          "Physical inventory quantity must be 1",
+          { reason: "physical_quantity" },
+        );
+      }
+      if (!input.inventoryUnitId) {
+        throw new AppError(
+          ErrorCodes.VALIDATION_ERROR,
+          "Physical unit required",
+          { reason: "physical_unit_required" },
+        );
+      }
+      const unit = await this.pg.query<{
+        id: string;
+        status: string;
+      }>(
+        `SELECT id, status FROM inventory_units
+         WHERE id = $1 AND inventory_type_id = $2`,
+        [input.inventoryUnitId, input.inventoryTypeId],
       );
+      if (!unit.rowCount || unit.rows[0].status !== "active") {
+        throw new AppError(
+          ErrorCodes.AVAILABILITY_CHANGED,
+          "Inventory no longer available",
+        );
+      }
     }
 
     this.assertSafeStayWindow(

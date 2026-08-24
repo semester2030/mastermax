@@ -9,6 +9,7 @@ import {
   CoreApiError,
   createImageUploadSession,
   createInventoryType,
+  createInventoryUnit,
   createRatePlan,
   createVenue,
   createVideoUploadSession,
@@ -157,6 +158,25 @@ export async function createUnitAction(
       quantityTotal: Number(formData.get("quantityTotal") ?? 1),
       baseOccupancy: Number(formData.get("baseOccupancy") ?? 2),
       maxOccupancy: Number(formData.get("maxOccupancy") ?? 2),
+    });
+    revalidatePath(`/venues/${venueId}/units`);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errMessage(e) };
+  }
+}
+
+export async function createPhysicalUnitAction(
+  venueId: string,
+  inventoryTypeId: string,
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  try {
+    const providerId = await requireProviderId();
+    await createInventoryUnit(inventoryTypeId, {
+      providerId,
+      labelAr: String(formData.get("labelAr") ?? "").trim(),
     });
     revalidatePath(`/venues/${venueId}/units`);
     return { ok: true };

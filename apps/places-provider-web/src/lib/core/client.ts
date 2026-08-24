@@ -253,6 +253,28 @@ export function createInventoryType(body: {
   });
 }
 
+export function listInventoryUnits(providerId: string, inventoryTypeId: string) {
+  return coreFetch<{ items: Array<{ id: string; label: string; status: string }> }>(
+    {
+      method: "GET",
+      path: `/v1/provider/inventory-types/${inventoryTypeId}/units`,
+      query: { providerId },
+      idempotent: false,
+    },
+  );
+}
+
+export function createInventoryUnit(
+  inventoryTypeId: string,
+  body: { providerId: string; labelAr: string },
+) {
+  return coreFetch<unknown>({
+    method: "POST",
+    path: `/v1/provider/inventory-types/${inventoryTypeId}/units`,
+    body,
+  });
+}
+
 export function patchInventoryType(
   id: string,
   body: Record<string, unknown>,

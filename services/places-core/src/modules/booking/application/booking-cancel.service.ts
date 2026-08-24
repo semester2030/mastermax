@@ -178,6 +178,7 @@ export class BookingCancelService {
     }
 
     await BookingLockOrder.lockVenue(c, row.venue_id);
+    await BookingLockOrder.lockUnitsForType(c, row.inventory_type_id);
     if (row.booking_mode === 'event_slot') {
       await BookingLockOrder.lockTemplatesForVenue(c, row.venue_id);
       await BookingLockOrder.lockSlotInventoryForVenueDate(
@@ -349,6 +350,9 @@ export class BookingCancelService {
       return;
     }
     const dates = stayDates(row.booking_mode, row.check_in, row.check_out);
+    if (row.hold_id) {
+      await this.capacity.releasePhysicalOccupancy(row.hold_id, c);
+    }
     if (kind === 'held') {
       await this.capacity.releaseHeld(
         row.inventory_type_id,

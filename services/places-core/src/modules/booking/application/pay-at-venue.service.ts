@@ -101,6 +101,7 @@ export class PayAtVenueService {
 
     // Lock order
     await BookingLockOrder.lockVenue(c, row.venue_id);
+    await BookingLockOrder.lockUnitsForType(c, row.inventory_type_id);
     if (row.booking_mode === 'event_slot') {
       await BookingLockOrder.lockTemplatesForVenue(c, row.venue_id);
       await BookingLockOrder.lockSlotInventoryForVenueDate(
@@ -196,6 +197,11 @@ export class PayAtVenueService {
         b.inventory_type_id,
         dates,
         b.quantity,
+        c,
+      );
+      await this.capacity.convertPhysicalOccupancyToBooked(
+        row.hold_id,
+        row.booking_id,
         c,
       );
     }

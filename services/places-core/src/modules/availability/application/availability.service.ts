@@ -5,6 +5,7 @@ import { AppError } from "../../../shared/errors/app-error";
 import { ErrorCodes } from "../../../shared/errors/error-codes";
 import { parseIsoDate, stayDates } from "../../../shared/time/stay-dates";
 import { CapacityService } from "../../inventory/application/capacity.service";
+import { BookingLockOrder } from "../../booking/application/booking-lock-order";
 import { VenueTypeCapabilityPolicy } from "../../filters/application/venue-type-capability.policy";
 import { metrics } from "../../../shared/observability/metrics";
 
@@ -22,7 +23,11 @@ export class AvailabilityService {
     checkIn: string;
     checkOut: string;
     quantity: number;
-  }): Promise<{ available: boolean; remaining: number }> {
+  }): Promise<{
+    available: boolean;
+    remaining: number;
+    units: Array<{ id: string; label: string }>;
+  }> {
     const started = Date.now();
     const venue = await this.pg.query<{
       booking_mode: "nightly" | "daily" | "event_slot";
@@ -50,20 +55,33 @@ export class AvailabilityService {
       );
     }
     if (type.rows[0].status !== "active") {
-      return { available: false, remaining: 0 };
-    }
-    if (type.rows[0].inventory_model !== "pooled") {
-      throw new AppError(
-        ErrorCodes.VALIDATION_ERROR,
-        "Physical inventory model is not bookable in this phase",
-      );
+      return { available: false, remaining: 0, units: [] };
     }
     const mode = venue.rows[0].booking_mode ?? "nightly";
     const dates = stayDates(mode, input.checkIn, input.checkOut);
     const open = await this.datesOpenUnderRules(input.inventoryTypeId, dates);
     if (!open) {
       metrics.observe("availability_latency", Date.now() - started);
-      return { available: false, remaining: 0 };
+      return { available: false, remaining: 0, units: [] };
+    }
+    if (type.rows[0].inventory_model === "physical") {
+      const qty = input.quantity;
+      const units = await this.pg.tx(async (c) => {
+        await BookingLockOrder.lockInventoryType(c, input.inventoryTypeId);
+        return this.capacity.listAvailablePhysicalUnits(
+          input.inventoryTypeId,
+          input.checkIn,
+          input.checkOut,
+          dates,
+          c,
+        );
+      });
+      metrics.observe("availability_latency", Date.now() - started);
+      return {
+        available: units.length >= qty && qty === 1,
+        remaining: units.length,
+        units,
+      };
     }
     await this.pg.tx(async (c) => {
       await this.capacity.ensureRows(input.inventoryTypeId, dates, c);
@@ -73,7 +91,7 @@ export class AvailabilityService {
       dates,
     );
     metrics.observe("availability_latency", Date.now() - started);
-    return { available: remaining >= input.quantity, remaining };
+    return { available: remaining >= input.quantity, remaining, units: [] };
   }
 
   /**

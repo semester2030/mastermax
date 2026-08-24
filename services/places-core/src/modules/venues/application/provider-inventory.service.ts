@@ -53,6 +53,23 @@ export class CreateInventoryTypeDto {
   sortOrder?: number;
 }
 
+export class CreateInventoryUnitDto {
+  @IsUUID()
+  providerId!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(80)
+  labelAr!: string;
+}
+
+export type InventoryUnitDto = {
+  id: string;
+  inventoryTypeId: string;
+  label: string;
+  status: string;
+};
+
 export class PatchInventoryTypeDto {
   @IsOptional()
   @IsString()
@@ -362,5 +379,117 @@ export class ProviderInventoryService {
       );
       return dto;
     });
+  }
+
+  async listUnits(
+    user: AuthUser,
+    providerId: string,
+    inventoryTypeId: string,
+  ): Promise<{ items: InventoryUnitDto[] }> {
+    await this.tenancy.require(user, providerId, 'venue.crud');
+    const type = await this.pg.query<{
+      provider_id: string;
+      inventory_model: string;
+    }>(
+      `SELECT v.provider_id, t.inventory_model
+       FROM inventory_types t
+       JOIN venues v ON v.id = t.venue_id
+       WHERE t.id = $1`,
+      [inventoryTypeId],
+    );
+    if (!type.rowCount || type.rows[0].provider_id !== providerId) {
+      throw new AppError(ErrorCodes.NOT_FOUND, 'Inventory type not found');
+    }
+    const rows = await this.pg.query<InventoryUnitDto>(
+      `SELECT id, inventory_type_id AS "inventoryTypeId", label, status
+       FROM inventory_units
+       WHERE inventory_type_id = $1
+       ORDER BY label ASC, id ASC`,
+      [inventoryTypeId],
+    );
+    return { items: rows.rows };
+  }
+
+  async createUnit(
+    user: AuthUser,
+    inventoryTypeId: string,
+    body: CreateInventoryUnitDto,
+    correlationId: string,
+  ): Promise<InventoryUnitDto> {
+    const type = await this.pg.query<{
+      provider_id: string;
+      inventory_model: string;
+    }>(
+      `SELECT v.provider_id, t.inventory_model
+       FROM inventory_types t
+       JOIN venues v ON v.id = t.venue_id
+       WHERE t.id = $1`,
+      [inventoryTypeId],
+    );
+    if (!type.rowCount || type.rows[0].provider_id !== body.providerId) {
+      throw new AppError(ErrorCodes.NOT_FOUND, 'Inventory type not found');
+    }
+    const m = await this.tenancy.require(user, body.providerId, 'venue.crud');
+    if (type.rows[0].inventory_model !== 'physical') {
+      throw new AppError(
+        ErrorCodes.VALIDATION_ERROR,
+        'Units can only be added to an independent inventory type',
+        { reason: 'physical_units_only' },
+      );
+    }
+    const label = body.labelAr.trim();
+    if (!label) {
+      throw new AppError(ErrorCodes.VALIDATION_ERROR, 'labelAr required');
+    }
+    const id = newId();
+    try {
+      return await this.pg.tx(async (c) => {
+        await BookingLockOrder.lockInventoryType(c, inventoryTypeId);
+        await c.query(
+          `INSERT INTO inventory_units (id, inventory_type_id, label, status)
+           VALUES ($1,$2,$3,'active')`,
+          [id, inventoryTypeId, label],
+        );
+        const count = await c.query<{ c: string }>(
+          `SELECT count(*)::text AS c FROM inventory_units
+           WHERE inventory_type_id = $1 AND status = 'active'`,
+          [inventoryTypeId],
+        );
+        const nextQty = Number(count.rows[0].c);
+        await c.query(
+          `UPDATE inventory_types SET quantity_total = $2 WHERE id = $1`,
+          [inventoryTypeId, nextQty],
+        );
+        await this.capacity.reconcileQuantityTotal(
+          inventoryTypeId,
+          nextQty,
+          c,
+          riyadhTodayIso(),
+        );
+        await this.audit.write(
+          {
+            actorUid: user.uid,
+            actorRole: m.actorRole,
+            entityType: 'inventory_unit',
+            entityId: id,
+            after: { inventoryTypeId, label, quantityTotal: nextQty },
+            correlationId,
+          },
+          c,
+        );
+        return {
+          id,
+          inventoryTypeId,
+          label,
+          status: 'active',
+        };
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (/unique|duplicate/i.test(msg)) {
+        throw new AppError(ErrorCodes.DUPLICATE_REQUEST, 'Duplicate unit label');
+      }
+      throw e;
+    }
   }
 }

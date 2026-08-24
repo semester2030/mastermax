@@ -12,6 +12,8 @@ import { ErrorCodes } from '../../../shared/errors/error-codes';
  * 6) booking FOR UPDATE
  * 7) payment FOR UPDATE (when applicable; webhook/refund)
  * 8) capacity rows ORDER BY date FOR UPDATE (caller / CapacityService)
+ * Physical (nightly/daily): after venue, lock inventory_units ORDER BY id
+ * before hold / occupancy / daily capacity mutation.
  */
 export class BookingLockOrder {
   static async lockVenue(client: PoolClient, venueId: string): Promise<void> {
@@ -65,6 +67,31 @@ export class BookingLockOrder {
       throw new AppError(ErrorCodes.NOT_FOUND, 'Inventory type not found');
     }
     return { quantity_total: Number(r.rows[0].quantity_total) };
+  }
+
+  /**
+   * Lock every physical unit of a type in deterministic id order.
+   * Must follow venue (and inventory_types) locks and precede occupancy writes.
+   */
+  static async lockUnitsForType(
+    client: PoolClient,
+    inventoryTypeId: string,
+  ): Promise<
+    Array<{ id: string; label: string; status: string }>
+  > {
+    const r = await client.query<{
+      id: string;
+      label: string;
+      status: string;
+    }>(
+      `SELECT id, label, status
+       FROM inventory_units
+       WHERE inventory_type_id = $1
+       ORDER BY id
+       FOR UPDATE`,
+      [inventoryTypeId],
+    );
+    return r.rows;
   }
 
   static async lockTemplatesForVenue(

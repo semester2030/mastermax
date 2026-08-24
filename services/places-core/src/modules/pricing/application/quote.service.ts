@@ -8,6 +8,10 @@ import { ErrorCodes } from "../../../shared/errors/error-codes";
 import { newId } from "../../../shared/ids/ids";
 import { OutboxService } from "../../../shared/events/outbox.service";
 import { VenueTypeCapabilityPolicy } from "../../filters/application/venue-type-capability.policy";
+import {
+  ConsumerPaymentOptions,
+  resolveConsumerPaymentOptions,
+} from "../../booking/application/consumer-payment-options";
 import { PricingEngine, QuoteInput } from "./pricing.engine";
 
 export interface QuoteDto {
@@ -23,6 +27,8 @@ export interface QuoteDto {
   pricingVersion: string;
   slotCode: string | null;
   bookingMode: "nightly" | "daily" | "event_slot";
+  paymentOptions: ConsumerPaymentOptions;
+  inventoryUnitId: string | null;
 }
 
 @Injectable()
@@ -36,8 +42,11 @@ export class QuoteService {
   ) {}
 
   async create(uid: string, input: QuoteInput): Promise<QuoteDto> {
-    const venue = await this.pg.query<{ venue_type: string }>(
-      `SELECT venue_type FROM venues WHERE id = $1`,
+    const venue = await this.pg.query<{
+      venue_type: string;
+      provider_id: string;
+    }>(
+      `SELECT venue_type, provider_id FROM venues WHERE id = $1`,
       [input.venueId],
     );
     if (!venue.rowCount) {
@@ -58,9 +67,9 @@ export class QuoteService {
            id, consumer_firebase_uid, venue_id, inventory_type_id, check_in, check_out,
            quantity, guests_adults, guests_children, currency, subtotal, extras_total,
            discount_total, tax_total, gross_total, commission_bps, commission_amount,
-           provider_net, pricing_version, expires_at, status, slot_code
+           provider_net, pricing_version, expires_at, status, slot_code, inventory_unit_id
          ) VALUES (
-           $1,$2,$3,$4,$5::date,$6::date,$7,$8,$9,'SAR',$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,'open',$20
+           $1,$2,$3,$4,$5::date,$6::date,$7,$8,$9,'SAR',$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,'open',$20,$21
          )`,
         [
           id,
@@ -83,6 +92,7 @@ export class QuoteService {
           calc.pricingVersion,
           expires.toISOString(),
           calc.slotCode,
+          input.inventoryUnitId ?? null,
         ],
       );
       for (const item of calc.items) {
@@ -115,6 +125,8 @@ export class QuoteService {
       pricingVersion: calc.pricingVersion,
       slotCode: calc.slotCode,
       bookingMode: calc.bookingMode,
+      paymentOptions: resolveConsumerPaymentOptions(venue.rows[0].provider_id),
+      inventoryUnitId: input.inventoryUnitId ?? null,
     };
   }
 }

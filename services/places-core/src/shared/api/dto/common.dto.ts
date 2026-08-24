@@ -60,6 +60,10 @@ export class CreateQuoteDto {
   quantity?: number;
 
   @IsOptional()
+  @IsUUID()
+  inventoryUnitId?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(0)

@@ -17,7 +17,7 @@ import {
   CurrentUser,
   RequireAnyClaim,
 } from "../../../shared/auth/auth.decorators";
-import { ProviderInventoryService, CreateInventoryTypeDto, PatchInventoryTypeDto } from "../application/provider-inventory.service";
+import { ProviderInventoryService, CreateInventoryTypeDto, CreateInventoryUnitDto, PatchInventoryTypeDto } from "../application/provider-inventory.service";
 import {
   ProviderRatePlansService,
   CreateRatePlanDto,
@@ -280,6 +280,47 @@ export class ProviderController {
     @Query("venueId") venueId: string,
   ) {
     return this.inventory.list(user, providerId, venueId);
+  }
+
+  @Get("inventory-types/:id/units")
+  listInventoryUnits(
+    @CurrentUser() user: AuthUser,
+    @Param("id") id: string,
+    @Query("providerId") providerId: string,
+  ) {
+    return this.inventory.listUnits(user, providerId, id);
+  }
+
+  @Post("inventory-types/:id/units")
+  async createInventoryUnit(
+    @CurrentUser() user: AuthUser,
+    @Req() req: CorrelatedRequest,
+    @Headers("idempotency-key") idempotencyKey: string | undefined,
+    @Param("id") id: string,
+    @Body() body: CreateInventoryUnitDto,
+  ) {
+    const key = this.requireIdempotencyKey(idempotencyKey);
+    const scope = {
+      actorUid: user.uid,
+      httpMethod: "POST",
+      routePath: "/v1/provider/inventory-types/:id/units",
+    };
+    return this.idem.runScoped(
+      key,
+      body,
+      true,
+      scope,
+      24,
+      async () => {
+        const result = await this.inventory.createUnit(
+          user,
+          id,
+          body,
+          req.correlationId,
+        );
+        return { responseCode: 201, responseBody: result };
+      },
+    );
   }
 
   @Patch("inventory-types/:id")

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PgService } from "../../../shared/database/pg.service";
 import { AppError } from "../../../shared/errors/app-error";
 import { ErrorCodes } from "../../../shared/errors/error-codes";
+import { mapConsumerBookingDocument } from "./consumer-booking-document";
 
 /**
  * Consumer-safe booking projection (F-V2-003 / F-REV3-06).
@@ -30,6 +31,8 @@ const CONSUMER_BOOKING_SELECT = `
   v.lat AS venue_lat,
   v.lng AS venue_lng,
   it.name AS inventory_type_name,
+  it.label_ar AS inventory_type_label_ar,
+  iu.label AS inventory_unit_label,
   q.guests_adults,
   q.guests_children,
   cover.cover_url AS cover_url,
@@ -40,6 +43,7 @@ const CONSUMER_BOOKING_FROM = `
   FROM bookings b
   JOIN venues v ON v.id = b.venue_id
   JOIN inventory_types it ON it.id = b.inventory_type_id
+  LEFT JOIN inventory_units iu ON iu.id = b.inventory_unit_id
   LEFT JOIN quotes q ON q.id = b.quote_id
   LEFT JOIN LATERAL (
     SELECT COALESCE(m.cover_url, m.url) AS cover_url
@@ -116,8 +120,10 @@ export function mapConsumerBookingRow(
     coverUrl: row.cover_url ?? null,
     inventory_type_id: row.inventory_type_id,
     inventoryTypeId: row.inventory_type_id,
-    inventory_type_name: row.inventory_type_name,
-    inventoryTypeName: row.inventory_type_name,
+    inventory_type_name: row.inventory_type_label_ar || row.inventory_type_name,
+    inventoryTypeName: row.inventory_type_label_ar || row.inventory_type_name,
+    inventory_unit_label: row.inventory_unit_label ?? null,
+    inventoryUnitLabel: row.inventory_unit_label ?? null,
     quantity: row.quantity,
     slot_code: row.slot_code,
     slotCode: row.slot_code,
@@ -141,6 +147,15 @@ export function mapConsumerBookingRow(
     longitude: Number.isFinite(lng as number) ? lng : null,
     has_review: hasReview,
     hasReview,
+    document: mapConsumerBookingDocument({
+      status: row.status,
+      payment_status: row.payment_status,
+      payment_method: row.payment_method,
+      human_code: row.human_code,
+      gross_total: row.gross_total,
+      currency: row.currency,
+      venue_name: row.venue_name,
+    }),
   };
 }
 

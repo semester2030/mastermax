@@ -272,6 +272,104 @@ export class CapacityService {
     }
   }
 
+  async listAvailablePhysicalUnits(
+    typeId: string,
+    checkIn: string,
+    checkOut: string,
+    stayDatesForOverrides: string[],
+    client: PoolClient,
+  ): Promise<Array<{ id: string; label: string }>> {
+    const units = await BookingLockOrder.lockUnitsForType(client, typeId);
+    const blocked = await client.query<{ id: string }>(
+      `SELECT DISTINCT inventory_unit_id AS id
+       FROM availability_overrides
+       WHERE inventory_type_id = $1
+         AND inventory_unit_id IS NOT NULL
+         AND date = ANY($2::date[])
+         AND kind IN ('block', 'maintenance')`,
+      [typeId, stayDatesForOverrides],
+    );
+    const blockedIds = new Set(blocked.rows.map((r) => r.id));
+    const occupied = await client.query<{ inventory_unit_id: string }>(
+      `SELECT inventory_unit_id
+       FROM inventory_unit_occupancy
+       WHERE inventory_unit_id = ANY($1::uuid[])
+         AND daterange(check_in, check_out, '[)') && daterange($2::date, $3::date, '[)')`,
+      [units.map((u) => u.id), checkIn, checkOut],
+    );
+    const occupiedIds = new Set(occupied.rows.map((r) => r.inventory_unit_id));
+    return units
+      .filter(
+        (u) =>
+          u.status === "active" &&
+          !blockedIds.has(u.id) &&
+          !occupiedIds.has(u.id),
+      )
+      .map((u) => ({ id: u.id, label: u.label }));
+  }
+
+  async occupyPhysicalUnit(
+    input: {
+      unitId: string;
+      holdId: string;
+      bookingId: string;
+      checkIn: string;
+      checkOut: string;
+    },
+    client: PoolClient,
+  ): Promise<void> {
+    try {
+      await client.query(
+        `INSERT INTO inventory_unit_occupancy
+           (id, inventory_unit_id, hold_id, booking_id, check_in, check_out, status)
+         VALUES ($1,$2,$3,$4,$5::date,$6::date,'held')`,
+        [
+          newId(),
+          input.unitId,
+          input.holdId,
+          input.bookingId,
+          input.checkIn,
+          input.checkOut,
+        ],
+      );
+    } catch (err) {
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code: unknown }).code)
+          : "";
+      if (code === "23P01") {
+        throw new AppError(
+          ErrorCodes.AVAILABILITY_CHANGED,
+          "Inventory no longer available",
+        );
+      }
+      throw err;
+    }
+  }
+
+  async convertPhysicalOccupancyToBooked(
+    holdId: string,
+    bookingId: string,
+    client: PoolClient,
+  ): Promise<void> {
+    await client.query(
+      `UPDATE inventory_unit_occupancy
+       SET status = 'booked', booking_id = $2
+       WHERE hold_id = $1 AND status = 'held'`,
+      [holdId, bookingId],
+    );
+  }
+
+  async releasePhysicalOccupancy(
+    holdId: string,
+    client: PoolClient,
+  ): Promise<void> {
+    await client.query(
+      `DELETE FROM inventory_unit_occupancy WHERE hold_id = $1`,
+      [holdId],
+    );
+  }
+
   private async blockedFor(
     client: PoolClient,
     typeId: string,
