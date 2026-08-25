@@ -18,6 +18,7 @@ import {
 } from "../src/lib/location/geocode.ts";
 import { bootLocationMaps } from "../src/lib/google-maps/boot-maps.ts";
 import { buildMapsScriptSrc } from "../src/lib/google-maps/load-script.ts";
+import { resolveClassicMarkerCtor } from "../src/lib/google-maps/marker-ctor.ts";
 import { operatorErrorAr } from "../src/lib/operator-errors.ts";
 
 const cities = [
@@ -228,6 +229,20 @@ test("maps script loads Maps JS only and never bundles Places or async loading f
   assert.equal(src.includes("libraries="), false);
   assert.equal(src.includes("loading=async"), false);
   assert.equal(src.includes("AIza"), false);
+});
+
+test("classic marker is read from google.maps because importLibrary omits it", () => {
+  const mapsLib = { Map: class {} };
+  const globalMarker = class {};
+  const previous = (globalThis as { window?: unknown }).window;
+  (globalThis as { window?: unknown }).window = {
+    google: { maps: { Marker: globalMarker } },
+  };
+  try {
+    assert.equal(resolveClassicMarkerCtor(mapsLib as never), globalMarker);
+  } finally {
+    (globalThis as { window?: unknown }).window = previous;
+  }
 });
 
 test("map still boots when Places session setup fails", async () => {
