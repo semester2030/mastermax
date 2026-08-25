@@ -1,5 +1,6 @@
 import { mapsMapId } from "./load-script";
 import { resolveClassicMarkerCtor } from "./marker-ctor";
+import { attachOsmMapPin, googleMapLooksBroken } from "./osm-pin";
 
 export type MapPinHandle = {
   setPosition: (lat: number, lng: number) => void;
@@ -14,6 +15,7 @@ type MapInstance = {
 
 type MapsLib = {
   Map: new (el: HTMLElement, opts: Record<string, unknown>) => MapInstance;
+  RenderingType?: { RASTER: unknown };
   Marker?: new (opts: Record<string, unknown>) => {
     setPosition: (c: { lat: number; lng: number }) => void;
     setMap: (map: unknown) => void;
@@ -159,7 +161,7 @@ function attachDomPin(
   };
 }
 
-export async function attachDraggableMapPin(input: {
+async function attachGoogleMapPin(input: {
   element: HTMLElement;
   lat: number;
   lng: number;
@@ -174,6 +176,7 @@ export async function attachDraggableMapPin(input: {
     center: { lat: input.lat, lng: input.lng },
     zoom: 15,
     ...(mapId ? { mapId } : {}),
+    ...(maps.RenderingType ? { renderingType: maps.RenderingType.RASTER } : {}),
     streetViewControl: false,
     mapTypeControl: false,
     fullscreenControl: false,
@@ -224,4 +227,23 @@ export async function attachDraggableMapPin(input: {
   }
 
   return attachDomPin(maps, map, input.lat, input.lng, input.onMove);
+}
+
+export async function attachDraggableMapPin(input: {
+  element: HTMLElement;
+  lat: number;
+  lng: number;
+  onMove: (lat: number, lng: number) => void;
+  useMapId?: boolean;
+}): Promise<MapPinHandle> {
+  try {
+    const handle = await attachGoogleMapPin(input);
+    await new Promise((resolve) => window.setTimeout(resolve, 1600));
+    if (!googleMapLooksBroken(input.element)) return handle;
+    handle.destroy();
+  } catch {
+    // Google script/auth/tiles failed; OpenStreetMap still lets the operator set a pin.
+  }
+  input.element.innerHTML = "";
+  return attachOsmMapPin(input);
 }

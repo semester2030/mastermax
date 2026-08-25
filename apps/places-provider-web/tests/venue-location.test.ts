@@ -19,6 +19,7 @@ import {
 import { bootLocationMaps } from "../src/lib/google-maps/boot-maps.ts";
 import { buildMapsScriptSrc } from "../src/lib/google-maps/load-script.ts";
 import { resolveClassicMarkerCtor } from "../src/lib/google-maps/marker-ctor.ts";
+import { googleMapLooksBroken } from "../src/lib/google-maps/osm-pin.ts";
 import { operatorErrorAr } from "../src/lib/operator-errors.ts";
 
 const cities = [
@@ -229,6 +230,25 @@ test("maps script loads Maps JS only and never bundles Places or async loading f
   assert.equal(src.includes("libraries="), false);
   assert.equal(src.includes("loading=async"), false);
   assert.equal(src.includes("AIza"), false);
+});
+
+test("Google overlay copy is treated as a broken map so OSM can take over", () => {
+  const el = {
+    innerText: "عفوًا، حدث خطأ. لم تحمِّل هذه الصفحة خرائط Google بشكل صحيح.",
+    innerHTML: "<div>error</div>".repeat(20),
+    querySelectorAll() {
+      return { length: 1 };
+    },
+  };
+  assert.equal(googleMapLooksBroken(el as unknown as HTMLElement), true);
+  const ok = {
+    innerText: "",
+    innerHTML: "<img><img><img>",
+    querySelectorAll() {
+      return { length: 8 };
+    },
+  };
+  assert.equal(googleMapLooksBroken(ok as unknown as HTMLElement), false);
 });
 
 test("classic marker is read from google.maps because importLibrary omits it", () => {
