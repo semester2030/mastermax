@@ -11,6 +11,11 @@ const CODE_RE = /\b[A-Z][A-Z0-9_]{3,}\b/g;
 
 const KNOWN: Array<{ test: RegExp; message: string }> = [
   {
+    test: /internal media moderation|forbidden in production|placesInternalOperator/i,
+    message:
+      "تعذّر اعتماد الوسائط. سجّل الدخول بحساب المطوّر الداخلي ثم أعد المحاولة.",
+  },
+  {
     test: /unauthenticated|missing_session|جلسة/i,
     message: "انتهت الجلسة. سجّل الدخول ثم أعد المحاولة.",
   },

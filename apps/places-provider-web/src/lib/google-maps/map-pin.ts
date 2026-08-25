@@ -46,11 +46,12 @@ export async function attachDraggableMapPin(input: {
   lat: number;
   lng: number;
   onMove: (lat: number, lng: number) => void;
+  useMapId?: boolean;
 }): Promise<MapPinHandle> {
   const root = mapsRoot();
   if (!root?.importLibrary) throw new Error("maps_unavailable");
   const maps = (await root.importLibrary("maps")) as MapsLib;
-  const mapId = mapsMapId();
+  const mapId = input.useMapId === false ? null : mapsMapId();
   const map = new maps.Map(input.element, {
     center: { lat: input.lat, lng: input.lng },
     zoom: 15,

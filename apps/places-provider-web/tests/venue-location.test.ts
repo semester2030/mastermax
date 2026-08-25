@@ -16,6 +16,9 @@ import {
   mapsServerKeyConfigured,
   parseGeocodeResponse,
 } from "../src/lib/location/geocode.ts";
+import { bootLocationMaps } from "../src/lib/google-maps/boot-maps.ts";
+import { buildMapsScriptSrc } from "../src/lib/google-maps/load-script.ts";
+import { operatorErrorAr } from "../src/lib/operator-errors.ts";
 
 const cities = [
   { id: "c1", code: "riyadh", nameAr: "الرياض", nameEn: "Riyadh" },
@@ -202,6 +205,55 @@ test("server geocode key is never printed and example file has names only", () =
   assert.match(example, /NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=/);
   assert.match(example, /GOOGLE_MAPS_SERVER_API_KEY=/);
   assert.equal(example.includes("AIza"), false);
+});
+
+test("maps script loads Maps JS only and never bundles Places or async loading flags", () => {
+  const src = buildMapsScriptSrc("test-key");
+  assert.match(src, /^https:\/\/maps\.googleapis\.com\/maps\/api\/js\?/);
+  assert.match(src, /callback=__darPlacesMapsReady/);
+  assert.equal(src.includes("libraries="), false);
+  assert.equal(src.includes("loading=async"), false);
+  assert.equal(src.includes("AIza"), false);
+});
+
+test("map still boots when Places session setup fails", async () => {
+  const attached: string[] = [];
+  const result = await bootLocationMaps({
+    loadScript: async () => undefined,
+    createSession: async () => {
+      throw new Error("places_new_unavailable");
+    },
+    attachPin: async () => {
+      attached.push("primary");
+    },
+  });
+  assert.equal(result.ready, true);
+  assert.equal(result.session, null);
+  assert.deepEqual(attached, ["primary"]);
+});
+
+test("map falls back to a classic pin when the Map ID attach fails", async () => {
+  const attached: string[] = [];
+  const result = await bootLocationMaps({
+    loadScript: async () => undefined,
+    createSession: async () => "token",
+    attachPin: async () => {
+      throw new Error("advanced_marker_failed");
+    },
+    attachPinFallback: async () => {
+      attached.push("fallback");
+    },
+  });
+  assert.equal(result.ready, true);
+  assert.equal(result.session, "token");
+  assert.deepEqual(attached, ["fallback"]);
+});
+
+test("production moderation English is mapped to Arabic", () => {
+  assert.equal(
+    operatorErrorAr("Internal media moderation is forbidden in production"),
+    "تعذّر اعتماد الوسائط. سجّل الدخول بحساب المطوّر الداخلي ثم أعد المحاولة.",
+  );
 });
 
 test("location patch is scoped to one venue id and never a second tenant", () => {

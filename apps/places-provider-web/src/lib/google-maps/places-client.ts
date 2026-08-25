@@ -156,7 +156,12 @@ export async function createPlacesSessionToken(): Promise<unknown> {
     }
   ).google?.maps;
   if (!maps?.importLibrary) return null;
-  const lib = await maps.importLibrary("places");
-  const Token = lib.AutocompleteSessionToken as new () => unknown;
-  return new Token();
+  try {
+    const lib = await maps.importLibrary("places");
+    const Token = lib.AutocompleteSessionToken as new () => unknown;
+    if (typeof Token !== "function") return null;
+    return new Token();
+  } catch {
+    return null;
+  }
 }

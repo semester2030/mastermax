@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { AuthUser, hasClaim } from "../../../shared/auth/auth-user";
+import { AuthUser } from "../../../shared/auth/auth-user";
 import { PgService } from "../../../shared/database/pg.service";
 import { AppError } from "../../../shared/errors/app-error";
 import { ErrorCodes } from "../../../shared/errors/error-codes";
@@ -16,6 +16,7 @@ import { VenuePublicationService } from "./venue-publication.service";
 import { MediaModerationService } from "./media-moderation.service";
 import { MEDIA_LIMITS } from "../../media/domain/media-contract";
 import { LocationCatalogService } from "./location-catalog.service";
+import { assertInternalOperatorModeration } from "./internal-operator-moderation";
 import {
   isValidLatitude,
   isValidLongitude,
@@ -274,22 +275,8 @@ export class ProviderOpsService {
     }));
   }
 
-  /**
-   * Wave1 RC2 — staging/internal only. Forbidden when NODE_ENV=production.
-   */
   private assertInternalOperatorStaging(actor: AuthUser): void {
-    if (process.env.NODE_ENV === "production") {
-      throw new AppError(
-        ErrorCodes.FORBIDDEN_PROVIDER_SCOPE,
-        "Internal media moderation is forbidden in production",
-      );
-    }
-    if (!hasClaim(actor, "placesInternalOperator")) {
-      throw new AppError(
-        ErrorCodes.FORBIDDEN_PROVIDER_SCOPE,
-        "placesInternalOperator required",
-      );
-    }
+    assertInternalOperatorModeration(actor);
   }
 
   async listPendingModerationForOperator(

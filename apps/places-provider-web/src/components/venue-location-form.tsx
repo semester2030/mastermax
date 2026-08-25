@@ -16,6 +16,7 @@ import {
   attachDraggableMapPin,
   type MapPinHandle,
 } from "@/lib/google-maps/map-pin";
+import { bootLocationMaps } from "@/lib/google-maps/boot-maps";
 import { loadGoogleMapsScript, mapsWebKey, type MapsLoadState } from "@/lib/google-maps/load-script";
 import {
   createPlacesSessionToken,
@@ -64,6 +65,7 @@ export function VenueLocationForm({
   initialDistricts,
 }: Props) {
   const [mapsState, setMapsState] = useState<MapsLoadState>("idle");
+  const [mapsBoot, setMapsBoot] = useState(0);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -118,6 +120,14 @@ export function VenueLocationForm({
 
   useEffect(() => {
     let cancelled = false;
+    async function waitForMapElement(): Promise<HTMLElement> {
+      const started = Date.now();
+      while (!mapEl.current) {
+        if (Date.now() - started > 3000) throw new Error("maps_element_missing");
+        await new Promise((resolve) => window.setTimeout(resolve, 16));
+      }
+      return mapEl.current;
+    }
     async function boot() {
       if (!mapsWebKey()) {
         setMapsState("unavailable");
@@ -125,25 +135,39 @@ export function VenueLocationForm({
       }
       setMapsState("loading");
       try {
-        await loadGoogleMapsScript();
-        sessionRef.current = await createPlacesSessionToken();
+        const el = await waitForMapElement();
+        const onMove = (nextLat: number, nextLng: number) => {
+          setLat(nextLat);
+          setLng(nextLng);
+          setLocationSource("pin");
+          setPinConfirmed(true);
+          setNeedsPinConfirm(false);
+          setGeocodeFailed(false);
+        };
+        const pinOpts = {
+          lat: initialCenter.current.lat,
+          lng: initialCenter.current.lng,
+          onMove,
+        };
+        const booted = await bootLocationMaps({
+          loadScript: loadGoogleMapsScript,
+          createSession: createPlacesSessionToken,
+          attachPin: async () => {
+            pinRef.current = await attachDraggableMapPin({
+              element: el,
+              ...pinOpts,
+            });
+          },
+          attachPinFallback: async () => {
+            pinRef.current = await attachDraggableMapPin({
+              element: el,
+              ...pinOpts,
+              useMapId: false,
+            });
+          },
+        });
         if (cancelled) return;
-        const el = mapEl.current;
-        if (el) {
-          pinRef.current = await attachDraggableMapPin({
-            element: el,
-            lat: initialCenter.current.lat,
-            lng: initialCenter.current.lng,
-            onMove(nextLat, nextLng) {
-              setLat(nextLat);
-              setLng(nextLng);
-              setLocationSource("pin");
-              setPinConfirmed(true);
-              setNeedsPinConfirm(false);
-              setGeocodeFailed(false);
-            },
-          });
-        }
+        sessionRef.current = booted.session;
         setMapsState("ready");
       } catch {
         if (!cancelled) setMapsState(mapsWebKey() ? "error" : "unavailable");
@@ -155,7 +179,7 @@ export function VenueLocationForm({
       pinRef.current?.destroy();
       pinRef.current = null;
     };
-  }, []);
+  }, [mapsBoot]);
 
   function applyCoords(
     nextLat: number,
@@ -338,7 +362,7 @@ export function VenueLocationForm({
         <ErrorState
           title="تعذّر تحميل الخريطة"
           description={mapsMessage ?? ""}
-          onRetry={() => window.location.reload()}
+          onRetry={() => setMapsBoot((n) => n + 1)}
         />
       ) : null}
       {mapsState === "unavailable" ? (

@@ -7,6 +7,7 @@ import {
   requireProviderId,
 } from "@/lib/core/client";
 import { mediaCasOf } from "@/lib/core/types";
+import { operatorErrorAr } from "@/lib/operator-errors";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export default async function ModerationPage() {
   } catch (e) {
     error =
       e instanceof CoreApiError
-        ? e.message
+        ? operatorErrorAr(e.message)
         : "تعذّر جلب الوسائط بانتظار الاعتماد";
   }
 

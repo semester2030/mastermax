@@ -696,8 +696,7 @@ export class ProviderController {
   }
 
   /**
-   * Wave1 RC2 — internal operator only (forbidden in production).
-   * Lists pending media across the bound trial provider for moderation.
+   * Internal operator only. Lists pending media for the bound provider.
    */
   @Get("media/pending-moderation")
   listPendingModeration(
@@ -708,7 +707,7 @@ export class ProviderController {
   }
 
   /**
-   * Wave1 RC2 — internal operator media approve/reject (forbidden in production).
+   * Internal operator media approve/reject for the bound provider.
    */
   @Patch("media/:id/moderation")
   moderateMediaAsOperator(
