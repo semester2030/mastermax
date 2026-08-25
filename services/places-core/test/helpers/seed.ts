@@ -37,14 +37,16 @@ export async function seedVenue(
   await pool.query(
     `INSERT INTO venues (
        id, provider_id, name, venue_type, booking_mode, status, city, min_stay,
-       city_id, district_id, street, location_source
+       city_id, district_id, street, location_source, lat, lng
      )
      VALUES (
        $1,$2,$3,$4,$5,'published','الرياض',1,
        '01400000-0000-7000-8000-000000000001',
        '01400001-0000-7000-8000-000000000001',
        'طريق الملك فهد',
-       'manual'
+       'manual',
+       24.7136,
+       46.6753
      )`,
     [venueId, providerId, opts.name, opts.venueType, opts.mode ?? 'nightly'],
   );

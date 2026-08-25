@@ -16,6 +16,11 @@ import { VenuePublicationService } from "./venue-publication.service";
 import { MediaModerationService } from "./media-moderation.service";
 import { MEDIA_LIMITS } from "../../media/domain/media-contract";
 import { LocationCatalogService } from "./location-catalog.service";
+import {
+  isValidLatitude,
+  isValidLongitude,
+  projectVenueLocation,
+} from "./venue-location";
 
 const UPLOAD_SESSION_TTL_MS = 30 * 60 * 1000;
 
@@ -116,26 +121,38 @@ export class ProviderOpsService {
     await this.tenancy.require(actor, providerId, "venue.crud");
     const res = await this.pg.query(
       `SELECT id, name, venue_type, booking_mode, status, city, city_id, district,
-              district_id, street, created_at, updated_at
+              district_id, street, building_no, google_place_id, formatted_address,
+              location_source, lat, lng, created_at, updated_at
        FROM venues
        WHERE provider_id = $1
        ORDER BY updated_at DESC NULLS LAST, created_at DESC`,
       [providerId],
     );
-    return res.rows.map((r) => ({
-      id: r.id,
-      name: r.name,
-      venueType: r.venue_type,
-      bookingMode: r.booking_mode,
-      status: r.status,
-      city: r.city,
-      cityId: r.city_id,
-      district: r.district,
-      districtId: r.district_id,
-      street: r.street,
-      createdAt: r.created_at,
-      updatedAt: r.updated_at,
-    }));
+    return res.rows.map((r) => {
+      const location = projectVenueLocation(r);
+      return {
+        id: r.id,
+        name: r.name,
+        venueType: r.venue_type,
+        bookingMode: r.booking_mode,
+        status: r.status,
+        city: r.city,
+        cityId: r.city_id,
+        district: r.district,
+        districtId: r.district_id,
+        street: r.street,
+        googlePlaceId: location.googlePlaceId,
+        formattedAddress: location.formattedAddress,
+        locationSource: location.locationSource,
+        lat: location.lat,
+        lng: location.lng,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        locationComplete: location.locationComplete,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+      };
+    });
   }
 
   async getVenue(
@@ -159,6 +176,8 @@ export class ProviderOpsService {
       access_notes: string | null;
       maps_url: string | null;
       location_source: string | null;
+      google_place_id: string | null;
+      formatted_address: string | null;
       lat: number | null;
       lng: number | null;
       created_at: Date;
@@ -166,7 +185,8 @@ export class ProviderOpsService {
     }>(
       `SELECT id, provider_id, name, venue_type, booking_mode, status, city, district,
               city_id, district_id, street, building_no, landmark, access_notes,
-              maps_url, location_source, lat, lng, created_at, updated_at
+              maps_url, location_source, google_place_id, formatted_address,
+              lat, lng, created_at, updated_at
        FROM venues WHERE id = $1`,
       [venueId],
     );
@@ -175,6 +195,7 @@ export class ProviderOpsService {
     }
     await this.tenancy.require(actor, v.rows[0].provider_id, "venue.crud");
     const row = v.rows[0];
+    const location = projectVenueLocation(row);
     return {
       id: row.id,
       providerId: row.provider_id,
@@ -191,9 +212,14 @@ export class ProviderOpsService {
       landmark: row.landmark,
       accessNotes: row.access_notes,
       mapsUrl: row.maps_url,
-      locationSource: row.location_source,
-      lat: row.lat,
-      lng: row.lng,
+      locationSource: location.locationSource,
+      googlePlaceId: location.googlePlaceId,
+      formattedAddress: location.formattedAddress,
+      lat: location.lat,
+      lng: location.lng,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      locationComplete: location.locationComplete,
       addressDetails: {
         buildingNo: row.building_no,
         landmark: row.landmark,
@@ -398,13 +424,19 @@ export class ProviderOpsService {
       cityId != null ||
       districtId != null ||
       typeof patch.street === "string" ||
+      typeof patch.district === "string" ||
+      typeof patch.city === "string" ||
       typeof patch.buildingNo === "string" ||
       typeof patch.landmark === "string" ||
       typeof patch.accessNotes === "string" ||
       typeof patch.mapsUrl === "string" ||
       typeof patch.locationSource === "string" ||
+      typeof patch.googlePlaceId === "string" ||
+      typeof patch.formattedAddress === "string" ||
       typeof patch.lat === "number" ||
-      typeof patch.lng === "number";
+      typeof patch.lng === "number" ||
+      typeof patch.latitude === "number" ||
+      typeof patch.longitude === "number";
     if (!hasLocation) {
       return;
     }
@@ -412,6 +444,16 @@ export class ProviderOpsService {
       cityId: cityId ?? null,
       districtId: districtId ?? null,
     });
+    const latRaw = patch.lat ?? patch.latitude;
+    const lngRaw = patch.lng ?? patch.longitude;
+    const lat = isValidLatitude(latRaw) ? latRaw : null;
+    const lng = isValidLongitude(lngRaw) ? lngRaw : null;
+    if ((latRaw != null && lat == null) || (lngRaw != null && lng == null)) {
+      throw new AppError(
+        ErrorCodes.VALIDATION_ERROR,
+        "latitude must be between -90 and 90 and longitude between -180 and 180",
+      );
+    }
     await this.pg.query(
       `UPDATE venues SET
          city_id = COALESCE($2, city_id),
@@ -422,10 +464,12 @@ export class ProviderOpsService {
          access_notes = COALESCE($7, access_notes),
          maps_url = COALESCE($8, maps_url),
          location_source = COALESCE($9, location_source),
-         lat = COALESCE($10, lat),
-         lng = COALESCE($11, lng),
-         city = COALESCE($12, city),
-         district = COALESCE($13, district),
+         google_place_id = COALESCE($10, google_place_id),
+         formatted_address = COALESCE($11, formatted_address),
+         lat = COALESCE($12, lat),
+         lng = COALESCE($13, lng),
+         city = COALESCE($14, city),
+         district = COALESCE($15, district),
          updated_at = now()
        WHERE id = $1`,
       [
@@ -440,10 +484,17 @@ export class ProviderOpsService {
         typeof patch.locationSource === "string"
           ? patch.locationSource
           : "manual",
-        typeof patch.lat === "number" ? patch.lat : null,
-        typeof patch.lng === "number" ? patch.lng : null,
+        typeof patch.googlePlaceId === "string"
+          ? patch.googlePlaceId.trim()
+          : null,
+        typeof patch.formattedAddress === "string"
+          ? patch.formattedAddress.trim()
+          : null,
+        lat,
+        lng,
         names.city ?? (typeof patch.city === "string" ? patch.city : null),
-        names.district,
+        names.district ??
+          (typeof patch.district === "string" ? patch.district : null),
       ],
     );
   }

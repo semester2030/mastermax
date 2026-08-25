@@ -16,6 +16,7 @@ function evidence(partial: Partial<PrepareEvidence> = {}): PrepareEvidence {
     hasCity: false,
     hasDistrict: false,
     hasStreet: false,
+    hasCoordinates: false,
     imageCount: 0,
     approvedVenueImages: 0,
     hasCover: false,
@@ -42,6 +43,7 @@ test("empty venue starts at basics and blocks publish", () => {
   assert.ok(labels.includes("المدينة"));
   assert.ok(labels.includes("الحي"));
   assert.ok(labels.includes("الشارع"));
+  assert.ok(labels.includes("إحداثيات الموقع"));
   assert.ok(labels.includes("فيديو رئيسي معتمد"));
   assert.ok(labels.includes("صورة غلاف معتمدة على مستوى المكان"));
   assert.equal(
@@ -56,6 +58,7 @@ test("venue → media → availability → review path", () => {
     hasCity: true,
     hasDistrict: true,
     hasStreet: true,
+    hasCoordinates: true,
   });
   assert.equal(isStepComplete("basics", afterBasics), true);
   assert.equal(buildPrepareSnapshot(afterBasics).nextStep?.id, "media");
@@ -79,6 +82,7 @@ test("venue → media → availability → review path", () => {
     hasCity: true,
     hasDistrict: true,
     hasStreet: true,
+    hasCoordinates: true,
     imageCount: 2,
     approvedVenueImages: 1,
     hasCover: true,
@@ -103,6 +107,35 @@ test("venue → media → availability → review path", () => {
   assert.equal(published.percent, 100);
   assert.equal(published.nextStep, null);
   assert.equal(published.statusLabelAr, "منشور");
+});
+
+test("missing coordinates gap points at the location page", () => {
+  const gaps = collectGaps(
+    evidence({
+      hasName: true,
+      hasCity: true,
+      hasDistrict: true,
+      hasStreet: true,
+    }),
+  );
+  const coords = gaps.find((g) => g.labelAr === "إحداثيات الموقع");
+  assert.ok(coords);
+  assert.equal(coords?.hrefSuffix, "/location");
+  assert.equal(coords?.blocksPublish, true);
+  assert.equal(buildPrepareSnapshot(evidence({
+    hasName: true,
+    hasCity: true,
+    hasDistrict: true,
+    hasStreet: true,
+    hasCoordinates: false,
+    hasCover: true,
+    hasVenueVideo: true,
+    unitCount: 1,
+    hasBasePrice: true,
+    availabilityMarked: true,
+    allActiveUnitsHaveMedia: true,
+    approvedVenueImages: 1,
+  })).canPublish, false);
 });
 
 test("review lists Arabic blockers before publish", () => {
@@ -180,7 +213,7 @@ test("operator errors never leak JSON, IDs, or technical codes", () => {
 
   assert.equal(
     operatorErrorAr("Publish requires at least one approved venue-level image"),
-    "يلزم مدينة وحي وشارع، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.",
+    "يلزم مدينة وحي وشارع وإحداثيات صحيحة، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.",
   );
   assert.equal(operatorErrorAr("Missing onBehalfOfProviderId claim").includes("onBehalf"), false);
 });

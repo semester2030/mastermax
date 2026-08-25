@@ -1,0 +1,219 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  LOCATION_INCOMPLETE_AR,
+  PLACES_SEARCH_CONSTRAINTS,
+  buildVenueLocationPatch,
+  canPersistCoordinates,
+  composeAddressPreview,
+  matchCatalogName,
+  newAutocompleteSessionToken,
+  venueHasCoordinates,
+} from "../src/lib/location/venue-location.ts";
+import {
+  mapsServerKeyConfigured,
+  parseGeocodeResponse,
+} from "../src/lib/location/geocode.ts";
+
+const cities = [
+  { id: "c1", code: "riyadh", nameAr: "الرياض", nameEn: "Riyadh" },
+  { id: "c2", code: "jeddah", nameAr: "جدة", nameEn: "Jeddah" },
+];
+
+test("search constraints stay in Saudi Arabia and Arabic", () => {
+  assert.deepEqual(PLACES_SEARCH_CONSTRAINTS.includedRegionCodes, ["SA"]);
+  assert.equal(PLACES_SEARCH_CONSTRAINTS.language, "ar");
+  assert.equal(PLACES_SEARCH_CONSTRAINTS.region, "SA");
+});
+
+test("autocomplete session tokens are unique per search session", () => {
+  const a = newAutocompleteSessionToken();
+  const b = newAutocompleteSessionToken();
+  assert.notEqual(a, b);
+  assert.ok(a.length > 8);
+});
+
+test("selecting a place persists search source and confirmed coordinates", () => {
+  const patch = buildVenueLocationPatch({
+    cityId: "c1",
+    districtId: "d1",
+    city: "الرياض",
+    district: "العليا",
+    street: "طريق الملك فهد",
+    formattedAddress: "طريق الملك فهد، العليا، الرياض",
+    googlePlaceId: "ChIJ-search",
+    lat: 24.7136,
+    lng: 46.6753,
+    locationSource: "search",
+    pinConfirmed: true,
+  });
+  assert.equal(patch.locationSource, "search");
+  assert.equal(patch.lat, 24.7136);
+  assert.equal(patch.lng, 46.6753);
+  assert.equal(patch.latitude, 24.7136);
+  assert.equal(patch.longitude, 46.6753);
+  assert.equal(patch.googlePlaceId, "ChIJ-search");
+});
+
+test("dragging the pin switches source to pin and keeps the new coords", () => {
+  const patch = buildVenueLocationPatch({
+    lat: 24.72,
+    lng: 46.68,
+    locationSource: "pin",
+    pinConfirmed: true,
+    street: "طريق الملك فهد",
+  });
+  assert.equal(patch.locationSource, "pin");
+  assert.equal(patch.lat, 24.72);
+  assert.equal(patch.lng, 46.68);
+});
+
+test("current location uses geolocation source", () => {
+  const patch = buildVenueLocationPatch({
+    lat: 24.7,
+    lng: 46.6,
+    locationSource: "geolocation",
+    pinConfirmed: true,
+  });
+  assert.equal(patch.locationSource, "geolocation");
+  assert.ok(canPersistCoordinates({ lat: 24.7, lng: 46.6, pinConfirmed: true }));
+});
+
+test("manual address without pin confirmation is saved as a draft only", () => {
+  const patch = buildVenueLocationPatch({
+    city: "الرياض",
+    district: "العليا",
+    street: "شارع التحلية",
+    formattedAddress: "شارع التحلية، العليا، الرياض",
+    lat: 24.7,
+    lng: 46.6,
+    locationSource: "manual",
+    pinConfirmed: false,
+  });
+  assert.equal(patch.locationSource, "manual");
+  assert.equal("lat" in patch, false);
+  assert.equal("lng" in patch, false);
+  assert.equal(canPersistCoordinates({ lat: 24.7, lng: 46.6, pinConfirmed: false }), false);
+});
+
+test("failed geocode payload never invents coordinates", () => {
+  const parsed = parseGeocodeResponse({ status: "ZERO_RESULTS", results: [] });
+  assert.equal(parsed.ok, false);
+  if (parsed.ok) throw new Error("expected failure");
+  assert.equal(parsed.reason, "not_found");
+  const saved = buildVenueLocationPatch({
+    city: "الرياض",
+    street: "عنوان غير معروف",
+    locationSource: "manual",
+    pinConfirmed: false,
+  });
+  assert.equal(saved.lat, undefined);
+  assert.equal(saved.lng, undefined);
+});
+
+test("successful geocode requires pin confirmation before persist", () => {
+  const parsed = parseGeocodeResponse({
+    status: "OK",
+    results: [
+      {
+        formatted_address: "طريق الملك فهد، الرياض",
+        place_id: "ChIJ-geo",
+        geometry: { location: { lat: 24.7136, lng: 46.6753 } },
+        address_components: [
+          { long_name: "الرياض", types: ["locality"] },
+          { long_name: "العليا", types: ["sublocality"] },
+          { long_name: "طريق الملك فهد", types: ["route"] },
+        ],
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  if (!parsed.ok) throw new Error("expected geocode");
+  assert.equal(parsed.city, "الرياض");
+  assert.equal(parsed.district, "العليا");
+  assert.equal(parsed.street, "طريق الملك فهد");
+  assert.equal(
+    canPersistCoordinates({ lat: parsed.lat, lng: parsed.lng, pinConfirmed: false }),
+    false,
+  );
+  assert.equal(
+    canPersistCoordinates({ lat: parsed.lat, lng: parsed.lng, pinConfirmed: true }),
+    true,
+  );
+});
+
+test("save/reload contract keeps Core field names only", () => {
+  const preview = composeAddressPreview({
+    street: "طريق الملك فهد",
+    district: "العليا",
+    city: "الرياض",
+  });
+  assert.equal(preview, "طريق الملك فهد، العليا، الرياض");
+  const patch = buildVenueLocationPatch({
+    cityId: "c1",
+    districtId: "d1",
+    street: "طريق الملك فهد",
+    formattedAddress: preview,
+    googlePlaceId: "ChIJ-reload",
+    lat: 24.7136,
+    lng: 46.6753,
+    locationSource: "search",
+    pinConfirmed: true,
+  });
+  assert.deepEqual(
+    Object.keys(patch).sort(),
+    [
+      "cityId",
+      "districtId",
+      "formattedAddress",
+      "googlePlaceId",
+      "lat",
+      "latitude",
+      "lng",
+      "locationSource",
+      "longitude",
+      "street",
+    ].sort(),
+  );
+});
+
+test("out-of-range coordinates never persist and block publish completeness", () => {
+  assert.equal(venueHasCoordinates({ lat: 91, lng: 46 }), false);
+  assert.equal(venueHasCoordinates({ lat: 24.7, lng: 181 }), false);
+  assert.equal(canPersistCoordinates({ lat: 91, lng: 46, pinConfirmed: true }), false);
+  assert.equal(LOCATION_INCOMPLETE_AR, "الموقع غير مكتمل");
+});
+
+test("catalog matching stays tenant-local to provided cities", () => {
+  assert.equal(matchCatalogName(cities, "Riyadh")?.id, "c1");
+  assert.equal(matchCatalogName(cities, "جدة")?.id, "c2");
+  assert.equal(matchCatalogName(cities, "مكة"), undefined);
+});
+
+test("server geocode key is never printed and example file has names only", () => {
+  assert.equal(mapsServerKeyConfigured({}), false);
+  const example = readFileSync(
+    join(import.meta.dirname, "../.env.example"),
+    "utf8",
+  );
+  assert.match(example, /NEXT_PUBLIC_GOOGLE_MAPS_WEB_API_KEY=/);
+  assert.match(example, /NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=/);
+  assert.match(example, /GOOGLE_MAPS_SERVER_API_KEY=/);
+  assert.equal(example.includes("AIza"), false);
+});
+
+test("location patch is scoped to one venue id and never a second tenant", () => {
+  const venueId = "11111111-1111-4111-8111-111111111111";
+  const otherVenueId = "22222222-2222-4222-8222-222222222222";
+  const patch = buildVenueLocationPatch({
+    lat: 24.7,
+    lng: 46.6,
+    pinConfirmed: true,
+    locationSource: "pin",
+  });
+  assert.equal("venueId" in patch, false);
+  assert.equal("providerId" in patch, false);
+  assert.notEqual(venueId, otherVenueId);
+});

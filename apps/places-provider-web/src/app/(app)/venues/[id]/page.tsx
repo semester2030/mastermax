@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReviewPanel } from "@/components/review-panel";
+import { VenueNav } from "@/components/venue-nav";
 import { AdvancedVenueLinks, VenueStepper } from "@/components/venue-stepper";
 import { VenueEditForm } from "@/components/venue-edit-form";
 import { ErrorState } from "@/components/ui/error-state";
@@ -91,6 +92,7 @@ export default async function VenueDetailPage({
       {evidence ? (
         <VenueStepper venueId={id} current="basics" evidence={evidence} />
       ) : null}
+      <VenueNav venueId={id} />
 
       {isContentOnlyVenueType(type) ? (
         <p
@@ -115,7 +117,6 @@ export default async function VenueDetailPage({
               buildingNo: venue?.buildingNo,
               landmark: venue?.landmark,
               accessNotes: venue?.accessNotes,
-              mapsUrl: venue?.mapsUrl,
               status: venue?.status,
             }}
             cities={cities}
@@ -124,6 +125,7 @@ export default async function VenueDetailPage({
               hasCityId: Boolean(venue?.cityId ?? venue?.city_id),
               hasDistrictId: Boolean(venue?.districtId ?? venue?.district_id),
               hasStreet: Boolean(venue?.street?.trim()),
+              hasCoordinates: evidence?.hasCoordinates ?? false,
               approvedVenueImages: evidence?.approvedVenueImages ?? null,
               hasCover: evidence?.hasCover ?? false,
               hasVenueVideo: evidence?.hasVenueVideo ?? false,

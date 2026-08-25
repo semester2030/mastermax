@@ -32,6 +32,12 @@ import { operatorErrorAr } from "@/lib/operator-errors";
 import { eachIsoDate } from "@/lib/calendar-range";
 import type { VenueRow } from "@/lib/core/types";
 import { isContentOnlyVenueType } from "@/lib/venue-types";
+import {
+  geocodeSaudiAddress,
+  reverseGeocodeSaudi,
+  type GeocodeResult,
+} from "@/lib/location/geocode";
+import { composeAddressPreview } from "@/lib/location/venue-location";
 
 function errMessage(e: unknown): string {
   if (e instanceof CoreApiError) {
@@ -137,6 +143,51 @@ export async function patchVenueAction(
     return { ok: true, status: stored };
   } catch (e) {
     return { ok: false, error: errMessage(e) };
+  }
+}
+
+export async function patchVenueLocationAction(
+  venueId: string,
+  patch: Record<string, unknown>,
+): Promise<VenueSaveResult> {
+  try {
+    const body = { ...patch };
+    delete body.status;
+    await patchVenue(venueId, body);
+    revalidatePath(`/venues/${venueId}`);
+    revalidatePath(`/venues/${venueId}/location`);
+    revalidatePath("/venues");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errMessage(e) };
+  }
+}
+
+export async function geocodeManualAddressAction(input: {
+  city: string;
+  district: string;
+  street: string;
+}): Promise<GeocodeResult> {
+  const address = composeAddressPreview({
+    street: input.street,
+    district: input.district,
+    city: input.city,
+  });
+  try {
+    return await geocodeSaudiAddress({ address });
+  } catch {
+    return { ok: false, reason: "unavailable" };
+  }
+}
+
+export async function reverseGeocodeAction(input: {
+  lat: number;
+  lng: number;
+}): Promise<GeocodeResult> {
+  try {
+    return await reverseGeocodeSaudi(input);
+  } catch {
+    return { ok: false, reason: "unavailable" };
   }
 }
 

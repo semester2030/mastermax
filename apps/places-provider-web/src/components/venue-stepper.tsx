@@ -93,6 +93,12 @@ export function AdvancedVenueLinks({ venueId }: { venueId: string }) {
       </summary>
       <div className="mt-3 flex flex-wrap gap-2">
         <Link
+          href={`/venues/${venueId}/location`}
+          className="rounded-[var(--radius-sm)] bg-[var(--color-primary-light)] px-3 py-2 text-sm"
+        >
+          الموقع
+        </Link>
+        <Link
           href={`/venues/${venueId}/units`}
           className="rounded-[var(--radius-sm)] bg-[var(--color-primary-light)] px-3 py-2 text-sm"
         >

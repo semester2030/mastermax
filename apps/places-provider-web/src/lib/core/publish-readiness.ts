@@ -6,7 +6,7 @@
 import type { MediaRow } from "./types";
 
 export const PUBLISH_REQUIRES_IMAGE_AR =
-  "يلزم مدينة وحي وشارع، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.";
+  "يلزم مدينة وحي وشارع وإحداثيات صحيحة، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.";
 
 function isVenueLevel(m: MediaRow): boolean {
   const id = m.inventoryTypeId ?? m.inventory_type_id;
@@ -61,6 +61,7 @@ export type PublishUiEvidence = {
   hasCityId: boolean;
   hasDistrictId: boolean;
   hasStreet: boolean;
+  hasCoordinates: boolean;
   approvedVenueImages: number | null;
   hasCover: boolean;
   hasVenueVideo: boolean;
@@ -79,6 +80,7 @@ export function canPublishFromEvidence(e: PublishUiEvidence): boolean {
     e.hasCityId &&
     e.hasDistrictId &&
     e.hasStreet &&
+    e.hasCoordinates &&
     e.hasCover &&
     e.hasVenueVideo &&
     e.hasPrice &&
@@ -100,7 +102,7 @@ export function describeVenuePublishError(body: unknown): string | null {
   }
   const msg = envelope.message ?? "";
   if (
-    /cityId|districtId|street|cover image|hero video|price|availability|unit type|independent unit|physical type/i.test(
+    /cityId|districtId|street|latitude|longitude|coordinates|cover image|hero video|price|availability|unit type|independent unit|physical type/i.test(
       msg,
     ) ||
     /approved venue-level image/i.test(msg)

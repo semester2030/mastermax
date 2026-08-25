@@ -14,6 +14,7 @@ import { nextStepHref } from "@/lib/prepare-path";
 import { operatorErrorAr } from "@/lib/operator-errors";
 import type { VenueRow } from "@/lib/core/types";
 import { venueNameOf, venueTypeOf } from "@/lib/core/types";
+import { LOCATION_INCOMPLETE_AR, venueHasCoordinates } from "@/lib/location/venue-location";
 import {
   CONTENT_ONLY_BANNER_AR,
   isContentOnlyVenueType,
@@ -81,6 +82,7 @@ export default async function VenuesPage() {
                     <p className="text-xs text-[var(--color-on-surface-muted)]">
                       {venueTypeLabelAr(type)} · {snapshot.statusLabelAr}
                       {v.city ? ` · ${v.city}` : ""} · {snapshot.percent}٪
+                      {venueHasCoordinates(v) ? "" : ` · ${LOCATION_INCOMPLETE_AR}`}
                     </p>
                   </div>
                   <span className="text-xs font-semibold text-[var(--color-primary)]">

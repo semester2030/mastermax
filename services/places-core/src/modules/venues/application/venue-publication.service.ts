@@ -4,6 +4,7 @@ import { ErrorCodes } from "../../../shared/errors/error-codes";
 import { PgService } from "../../../shared/database/pg.service";
 import { AuditService } from "../../audit/application/audit.service";
 import { VenueTypeCapabilityPolicy } from "../../filters/application/venue-type-capability.policy";
+import { venueHasPublishableCoordinates } from "./venue-location";
 
 export type PublishActorRole = "admin" | "provider" | "operator";
 
@@ -41,9 +42,11 @@ export class VenuePublicationService {
       city_id: string | null;
       district_id: string | null;
       street: string | null;
+      lat: number | null;
+      lng: number | null;
     }>(
       `SELECT id, status, provider_id, venue_type, booking_mode,
-              city_id, district_id, street
+              city_id, district_id, street, lat, lng
        FROM venues WHERE id = $1`,
       [input.venueId],
     );
@@ -58,6 +61,13 @@ export class VenuePublicationService {
       throw new AppError(
         ErrorCodes.VALIDATION_ERROR,
         "Publish requires cityId, districtId, and street",
+      );
+    }
+    if (!venueHasPublishableCoordinates(venue)) {
+      throw new AppError(
+        ErrorCodes.VALIDATION_ERROR,
+        "Publish requires valid latitude and longitude",
+        { reason: "location_coordinates_required_for_publish" },
       );
     }
 

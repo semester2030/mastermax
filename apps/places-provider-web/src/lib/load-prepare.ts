@@ -10,6 +10,7 @@ import { venueTypeOf } from "@/lib/core/types";
 import { asCalendarDays } from "@/lib/calendar-range";
 import { buildPrepareSnapshot, type PrepareEvidence } from "@/lib/prepare-path";
 import { isContentOnlyVenueType } from "@/lib/venue-types";
+import { venueHasCoordinates } from "@/lib/location/venue-location";
 
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -72,6 +73,7 @@ export async function loadPrepareEvidence(
     hasCity: Boolean((venue.cityId ?? venue.city_id ?? venue.city)?.toString().trim()),
     hasDistrict: Boolean((venue.districtId ?? venue.district_id ?? venue.district)?.toString().trim()),
     hasStreet: Boolean(venue.street?.trim()),
+    hasCoordinates: venueHasCoordinates(venue),
     imageCount: images.length,
     approvedVenueImages,
     hasCover: hasApprovedVenueCover(media),

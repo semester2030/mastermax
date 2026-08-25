@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const tabs = [
   { suffix: "", label: "التفاصيل" },
+  { suffix: "/location", label: "الموقع" },
   { suffix: "/units", label: "الوحدات" },
   { suffix: "/pricing", label: "التسعير" },
   { suffix: "/availability", label: "التوفر" },

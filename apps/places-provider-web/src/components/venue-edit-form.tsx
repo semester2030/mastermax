@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
+import Link from "next/link";
 import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/field";
@@ -12,6 +13,7 @@ import {
 } from "@/lib/core/publish-readiness";
 import { VENUE_STATUS_LABEL_AR } from "@/lib/prepare-path";
 import type { LocationCity, LocationDistrict } from "@/lib/core/types";
+import { LOCATION_INCOMPLETE_AR } from "@/lib/location/venue-location";
 
 export function VenueEditForm({
   venueId,
@@ -29,7 +31,6 @@ export function VenueEditForm({
     buildingNo?: string | null;
     landmark?: string | null;
     accessNotes?: string | null;
-    mapsUrl?: string | null;
     status?: string;
   };
   cities: LocationCity[];
@@ -45,7 +46,6 @@ export function VenueEditForm({
   const [cityId, setCityId] = useState(initial.cityId ?? "");
   const [districts, setDistricts] = useState(initialDistricts);
   const [districtId, setDistrictId] = useState(initial.districtId ?? "");
-  const [extrasOpen, setExtrasOpen] = useState(false);
   const [, startTransition] = useTransition();
   const publishAllowed = canPublishFromEvidence(publishEvidence);
   const result = dirty ? null : state;
@@ -147,28 +147,29 @@ export function VenueEditForm({
           defaultValue={initial.accessNotes ?? ""}
         />
       </div>
-      <div>
-        <Label htmlFor="mapsUrl">رابط Google Maps (اختياري)</Label>
-        <Input
-          id="mapsUrl"
-          name="mapsUrl"
-          defaultValue={initial.mapsUrl ?? ""}
-          dir="ltr"
-        />
-      </div>
-      <details
-        className="rounded-[var(--radius-md)] border border-[var(--color-border)] p-3"
-        open={extrasOpen}
-        onToggle={(e) => setExtrasOpen((e.target as HTMLDetailsElement).open)}
-      >
-        <summary className="cursor-pointer text-sm font-medium">
-          خيارات إضافية للموقع (لا توقف الحفظ)
-        </summary>
-        <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
-          الموقع الحالي أو البحث أو الدبوس مساعدة فقط. الإدخال اليدوي للمدينة
-          والحي والشارع هو المسار المضمون. لا تُطلب الإحداثيات يدويًا.
+      {!publishEvidence.hasCoordinates ? (
+        <p
+          className="rounded-[var(--radius-md)] border border-[var(--color-warning)]/40 bg-[color-mix(in_srgb,var(--color-warning)_12%,white)] px-3 py-2 text-sm"
+          role="status"
+        >
+          {LOCATION_INCOMPLETE_AR}.{" "}
+          <Link
+            href={`/venues/${venueId}/location`}
+            className="font-semibold text-[var(--color-primary)] underline"
+          >
+            أكمل الموقع على الخريطة
+          </Link>
         </p>
-      </details>
+      ) : (
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          <Link
+            href={`/venues/${venueId}/location`}
+            className="font-semibold text-[var(--color-primary)] underline"
+          >
+            تعديل الموقع على الخريطة
+          </Link>
+        </p>
+      )}
       <div>
         <Label htmlFor="status">الحالة</Label>
         <Select

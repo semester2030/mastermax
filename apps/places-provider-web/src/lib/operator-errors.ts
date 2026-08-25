@@ -19,9 +19,9 @@ const KNOWN: Array<{ test: RegExp; message: string }> = [
     message: "تعذّر التعرف على حساب المطوّر. سجّل الدخول من جديد.",
   },
   {
-    test: /approved venue-level image|صورة واحدة معتمدة|cityId|districtId|hero video|cover image/i,
+    test: /approved venue-level image|صورة واحدة معتمدة|cityId|districtId|latitude|longitude|coordinates|hero video|cover image/i,
     message:
-      "يلزم مدينة وحي وشارع، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.",
+      "يلزم مدينة وحي وشارع وإحداثيات صحيحة، وفيديو رئيسي معتمد، وصورة غلاف، وسعر وإتاحة، ووسائط معتمدة لكل وحدة نشطة.",
   },
   {
     test: /quota|حد الفيديو|maxVideos|videos/i,

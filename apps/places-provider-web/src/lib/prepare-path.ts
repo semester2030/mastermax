@@ -36,6 +36,7 @@ export type PrepareEvidence = {
   hasCity: boolean;
   hasDistrict: boolean;
   hasStreet: boolean;
+  hasCoordinates: boolean;
   imageCount: number;
   approvedVenueImages: number | null;
   hasCover: boolean;
@@ -140,6 +141,14 @@ export function collectGaps(evidence: PrepareEvidence): GapItem[] {
       step: "basics",
       labelAr: "الشارع",
       hrefSuffix: "",
+      blocksPublish: true,
+    });
+  }
+  if (!evidence.hasCoordinates) {
+    gaps.push({
+      step: "basics",
+      labelAr: "إحداثيات الموقع",
+      hrefSuffix: "/location",
       blocksPublish: true,
     });
   }

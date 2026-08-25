@@ -54,6 +54,7 @@ function evidence(partial: Partial<PublishUiEvidence> = {}): PublishUiEvidence {
     hasCityId: true,
     hasDistrictId: true,
     hasStreet: true,
+    hasCoordinates: true,
     approvedVenueImages: 1,
     hasCover: true,
     hasVenueVideo: true,
@@ -128,6 +129,20 @@ test("physical type without an active unit is explained in Arabic", () => {
     message,
     "تعذّر النشر — الوحدات المستقلة تحتاج اسم وحدة نشطة واحدة على الأقل.",
   );
+});
+
+test("missing coordinates block publish", () => {
+  assert.equal(canPublishFromEvidence(evidence({ hasCoordinates: false })), false);
+});
+
+test("Core publish rejection for coordinates is explained in Arabic", () => {
+  const message = describeVenuePublishError({
+    code: "VALIDATION_ERROR",
+    message: "Publish requires valid latitude and longitude",
+    details: { reason: "location_coordinates_required_for_publish" },
+  });
+  assert.ok(message);
+  assert.ok(message.includes(PUBLISH_REQUIRES_IMAGE_AR));
 });
 
 test("unrelated validation errors keep their original message", () => {

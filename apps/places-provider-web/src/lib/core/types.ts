@@ -18,8 +18,13 @@ export type VenueRow = {
   accessNotes?: string | null;
   mapsUrl?: string | null;
   locationSource?: string | null;
+  googlePlaceId?: string | null;
+  formattedAddress?: string | null;
   lat?: number | null;
   lng?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  locationComplete?: boolean;
   providerId?: string;
   provider_id?: string;
 };

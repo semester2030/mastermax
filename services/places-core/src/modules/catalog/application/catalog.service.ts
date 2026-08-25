@@ -5,6 +5,7 @@ import { ErrorCodes } from "../../../shared/errors/error-codes";
 import { isAllowedCloudflareDeliveryUrl } from "../../media/domain/cloudflare-hostname-allowlist";
 import { FilterEngineService } from "../../filters/application/filter-engine.service";
 import { VenueTypeCapabilityPolicy } from "../../filters/application/venue-type-capability.policy";
+import { projectVenueLocation } from "../../venues/application/venue-location";
 
 @Injectable()
 export class CatalogService {
@@ -38,6 +39,8 @@ export class CatalogService {
     access_notes: string | null;
     maps_url: string | null;
     location_source: string | null;
+    google_place_id: string | null;
+    formatted_address: string | null;
     lat: number | null;
     lng: number | null;
     description: string | null;
@@ -62,6 +65,8 @@ export class CatalogService {
       access_notes: string | null;
       maps_url: string | null;
       location_source: string | null;
+      google_place_id: string | null;
+      formatted_address: string | null;
       lat: number | null;
       lng: number | null;
       description: string | null;
@@ -73,7 +78,8 @@ export class CatalogService {
     }>(
       `SELECT v.id, v.name, v.venue_type, v.booking_mode, v.city, v.district,
               v.city_id, v.district_id, v.street, v.building_no, v.landmark,
-              v.access_notes, v.maps_url, v.location_source, v.lat, v.lng,
+              v.access_notes, v.maps_url, v.location_source,
+              v.google_place_id, v.formatted_address, v.lat, v.lng,
               v.description, v.status, v.rating_average::text, v.indicative_starting_price::text,
               v.attributes_jsonb, COALESCE(c.enabled_for_booking, FALSE) AS enabled_for_booking
        FROM venues v
@@ -168,6 +174,7 @@ export class CatalogService {
       process.env.PLACES_EVENT_SLOT_ENABLED !== "true";
     const bookingEnabled =
       row.enabled_for_booking === true && !eventSlotBlocked;
+    const location = projectVenueLocation(row);
     return {
       id: row.id,
       name: row.name,
@@ -188,22 +195,19 @@ export class CatalogService {
       landmark: row.landmark,
       accessNotes: row.access_notes,
       mapsUrl: row.maps_url,
-      locationSource: row.location_source,
+      locationSource: location.locationSource,
+      googlePlaceId: location.googlePlaceId,
+      locationComplete: location.locationComplete,
       addressDetails: {
         buildingNo: row.building_no,
         landmark: row.landmark,
         accessNotes: row.access_notes,
       },
-      formattedAddress: [
-        row.street,
-        row.building_no,
-        row.district,
-        row.city,
-      ]
-        .filter((p) => typeof p === "string" && p.trim())
-        .join("، "),
-      lat: row.lat,
-      lng: row.lng,
+      formattedAddress: location.formattedAddress ?? "",
+      lat: location.lat,
+      lng: location.lng,
+      latitude: location.latitude,
+      longitude: location.longitude,
       description: row.description,
       status: row.status,
       ratingAverage: row.rating_average,
