@@ -92,6 +92,7 @@ export function loadGoogleMapsScript(): Promise<void> {
     script.id = SCRIPT_ID;
     script.async = true;
     script.defer = true;
+    script.referrerPolicy = "no-referrer-when-downgrade";
     script.src = buildMapsScriptSrc(key);
     script.onerror = () => done(new Error("maps_script_error"));
     document.head.appendChild(script);

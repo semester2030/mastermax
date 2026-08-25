@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   },
   description: "لوحة مقدم الخدمة — Wave1 (داخلي)",
   applicationName: appName,
+  referrer: "no-referrer-when-downgrade",
   robots: { index: false, follow: false },
 };
 

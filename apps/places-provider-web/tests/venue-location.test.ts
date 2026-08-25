@@ -207,6 +207,20 @@ test("server geocode key is never printed and example file has names only", () =
   assert.equal(example.includes("AIza"), false);
 });
 
+test("document referrer policy sends a full HTTPS URL so Google HTTP referrers match", () => {
+  const config = readFileSync(
+    join(import.meta.dirname, "../next.config.ts"),
+    "utf8",
+  );
+  const layout = readFileSync(
+    join(import.meta.dirname, "../src/app/layout.tsx"),
+    "utf8",
+  );
+  assert.match(config, /Referrer-Policy/);
+  assert.match(config, /no-referrer-when-downgrade/);
+  assert.match(layout, /no-referrer-when-downgrade/);
+});
+
 test("maps script loads Maps JS only and never bundles Places or async loading flags", () => {
   const src = buildMapsScriptSrc("test-key");
   assert.match(src, /^https:\/\/maps\.googleapis\.com\/maps\/api\/js\?/);

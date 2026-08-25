@@ -156,6 +156,7 @@ export function VenueLocationForm({
             pinRef.current = await attachDraggableMapPin({
               element: el,
               ...pinOpts,
+              useMapId: false,
             });
           },
           attachPinFallback: async () => {

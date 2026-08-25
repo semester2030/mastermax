@@ -51,11 +51,13 @@ export async function attachDraggableMapPin(input: {
   const root = mapsRoot();
   if (!root?.importLibrary) throw new Error("maps_unavailable");
   const maps = (await root.importLibrary("maps")) as MapsLib;
-  const mapId = input.useMapId === false ? null : mapsMapId();
+  // Classic map first. A bad or unauthorized Map ID renders Google's
+  // gray error overlay without throwing, so it must stay opt-in.
+  const mapId = input.useMapId === true ? mapsMapId() : null;
   const map = new maps.Map(input.element, {
     center: { lat: input.lat, lng: input.lng },
     zoom: 15,
-    mapId: mapId ?? undefined,
+    ...(mapId ? { mapId } : {}),
     streetViewControl: false,
     mapTypeControl: false,
     fullscreenControl: false,
