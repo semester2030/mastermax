@@ -20,6 +20,10 @@ import {
   ConsumerPaymentOptions,
   resolveConsumerPaymentOptions,
 } from "./consumer-payment-options";
+import {
+  guestSnapshotJson,
+  parseGuestSnapshot,
+} from "./guest-snapshot";
 
 @Injectable()
 export class HoldService {
@@ -38,6 +42,7 @@ export class HoldService {
       uid: string;
       quoteId: string;
       quantity: number;
+      guestSnapshot: unknown;
       idempotencyKey: string;
       correlationId: string;
     },
@@ -187,6 +192,8 @@ export class HoldService {
           "Quantity must match quote",
         );
       }
+      const guestSnapshot = parseGuestSnapshot(input.guestSnapshot);
+      const guestSnapshotPayload = guestSnapshotJson(guestSnapshot);
       const venue = await c.query<{
         booking_mode: "nightly" | "daily" | "event_slot";
         hold_ttl_seconds: number;
@@ -411,11 +418,15 @@ export class HoldService {
       const year = new Date().getUTCFullYear();
       const code = `BKG-${year}-${human.rows[0].n.padStart(6, "0")}`;
       await c.query(
+        `UPDATE quotes SET guest_snapshot_json = $2::jsonb WHERE id = $1`,
+        [q.id, guestSnapshotPayload],
+      );
+      await c.query(
         `INSERT INTO booking_holds (
            id, quote_id, inventory_type_id, consumer_firebase_uid, quantity,
            check_in, check_out, status, expires_at, extensions, idempotency_key, slot_code,
-           inventory_unit_id
-         ) VALUES ($1,$2,$3,$4,$5,$6::date,$7::date,'ACTIVE',$8,0,$9,$10,$11)`,
+           inventory_unit_id, guest_snapshot_json
+         ) VALUES ($1,$2,$3,$4,$5,$6::date,$7::date,'ACTIVE',$8,0,$9,$10,$11,$12::jsonb)`,
         [
           holdId,
           q.id,
@@ -428,6 +439,7 @@ export class HoldService {
           input.idempotencyKey,
           q.slot_code,
           q.inventory_unit_id,
+          guestSnapshotPayload,
         ],
       );
       const slotInventoryId = (q as { _slotInventoryId?: string })._slotInventoryId;
@@ -454,9 +466,9 @@ export class HoldService {
            consumer_firebase_uid, human_code, status, quantity, check_in, check_out,
            gross_total, commission_bps, commission_amount, provider_net,
            cancellation_policy_snapshot_json, slot_code, slot_start_time, slot_timezone,
-           inventory_unit_id
+           inventory_unit_id, guest_snapshot_json
          ) VALUES (
-           $1,$2,$3,$4,$5,$6,$7,$8,'HOLDING',$9,$10::date,$11::date,$12,$13,$14,$15,$16::jsonb,$17,$18::time,$19,$20
+           $1,$2,$3,$4,$5,$6,$7,$8,'HOLDING',$9,$10::date,$11::date,$12,$13,$14,$15,$16::jsonb,$17,$18::time,$19,$20,$21::jsonb
          )`,
         [
           bookingId,
@@ -479,6 +491,7 @@ export class HoldService {
           (q as { _slotStartTime?: string })._slotStartTime ?? null,
           (q as { _slotTimezone?: string })._slotTimezone ?? null,
           q.inventory_unit_id,
+          guestSnapshotPayload,
         ],
       );
       const nightItems = await c.query<{

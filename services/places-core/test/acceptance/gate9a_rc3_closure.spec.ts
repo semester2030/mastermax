@@ -67,7 +67,7 @@ describe('gate9a_rc3_closure', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', `rc3-hold-${tag}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return {
       uid,

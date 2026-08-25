@@ -129,7 +129,7 @@ describe("phase_pooled_semantics", () => {
       .post("/v1/holds")
       .set("Authorization", auth(uid))
       .set("Idempotency-Key", `pool-60-${seeded.types["120"]}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 });
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect([200, 201]).toContain(h.status);
     expect(h.body.inventoryUnitId ?? null).toBeNull();
   });
@@ -196,7 +196,7 @@ describe("phase_pooled_semantics", () => {
         .post("/v1/holds")
         .set("Authorization", auth(uid))
         .set("Idempotency-Key", key)
-        .send({ quoteId: q.body.quoteId, quantity: qty });
+        .send({ quoteId:q.body.quoteId, quantity: qty, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     };
 
     const first = await quoteHold(a, 2, `conc-ok-${typeId}`);

@@ -143,7 +143,7 @@ describe('Acceptance A–H', () => {
       .post('/v1/holds')
       .set('Authorization', consumer('c-user'))
       .set('Idempotency-Key', 'c-hold-1')
-      .send({ quoteId: q1.body.quoteId, quantity: 1 })
+      .send({ quoteId:q1.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const q2 = await request(app.getHttpServer())
       .post('/v1/quotes')
@@ -160,7 +160,7 @@ describe('Acceptance A–H', () => {
       .post('/v1/holds')
       .set('Authorization', consumer('c-user-2'))
       .set('Idempotency-Key', 'c-hold-2')
-      .send({ quoteId: q2.body.quoteId, quantity: 1 });
+      .send({ quoteId:q2.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(r2.status).toBe(409);
     expect(r2.body.code).toBe('AVAILABILITY_CHANGED');
   });
@@ -198,7 +198,7 @@ describe('Acceptance A–H', () => {
           .post('/v1/holds')
           .set('Authorization', consumer(q.uid))
           .set('Idempotency-Key', `d-hold-${i}`)
-          .send({ quoteId: q.quoteId, quantity: 1 }),
+          .send({ quoteId:q.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       ),
     );
     const ok = results.filter((r) => r.status === 201);
@@ -236,7 +236,7 @@ describe('Acceptance A–H', () => {
           .post('/v1/holds')
           .set('Authorization', consumer(q.uid))
           .set('Idempotency-Key', `e-hold-${i}`)
-          .send({ quoteId: q.quoteId, quantity: 1 }),
+          .send({ quoteId:q.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       ),
     );
     expect(results.filter((r) => r.status === 201)).toHaveLength(1);
@@ -274,7 +274,7 @@ describe('Acceptance A–H', () => {
       .post('/v1/holds')
       .set('Authorization', consumer('f-user'))
       .set('Idempotency-Key', 'f-hold')
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const a = await request(app.getHttpServer())
       .post('/v1/payments/intents')
@@ -324,7 +324,7 @@ describe('Acceptance A–H', () => {
       .post('/v1/holds')
       .set('Authorization', consumer('g-user'))
       .set('Idempotency-Key', 'g-hold')
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')
@@ -419,7 +419,7 @@ describe('Acceptance A–H', () => {
       .post('/v1/holds')
       .set('Authorization', consumer('x-user'))
       .set('Idempotency-Key', 'x-hold')
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')

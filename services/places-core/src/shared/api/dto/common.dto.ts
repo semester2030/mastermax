@@ -1,11 +1,13 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsDateString,
+  IsDefined,
   IsIn,
   IsInt,
+  IsEmail,
   IsNumber,
   IsOptional,
   IsString,
@@ -15,6 +17,8 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
+  ValidateNested,
 } from "class-validator";
 
 const MONEY = /^\d+(\.\d{1,2})?$/;
@@ -96,6 +100,42 @@ export class CreateQuoteDto {
   slotCode?: string;
 }
 
+export class GuestSnapshotDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(80)
+  bookerFullName!: string;
+
+  @Transform(({ value }) => String(value ?? "").replace(/[\s()-]/g, ""))
+  @IsString()
+  @MinLength(8)
+  @MaxLength(20)
+  @Matches(/^(?:\+9665\d{8}|9665\d{8}|05\d{8})$/)
+  bookerPhone!: string;
+
+  @IsOptional()
+  @IsEmail()
+  @MaxLength(120)
+  bookerEmail?: string;
+
+  @IsBoolean()
+  bookingForOther!: boolean;
+
+  @ValidateIf((o: GuestSnapshotDto) => o.bookingForOther === true)
+  @IsString()
+  @MinLength(2)
+  @MaxLength(80)
+  guestFullName?: string;
+
+  @ValidateIf((o: GuestSnapshotDto) => o.bookingForOther === true)
+  @Transform(({ value }) => String(value ?? "").replace(/[\s()-]/g, ""))
+  @IsString()
+  @MinLength(8)
+  @MaxLength(20)
+  @Matches(/^(?:\+9665\d{8}|9665\d{8}|05\d{8})$/)
+  guestPhone?: string;
+}
+
 export class CreateHoldDto {
   @IsUUID()
   quoteId!: string;
@@ -105,6 +145,11 @@ export class CreateHoldDto {
   @Min(1)
   @Max(50)
   quantity!: number;
+
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => GuestSnapshotDto)
+  guestSnapshot!: GuestSnapshotDto;
 }
 
 export class CreatePaymentIntentDto {

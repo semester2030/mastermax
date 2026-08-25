@@ -224,7 +224,7 @@ describe('phase3_inventory_truth', () => {
       .post('/v1/holds')
       .set('Authorization', auth(consumer))
       .set('Idempotency-Key', `p3-susp-${Date.now()}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 });
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(holdSusp.status).toBeGreaterThanOrEqual(400);
     await db.query(`UPDATE providers SET status = 'active' WHERE id = $1`, [
       providerId,
@@ -249,7 +249,7 @@ describe('phase3_inventory_truth', () => {
       .post('/v1/holds')
       .set('Authorization', auth(`${consumer}-2`))
       .set('Idempotency-Key', `p3-unpub-${Date.now()}`)
-      .send({ quoteId: quote2.body.quoteId, quantity: 1 });
+      .send({ quoteId:quote2.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(holdUnpub.status).toBeGreaterThanOrEqual(400);
     await db.query(`UPDATE venues SET status = 'published' WHERE id = $1`, [
       seeded.venueId,
@@ -275,7 +275,7 @@ describe('phase3_inventory_truth', () => {
       .post('/v1/holds')
       .set('Authorization', auth(`${consumer}-3`))
       .set('Idempotency-Key', `p3-cap-${Date.now()}`)
-      .send({ quoteId: quote3.body.quoteId, quantity: 1 });
+      .send({ quoteId:quote3.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(holdCap.status).toBeGreaterThanOrEqual(400);
     await db.query(
       `UPDATE venue_type_capabilities SET enabled_for_booking = TRUE
@@ -327,12 +327,12 @@ describe('phase3_inventory_truth', () => {
         .post('/v1/holds')
         .set('Authorization', auth('dual-a'))
         .set('Idempotency-Key', `dual-a-${Date.now()}`)
-        .send({ quoteId: qA.body.quoteId, quantity: 1 }),
+        .send({ quoteId:qA.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       request(app.getHttpServer())
         .post('/v1/holds')
         .set('Authorization', auth('dual-b'))
         .set('Idempotency-Key', `dual-b-${Date.now()}`)
-        .send({ quoteId: qB.body.quoteId, quantity: 1 }),
+        .send({ quoteId:qB.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
     ]);
     const statuses = [a.status, b.status].sort();
     expect(statuses).toEqual([201, 409]);
@@ -508,7 +508,7 @@ describe('phase3_inventory_truth', () => {
           .post('/v1/holds')
           .set('Authorization', auth(`${consumer}-barrier`))
           .set('Idempotency-Key', `barrier-a-${Date.now()}`)
-          .send({ quoteId: quote1.body.quoteId, quantity: 1 }),
+          .send({ quoteId:quote1.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       );
 
       // Deterministic barrier: wait until the hold is actually blocked on the
@@ -647,7 +647,7 @@ describe('phase3_inventory_truth', () => {
           .post('/v1/holds')
           .set('Authorization', auth(uid))
           .set('Idempotency-Key', key)
-          .send({ quoteId, quantity: 1 }),
+          .send({ quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       );
 
     // ---- Scenario A: Suspend arrives first (real contention via venue gate).
@@ -790,7 +790,7 @@ describe('phase3_inventory_truth', () => {
           .post('/v1/holds')
           .set('Authorization', auth(uid))
           .set('Idempotency-Key', key)
-          .send({ quoteId, quantity: 1 }),
+          .send({ quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       );
 
     // Seed one ACTIVE hold, then force it expiry-eligible AND expire the HTTP
@@ -968,7 +968,7 @@ describe('phase3_inventory_truth', () => {
           .post('/v1/holds')
           .set('Authorization', auth(uid))
           .set('Idempotency-Key', key)
-          .send({ quoteId, quantity: 1 }),
+          .send({ quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       );
 
     const heldSum = async (typeId: string) =>
@@ -1241,7 +1241,7 @@ describe('phase3_inventory_truth', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', `exp-${Date.now()}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     const held = await db.query<{ held: number }>(

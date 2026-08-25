@@ -68,7 +68,7 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth(opts.uid))
       .set('Idempotency-Key', `h-${opts.uid}-${Date.now()}-${Math.random()}`)
-      .send({ quoteId: q.body.quoteId, quantity: opts.qty ?? 1 })
+      .send({ quoteId:q.body.quoteId, quantity: opts.qty ?? 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return { ...seeded, typeId, holdId: hold.body.holdId as string, bookingId: hold.body.bookingId as string, uid: opts.uid };
   }
@@ -198,7 +198,7 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth('j-user'))
       .set('Idempotency-Key', 'j-hold')
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(409);
     const db2 = pool();
     const caps = await db2.query<{ date: string; held: string }>(
@@ -615,7 +615,7 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth('r-user-a'))
       .set('Idempotency-Key', 'r-hold-a')
-      .send({ quoteId: qA.body.quoteId, quantity: 1 })
+      .send({ quoteId:qA.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const db2 = pool();
     const snap = await db2.query<{ commission_bps: number; commission_amount: string }>(
@@ -641,7 +641,7 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth('r-user-b'))
       .set('Idempotency-Key', 'r-hold-b')
-      .send({ quoteId: qB.body.quoteId, quantity: 1 })
+      .send({ quoteId:qB.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const db3 = pool();
     const a = await db3.query<{ commission_bps: number }>(`SELECT commission_bps FROM bookings WHERE id = $1`, [
@@ -704,7 +704,7 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth('g10-u'))
       .set('Idempotency-Key', 'g10-hold')
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')
@@ -772,13 +772,13 @@ describe('Hardening I–W', () => {
       .post('/v1/holds')
       .set('Authorization', auth('idem-user'))
       .set('Idempotency-Key', 'idem-diff')
-      .send({ quoteId: q1.body.quoteId, quantity: 1 })
+      .send({ quoteId:q1.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     await request(app.getHttpServer())
       .post('/v1/holds')
       .set('Authorization', auth('idem-user'))
       .set('Idempotency-Key', 'idem-diff')
-      .send({ quoteId: q2.body.quoteId, quantity: 1 })
+      .send({ quoteId:q2.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(409);
   });
 });

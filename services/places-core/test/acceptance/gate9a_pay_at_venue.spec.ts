@@ -91,7 +91,7 @@ describe('gate9a_pay_at_venue', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', `g9a-hold-${tag}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return {
       ...s,
@@ -146,7 +146,7 @@ describe('gate9a_pay_at_venue', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', `g9a-slot-hold-${tag}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return { ...s, holdId: hold.body.holdId as string, bookingId: hold.body.bookingId as string };
   }
@@ -448,7 +448,7 @@ describe('gate9a_pay_at_venue', () => {
         .post('/v1/holds')
         .set('Authorization', auth(uid))
         .set('Idempotency-Key', key)
-        .send({ quoteId: quote.body.quoteId, quantity: 1 });
+        .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     };
     const [a, b] = await Promise.all([
       mkHold('u-slot-a', 'slot-hold-a'),

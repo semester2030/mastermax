@@ -49,7 +49,7 @@ describe('Gate 3D.1 AL–AP Settlement Ledger Attribution', () => {
       .post('/v1/holds')
       .set('Authorization', auth(opts.uid))
       .set('Idempotency-Key', `al-h-${opts.tag}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')

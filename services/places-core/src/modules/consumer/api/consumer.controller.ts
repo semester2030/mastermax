@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Req,
+  StreamableFile,
 } from '@nestjs/common';
 import { AuthUser } from '../../../shared/auth/auth-user';
 import { CurrentUser } from '../../../shared/auth/auth.decorators';
@@ -170,6 +171,7 @@ export class ConsumerController {
           uid: user.uid,
           quoteId: body.quoteId,
           quantity: body.quantity,
+          guestSnapshot: body.guestSnapshot,
           idempotencyKey: key as string,
           correlationId: req.correlationId,
         },
@@ -246,6 +248,15 @@ export class ConsumerController {
       throw new AppError(ErrorCodes.NOT_FOUND, 'Booking document not issued');
     }
     return booking.document;
+  }
+
+  @Get('bookings/:id/document.pdf')
+  async documentPdf(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const pdf = await this.bookings.pdfForConsumer(user.uid, id);
+    return new StreamableFile(pdf.bytes, {
+      type: 'application/pdf',
+      disposition: `attachment; filename="${pdf.fileName}"`,
+    });
   }
 
   @Post('bookings/:id/cancel')

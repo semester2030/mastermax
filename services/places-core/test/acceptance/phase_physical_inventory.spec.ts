@@ -40,7 +40,7 @@ async function quoteHold(
     .post("/v1/holds")
     .set("Authorization", auth(uid))
     .set("Idempotency-Key", body.key)
-    .send({ quoteId: quote.body.quoteId, quantity: 1 });
+    .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
   return { quote, hold };
 }
 
@@ -289,7 +289,7 @@ describe("phase_physical_inventory", () => {
       .post("/v1/holds")
       .set("Authorization", auth(s.uidA))
       .set("Idempotency-Key", `pooled-ok-${s.pooledTypeId}`)
-      .send({ quoteId: q1.body.quoteId, quantity: 2 });
+      .send({ quoteId:q1.body.quoteId, quantity: 2, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect([200, 201]).toContain(h1.status);
     const q2 = await request(app.getHttpServer())
       .post("/v1/quotes")
@@ -306,7 +306,7 @@ describe("phase_physical_inventory", () => {
       .post("/v1/holds")
       .set("Authorization", auth(s.uidB))
       .set("Idempotency-Key", `pooled-fail-${s.pooledTypeId}`)
-      .send({ quoteId: q2.body.quoteId, quantity: 2 });
+      .send({ quoteId:q2.body.quoteId, quantity: 2, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(h2.status).toBeGreaterThanOrEqual(400);
   });
 

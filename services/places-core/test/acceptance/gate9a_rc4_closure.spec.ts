@@ -93,7 +93,7 @@ describe('gate9a_rc4_closure', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', `rc4-hold-${tag}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return {
       uid,
@@ -262,7 +262,7 @@ describe('gate9a_rc4_closure', () => {
       .post('/v1/holds')
       .set('Authorization', auth('kill-hold-uid'))
       .set('Idempotency-Key', 'rc4-kill-hold')
-      .send({ quoteId: quote.body.quoteId, quantity: 1 });
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(res.status).toBe(403);
     expect(res.body.code).toBe('EVENT_SLOT_DISABLED');
   });

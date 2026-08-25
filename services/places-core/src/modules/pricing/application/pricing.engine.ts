@@ -17,6 +17,7 @@ import {
   stayDates,
   toIsoDate,
 } from "../../../shared/time/stay-dates";
+import { formatArabicDate } from "../../booking/application/arabic-document-format";
 
 /** Hard caps aligned with Discovery safety (not business marketing limits). */
 const MAX_STAY_NIGHTS_HARD = 90;
@@ -284,8 +285,8 @@ export class PricingEngine {
         date,
         label:
           mode === "event_slot" && slotCode
-            ? `Slot ${slotCode} ${date}`
-            : `Night ${date}`,
+            ? `فترة ${formatArabicDate(date)}`
+            : `ليلة ${formatArabicDate(date)}`,
         amount: line.toString(),
         qty: input.quantity,
       });
@@ -327,7 +328,7 @@ export class PricingEngine {
       items.push({
         kind: "fee",
         date: null,
-        label: "Extra guest",
+        label: "ضيف إضافي",
         amount: line.toString(),
         qty: extraGuests,
       });

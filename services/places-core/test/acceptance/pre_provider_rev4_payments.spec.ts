@@ -79,7 +79,7 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', key)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return {
       ...s,
@@ -140,13 +140,13 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
       .post('/v1/holds')
       .set('Authorization', auth(a.uid))
       .set('Idempotency-Key', sharedKey)
-      .send({ quoteId: quoteA.body.quoteId, quantity: 1 })
+      .send({ quoteId:quoteA.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const holdB = await request(app.getHttpServer())
       .post('/v1/holds')
       .set('Authorization', auth(b.uid))
       .set('Idempotency-Key', sharedKey)
-      .send({ quoteId: quoteB.body.quoteId, quantity: 1 })
+      .send({ quoteId:quoteB.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     expect(holdA.body.holdId).not.toBe(holdB.body.holdId);
     const rows = await db.query<{ c: number }>(
@@ -177,7 +177,7 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
           .post('/v1/holds')
           .set('Authorization', auth(s.uid))
           .set('Idempotency-Key', key)
-          .send({ quoteId: quote.body.quoteId, quantity: 1 }),
+          .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       ),
     );
     const oks = results.filter((r) => r.status === 201 || r.status === 200);
@@ -328,7 +328,7 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', 'rev4-hold-hala')
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')
@@ -486,7 +486,7 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', 'rev4-block-hold')
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     await db.query(
@@ -588,7 +588,7 @@ describe('pre_provider_rev4 — payments / holds / availability', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', 'rev4-slot-hold')
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     expect(hold.body.slotCode).toBe('evening');
 

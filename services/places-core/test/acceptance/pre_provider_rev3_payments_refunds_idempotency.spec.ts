@@ -75,7 +75,7 @@ describe('pre_provider_rev3 — payments / refunds / idempotency', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', key)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     return { ...s, holdId: hold.body.holdId as string, bookingId: hold.body.bookingId as string, gross: quote.body.grossTotal as string };
   }
@@ -275,7 +275,7 @@ describe('pre_provider_rev3 — payments / refunds / idempotency', () => {
           .post('/v1/holds')
           .set('Authorization', auth(s.uid))
           .set('Idempotency-Key', key)
-          .send({ quoteId: quote.body.quoteId, quantity: 1 }),
+          .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       ),
     );
     const oks = results.filter((r) => r.status === 201 || r.status === 200);
@@ -310,7 +310,7 @@ describe('pre_provider_rev3 — payments / refunds / idempotency', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', key)
-      .send({ quoteId: quote1.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote1.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const firstHoldId = first.body.holdId as string;
 
@@ -340,7 +340,7 @@ describe('pre_provider_rev3 — payments / refunds / idempotency', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', key)
-      .send({ quoteId: quote2.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote2.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     // Expired HTTP key + new quote → NEW hold (F-REV4-02), not sticky old hold.

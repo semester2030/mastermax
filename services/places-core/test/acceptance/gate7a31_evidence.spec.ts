@@ -210,7 +210,7 @@ describe('Gate 7A.3.1 — Final evidence closure', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', `h-${newId()}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     await paySucceed(hold.body.holdId, uid, `pay-${newId()}`);

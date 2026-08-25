@@ -67,7 +67,7 @@ describe('pre_provider_rev3 — daily same-day + bookingMode', () => {
       .post('/v1/holds')
       .set('Authorization', auth(uid))
       .set('Idempotency-Key', `daily-same-${Date.now()}`)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     expect(hold.body.bookingId).toBeTruthy();
 

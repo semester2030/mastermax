@@ -69,7 +69,7 @@ describe('Gate 3C AD–AK Financial Integrity', () => {
       .post('/v1/holds')
       .set('Authorization', auth(opts.uid))
       .set('Idempotency-Key', `h-${opts.eventId}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')

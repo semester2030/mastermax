@@ -77,7 +77,7 @@ describe('phase4_pav_finance', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.uid))
       .set('Idempotency-Key', key)
-      .send({ quoteId: quote.body.quoteId, quantity: 1 })
+      .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const conf = await request(app.getHttpServer())
       .post('/v1/bookings/confirm-pay-at-venue')
@@ -535,7 +535,7 @@ describe('phase4_pav_finance', () => {
         .post('/v1/holds')
         .set('Authorization', auth(s.uid))
         .set('Idempotency-Key', 'p4-phys')
-        .send({ quoteId: quote.body.quoteId, quantity: 1 });
+        .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
       expect(hold.status).toBeGreaterThanOrEqual(400);
     }
     await db.query(

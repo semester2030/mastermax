@@ -171,7 +171,7 @@ describe('Gate 7A.3 — Migration / Capability / Cursor final closure', () => {
         .post('/v1/holds')
         .set('Authorization', auth(consumer))
         .set('Idempotency-Key', `ik-${newId()}`)
-        .send({ quoteId: quote.body.quoteId, quantity: 1 });
+        .send({ quoteId:quote.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
       expect(hold.status).toBe(201);
 
       await pool.query(

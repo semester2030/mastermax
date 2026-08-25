@@ -308,12 +308,12 @@ describe('phase7_event_slot_e2e', () => {
         .post('/v1/holds')
         .set('Authorization', auth(s.consumer))
         .set('Idempotency-Key', `p7-hold-a-${newId()}`)
-        .send({ quoteId: quoteA.body.quoteId, quantity: 1 }),
+        .send({ quoteId:quoteA.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
       request(app.getHttpServer())
         .post('/v1/holds')
         .set('Authorization', auth(`${s.consumer}-b`))
         .set('Idempotency-Key', `p7-hold-b-${newId()}`)
-        .send({ quoteId: quoteB.body.quoteId, quantity: 1 }),
+        .send({ quoteId:quoteB.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } }),
     ]);
     delete process.env.PLACES_HOLD_BARRIER;
     const ok = [h1, h2].filter((r) => r.status === 201);
@@ -374,7 +374,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.consumer))
       .set('Idempotency-Key', `p7-cxl-hold-${newId()}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     const held = await db.query<{ status: string }>(
@@ -414,7 +414,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.consumer))
       .set('Idempotency-Key', `p7-exp-hold-${newId()}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     // Force expiry then run the expiry sweep the worker uses.
@@ -446,7 +446,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.consumer))
       .set('Idempotency-Key', `p7-ovl-hold-${newId()}`)
-      .send({ quoteId: q1.body.quoteId, quantity: 1 })
+      .send({ quoteId:q1.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     // Overlapping 'late' hold must conflict (409).
@@ -455,7 +455,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(`${s.consumer}-late`))
       .set('Idempotency-Key', `p7-ovl-late-${newId()}`)
-      .send({ quoteId: q2.body.quoteId, quantity: 1 });
+      .send({ quoteId:q2.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(lateHold.status).toBe(409);
     expect(lateHold.body.code).toBe('SLOT_OR_CAPACITY_CONFLICT');
 
@@ -465,7 +465,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(`${s.consumer}-am`))
       .set('Idempotency-Key', `p7-ovl-am-${newId()}`)
-      .send({ quoteId: q3.body.quoteId, quantity: 1 })
+      .send({ quoteId:q3.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
 
     // Cross-midnight template rejected at creation (deterministic 400).
@@ -499,7 +499,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.consumer))
       .set('Idempotency-Key', `p7-tpl-hold-${newId()}`)
-      .send({ quoteId: qInactive.body.quoteId, quantity: 1 });
+      .send({ quoteId:qInactive.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(holdInactive.status).toBe(400);
     expect(holdInactive.body.message).toMatch(/not active/i);
     await db.query(
@@ -522,7 +522,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(`${s.consumer}-mm`))
       .set('Idempotency-Key', `p7-tpl-mm-${newId()}`)
-      .send({ quoteId: qMismatch.body.quoteId, quantity: 1 });
+      .send({ quoteId:qMismatch.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } });
     expect(holdMismatch.status).toBe(400);
     expect(holdMismatch.body.message).toMatch(/inventory_type/i);
   });
@@ -548,7 +548,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(s.consumer))
       .set('Idempotency-Key', `p7-ns-hold-${newId()}`)
-      .send({ quoteId: qLate.body.quoteId, quantity: 1 })
+      .send({ quoteId:qLate.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const confLate = await request(app.getHttpServer())
       .post('/v1/bookings/confirm-pay-at-venue')
@@ -601,7 +601,7 @@ describe('phase7_event_slot_e2e', () => {
       .post('/v1/holds')
       .set('Authorization', auth(sAfter.consumer))
       .set('Idempotency-Key', `p7-ns-after-hold-${newId()}`)
-      .send({ quoteId: qAfter.body.quoteId, quantity: 1 })
+      .send({ quoteId:qAfter.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const confAfter = await request(app.getHttpServer())
       .post('/v1/bookings/confirm-pay-at-venue')
@@ -658,7 +658,7 @@ describe('phase7_event_slot_e2e', () => {
         .post('/v1/holds')
         .set('Authorization', auth(s.consumer))
         .set('Idempotency-Key', `p7-wait-${newId()}`)
-        .send({ quoteId: q.body.quoteId, quantity: 1 })
+        .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
         .then((r) => r);
       await waitForLockWaiters(1);
       await gate.query('COMMIT');

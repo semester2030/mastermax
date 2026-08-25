@@ -58,7 +58,7 @@ describe('Gate 3B X–AC', () => {
       .post('/v1/holds')
       .set('Authorization', auth(opts.uid))
       .set('Idempotency-Key', `h-${opts.eventId}`)
-      .send({ quoteId: q.body.quoteId, quantity: 1 })
+      .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(201);
     const intent = await request(app.getHttpServer())
       .post('/v1/payments/intents')
@@ -122,7 +122,7 @@ describe('Gate 3B X–AC', () => {
         .post('/v1/holds')
         .set('Authorization', auth(uid))
         .set('Idempotency-Key', `x-h-${tag}`)
-        .send({ quoteId: q.body.quoteId, quantity: 1 })
+        .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
         .expect(201);
       const intent = await request(app.getHttpServer())
         .post('/v1/payments/intents')
@@ -297,7 +297,7 @@ describe('Gate 3B X–AC', () => {
       .post('/v1/holds')
       .set('Authorization', auth('aa-user'))
       .set('Idempotency-Key', 'aa-bad')
-      .send({ quoteId: '00000000-0000-0000-0000-000000000001', quantity: 1, injected: 'nope' })
+      .send({ quoteId:'00000000-0000-0000-0000-000000000001', quantity: 1, injected: 'nope', guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
       .expect(400);
 
     await request(app.getHttpServer())
@@ -392,7 +392,7 @@ describe('Gate 3B X–AC', () => {
         .post('/v1/holds')
         .set('Authorization', auth(uid))
         .set('Idempotency-Key', `ac-h-${tag}`)
-        .send({ quoteId: q.body.quoteId, quantity: 1 })
+        .send({ quoteId:q.body.quoteId, quantity: 1, guestSnapshot: { bookerFullName: 'فائز المختبر', bookerPhone: '0501234567', bookingForOther: false } })
         .expect(201);
       const intent = await request(app.getHttpServer())
         .post('/v1/payments/intents')

@@ -3,6 +3,11 @@ import { PgService } from "../../../shared/database/pg.service";
 import { AppError } from "../../../shared/errors/app-error";
 import { ErrorCodes } from "../../../shared/errors/error-codes";
 import { mapConsumerBookingDocument } from "./consumer-booking-document";
+import { readGuestSnapshot } from "./guest-snapshot";
+import {
+  isPdfBuffer,
+  renderBookingDocumentPdf,
+} from "./booking-document-pdf";
 
 /**
  * Consumer-safe booking projection (F-V2-003 / F-REV3-06).
@@ -35,6 +40,7 @@ const CONSUMER_BOOKING_SELECT = `
   iu.label AS inventory_unit_label,
   q.guests_adults,
   q.guests_children,
+  b.guest_snapshot_json,
   cover.cover_url AS cover_url,
   (r.id IS NOT NULL) AS has_review
 `;
@@ -93,6 +99,7 @@ export function mapConsumerBookingRow(
   const lat = row.venue_lat == null ? null : Number(row.venue_lat);
   const lng = row.venue_lng == null ? null : Number(row.venue_lng);
   const hasReview = row.has_review === true || row.has_review === "t";
+  const guestSnapshot = readGuestSnapshot(row.guest_snapshot_json);
 
   // Dual snake_case + camelCase for Flutter Booking / BookingDetails parsers.
   return {
@@ -147,6 +154,8 @@ export function mapConsumerBookingRow(
     longitude: Number.isFinite(lng as number) ? lng : null,
     has_review: hasReview,
     hasReview,
+    guest_snapshot: guestSnapshot,
+    guestSnapshot,
     document: mapConsumerBookingDocument({
       status: row.status,
       payment_status: row.payment_status,
@@ -155,6 +164,15 @@ export function mapConsumerBookingRow(
       gross_total: row.gross_total,
       currency: row.currency,
       venue_name: row.venue_name,
+      inventory_type_name: row.inventory_type_name,
+      inventory_type_label_ar: row.inventory_type_label_ar,
+      inventory_unit_label: row.inventory_unit_label,
+      check_in: row.check_in,
+      check_out: row.check_out,
+      guests_adults: row.guests_adults,
+      guests_children: row.guests_children,
+      cancellation_policy_snapshot_json: row.cancellation_policy_snapshot_json,
+      guest_snapshot_json: row.guest_snapshot_json,
     }),
   };
 }
@@ -218,6 +236,61 @@ export class BookingQuery {
       throw new AppError(ErrorCodes.NOT_FOUND, "Booking not found");
     }
     return mapConsumerBookingRow(res.rows[0] as Record<string, unknown>);
+  }
+
+  async pdfForConsumer(
+    uid: string,
+    id: string,
+  ): Promise<{ bytes: Buffer; fileName: string }> {
+    const owner = await this.pg.query<{
+      consumer_firebase_uid: string;
+    }>(`SELECT consumer_firebase_uid FROM bookings WHERE id = $1`, [id]);
+    if (!owner.rowCount) {
+      throw new AppError(ErrorCodes.NOT_FOUND, "Booking not found");
+    }
+    if (owner.rows[0].consumer_firebase_uid !== uid) {
+      throw new AppError(
+        ErrorCodes.FORBIDDEN_BOOKING_OWNERSHIP,
+        "Booking document belongs to another user",
+      );
+    }
+    const res = await this.pg.query(
+      `SELECT ${CONSUMER_BOOKING_SELECT}
+       ${CONSUMER_BOOKING_FROM}
+       WHERE b.id = $1`,
+      [id],
+    );
+    if (!res.rowCount) {
+      throw new AppError(ErrorCodes.NOT_FOUND, "Booking not found");
+    }
+    const row = res.rows[0] as Record<string, unknown>;
+    const mapped = mapConsumerBookingRow(row);
+    const document = mapped.document as { downloadFileName?: string };
+    const bytes = await renderBookingDocumentPdf({
+      status: row.status,
+      payment_status: row.payment_status,
+      payment_method: row.payment_method,
+      human_code: row.human_code,
+      gross_total: row.gross_total,
+      currency: row.currency,
+      venue_name: row.venue_name,
+      inventory_type_name: row.inventory_type_name,
+      inventory_type_label_ar: row.inventory_type_label_ar,
+      inventory_unit_label: row.inventory_unit_label,
+      check_in: row.check_in,
+      check_out: row.check_out,
+      guests_adults: row.guests_adults,
+      guests_children: row.guests_children,
+      cancellation_policy_snapshot_json: row.cancellation_policy_snapshot_json,
+      guest_snapshot_json: row.guest_snapshot_json,
+    });
+    if (!isPdfBuffer(bytes)) {
+      throw new AppError(ErrorCodes.INTERNAL, "PDF render failed");
+    }
+    return {
+      bytes,
+      fileName: document.downloadFileName || "booking.pdf",
+    };
   }
 
   async listForProvider(providerId: string): Promise<unknown[]> {
